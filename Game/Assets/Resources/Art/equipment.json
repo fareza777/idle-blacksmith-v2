@@ -1,0 +1,49 @@
+{ "frames": [
+   {
+    "filename": "equipment.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 640, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 640, "h": 32 },
+    "sourceSize": { "w": 640, "h": 32 },
+    "duration": 1000
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-dev",
+  "image": "equipment.png",
+  "format": "RGBA8888",
+  "size": { "w": 640, "h": 32 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "work", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" }
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" },
+   { "name": "Twenty regional equipment silhouettes - IronSword first", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+   { "name": "StarsteelWard", "keys": [{ "frame": 0, "bounds": {"x": 608, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "StarsteelMail", "keys": [{ "frame": 0, "bounds": {"x": 576, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "StarsteelAxe", "keys": [{ "frame": 0, "bounds": {"x": 544, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "StarsteelSword", "keys": [{ "frame": 0, "bounds": {"x": 512, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "EmberObsidianWard", "keys": [{ "frame": 0, "bounds": {"x": 480, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "EmberObsidianMail", "keys": [{ "frame": 0, "bounds": {"x": 448, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "EmberObsidianAxe", "keys": [{ "frame": 0, "bounds": {"x": 416, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "EmberObsidianSword", "keys": [{ "frame": 0, "bounds": {"x": 384, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "FrostSilverWard", "keys": [{ "frame": 0, "bounds": {"x": 352, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "FrostSilverMail", "keys": [{ "frame": 0, "bounds": {"x": 320, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "FrostSilverAxe", "keys": [{ "frame": 0, "bounds": {"x": 288, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "FrostSilverSword", "keys": [{ "frame": 0, "bounds": {"x": 256, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "BogBronzeWard", "keys": [{ "frame": 0, "bounds": {"x": 224, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "BogBronzeMail", "keys": [{ "frame": 0, "bounds": {"x": 192, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "BogBronzeAxe", "keys": [{ "frame": 0, "bounds": {"x": 160, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "BogBronzeSword", "keys": [{ "frame": 0, "bounds": {"x": 128, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "IronWard", "keys": [{ "frame": 0, "bounds": {"x": 96, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "IronMail", "keys": [{ "frame": 0, "bounds": {"x": 64, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "IronAxe", "keys": [{ "frame": 0, "bounds": {"x": 32, "y": 0, "w": 32, "h": 32 } }] },
+   { "name": "IronSword", "keys": [{ "frame": 0, "bounds": {"x": 0, "y": 0, "w": 32, "h": 32 } }] }
+  ]
+ }
+}

@@ -1,0 +1,69 @@
+{ "frames": [
+   {
+    "filename": "improvements 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 384, "h": 592 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 384, "h": 592 },
+    "sourceSize": { "w": 384, "h": 592 },
+    "duration": 1000
+   },
+   {
+    "filename": "improvements 1.aseprite",
+    "frame": { "x": 384, "y": 0, "w": 384, "h": 592 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 384, "h": 592 },
+    "sourceSize": { "w": 384, "h": 592 },
+    "duration": 1000
+   },
+   {
+    "filename": "improvements 2.aseprite",
+    "frame": { "x": 768, "y": 0, "w": 384, "h": 592 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 384, "h": 592 },
+    "sourceSize": { "w": 384, "h": 592 },
+    "duration": 1000
+   },
+   {
+    "filename": "improvements 3.aseprite",
+    "frame": { "x": 1152, "y": 0, "w": 384, "h": 592 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 384, "h": 592 },
+    "sourceSize": { "w": 384, "h": 592 },
+    "duration": 1000
+   },
+   {
+    "filename": "improvements 4.aseprite",
+    "frame": { "x": 1536, "y": 0, "w": 384, "h": 592 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 384, "h": 592 },
+    "sourceSize": { "w": 384, "h": 592 },
+    "duration": 1000
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-dev",
+  "image": "improvements.png",
+  "format": "RGBA8888",
+  "size": { "w": 1920, "h": 592 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "station-upgrades", "from": 0, "to": 4, "direction": "forward", "color": "#000000ff" }
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" },
+   { "name": "Mine reinforcement and working hoist", "opacity": 255, "blendMode": "normal" },
+   { "name": "Furnace brass fittings and leather bellows", "opacity": 255, "blendMode": "normal" },
+   { "name": "Polished anvil and weapon rack", "opacity": 255, "blendMode": "normal" },
+   { "name": "Gold trimmed market awning and fine stock", "opacity": 255, "blendMode": "normal" },
+   { "name": "Raised guild banner storage annex and broad front steps", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

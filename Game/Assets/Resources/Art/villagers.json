@@ -1,0 +1,132 @@
+{ "frames": [
+   {
+    "filename": "villagers 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 48, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 56 },
+    "sourceSize": { "w": 48, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "villagers 1.aseprite",
+    "frame": { "x": 48, "y": 0, "w": 48, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 56 },
+    "sourceSize": { "w": 48, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "villagers 2.aseprite",
+    "frame": { "x": 96, "y": 0, "w": 48, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 56 },
+    "sourceSize": { "w": 48, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "villagers 3.aseprite",
+    "frame": { "x": 144, "y": 0, "w": 48, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 56 },
+    "sourceSize": { "w": 48, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "villagers 4.aseprite",
+    "frame": { "x": 192, "y": 0, "w": 48, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 56 },
+    "sourceSize": { "w": 48, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "villagers 5.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 48, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 56 },
+    "sourceSize": { "w": 48, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "villagers 6.aseprite",
+    "frame": { "x": 288, "y": 0, "w": 48, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 56 },
+    "sourceSize": { "w": 48, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "villagers 7.aseprite",
+    "frame": { "x": 336, "y": 0, "w": 48, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 56 },
+    "sourceSize": { "w": 48, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "villagers 8.aseprite",
+    "frame": { "x": 384, "y": 0, "w": 48, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 56 },
+    "sourceSize": { "w": 48, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "villagers 9.aseprite",
+    "frame": { "x": 432, "y": 0, "w": 48, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 56 },
+    "sourceSize": { "w": 48, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "villagers 10.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 48, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 56 },
+    "sourceSize": { "w": 48, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "villagers 11.aseprite",
+    "frame": { "x": 528, "y": 0, "w": 48, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 56 },
+    "sourceSize": { "w": 48, "h": 56 },
+    "duration": 150
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-dev",
+  "image": "villagers.png",
+  "format": "RGBA8888",
+  "size": { "w": 576, "h": 56 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "OrePorter-walk", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "Herbalist-walk", "from": 4, "to": 7, "direction": "forward", "color": "#000000ff" },
+   { "name": "BardMerchant-walk", "from": 8, "to": 11, "direction": "forward", "color": "#000000ff" }
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" },
+   { "name": "Ore porter - loaded basket and hand-drawn steps", "opacity": 255, "blendMode": "normal" },
+   { "name": "Herbalist - green hood gathering basket and steps", "opacity": 255, "blendMode": "normal" },
+   { "name": "Bard merchant - burgundy coat lute and steps", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

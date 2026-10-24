@@ -1,0 +1,223 @@
+{ "frames": [
+   {
+    "filename": "enemies 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 540
+   },
+   {
+    "filename": "enemies 1.aseprite",
+    "frame": { "x": 80, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 150
+   },
+   {
+    "filename": "enemies 2.aseprite",
+    "frame": { "x": 160, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 200
+   },
+   {
+    "filename": "enemies 3.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 900
+   },
+   {
+    "filename": "enemies 4.aseprite",
+    "frame": { "x": 320, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 540
+   },
+   {
+    "filename": "enemies 5.aseprite",
+    "frame": { "x": 400, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 150
+   },
+   {
+    "filename": "enemies 6.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 200
+   },
+   {
+    "filename": "enemies 7.aseprite",
+    "frame": { "x": 560, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 900
+   },
+   {
+    "filename": "enemies 8.aseprite",
+    "frame": { "x": 640, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 540
+   },
+   {
+    "filename": "enemies 9.aseprite",
+    "frame": { "x": 720, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 150
+   },
+   {
+    "filename": "enemies 10.aseprite",
+    "frame": { "x": 800, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 200
+   },
+   {
+    "filename": "enemies 11.aseprite",
+    "frame": { "x": 880, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 900
+   },
+   {
+    "filename": "enemies 12.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 540
+   },
+   {
+    "filename": "enemies 13.aseprite",
+    "frame": { "x": 1040, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 150
+   },
+   {
+    "filename": "enemies 14.aseprite",
+    "frame": { "x": 1120, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 200
+   },
+   {
+    "filename": "enemies 15.aseprite",
+    "frame": { "x": 1200, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 900
+   },
+   {
+    "filename": "enemies 16.aseprite",
+    "frame": { "x": 1280, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 540
+   },
+   {
+    "filename": "enemies 17.aseprite",
+    "frame": { "x": 1360, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 150
+   },
+   {
+    "filename": "enemies 18.aseprite",
+    "frame": { "x": 1440, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 200
+   },
+   {
+    "filename": "enemies 19.aseprite",
+    "frame": { "x": 1520, "y": 0, "w": 80, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
+    "sourceSize": { "w": 80, "h": 80 },
+    "duration": 900
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-dev",
+  "image": "enemies.png",
+  "format": "RGBA8888",
+  "size": { "w": 1600, "h": 80 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "ThornbackBoar-idle", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" },
+   { "name": "ThornbackBoar-attack", "from": 1, "to": 1, "direction": "forward", "color": "#000000ff" },
+   { "name": "ThornbackBoar-hurt", "from": 2, "to": 2, "direction": "forward", "color": "#000000ff" },
+   { "name": "ThornbackBoar-defeated", "from": 3, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "MireWarden-idle", "from": 4, "to": 4, "direction": "forward", "color": "#000000ff" },
+   { "name": "MireWarden-attack", "from": 5, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "MireWarden-hurt", "from": 6, "to": 6, "direction": "forward", "color": "#000000ff" },
+   { "name": "MireWarden-defeated", "from": 7, "to": 7, "direction": "forward", "color": "#000000ff" },
+   { "name": "FrostfangWolf-idle", "from": 8, "to": 8, "direction": "forward", "color": "#000000ff" },
+   { "name": "FrostfangWolf-attack", "from": 9, "to": 9, "direction": "forward", "color": "#000000ff" },
+   { "name": "FrostfangWolf-hurt", "from": 10, "to": 10, "direction": "forward", "color": "#000000ff" },
+   { "name": "FrostfangWolf-defeated", "from": 11, "to": 11, "direction": "forward", "color": "#000000ff" },
+   { "name": "CinderColossus-idle", "from": 12, "to": 12, "direction": "forward", "color": "#000000ff" },
+   { "name": "CinderColossus-attack", "from": 13, "to": 13, "direction": "forward", "color": "#000000ff" },
+   { "name": "CinderColossus-hurt", "from": 14, "to": 14, "direction": "forward", "color": "#000000ff" },
+   { "name": "CinderColossus-defeated", "from": 15, "to": 15, "direction": "forward", "color": "#000000ff" },
+   { "name": "StarboundSentinel-idle", "from": 16, "to": 16, "direction": "forward", "color": "#000000ff" },
+   { "name": "StarboundSentinel-attack", "from": 17, "to": 17, "direction": "forward", "color": "#000000ff" },
+   { "name": "StarboundSentinel-hurt", "from": 18, "to": 18, "direction": "forward", "color": "#000000ff" },
+   { "name": "StarboundSentinel-defeated", "from": 19, "to": 19, "direction": "forward", "color": "#000000ff" }
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" },
+   { "name": "Thornback boar - moss tusks and four drawn poses", "opacity": 255, "blendMode": "normal" },
+   { "name": "Mire Warden - reed armor carved bark and roots", "opacity": 255, "blendMode": "normal" },
+   { "name": "Frostfang wolf - crystalline mane and drawn gait", "opacity": 255, "blendMode": "normal" },
+   { "name": "Cinder Colossus - interlocking obsidian and molten core", "opacity": 255, "blendMode": "normal" },
+   { "name": "Starbound Sentinel - ancient plate shield and plume", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

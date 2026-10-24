@@ -1,0 +1,55 @@
+# Unity-generated files
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+Game/.utmp/
+
+# Build outputs and local test evidence
+/Builds/
+/QA/*
+!/QA/README.md
+*.apk
+*.aab
+*.unitypackage
+*.zip
+
+# IDE and machine-local files
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.sln
+*.slnx
+*.unityproj
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.log
+*.tmp
+*.bak
+sysinfo.txt
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local dependencies, credentials and signing material
+node_modules/
+__pycache__/
+*.pyc
+.env
+.env.*
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.pem
+*.key
