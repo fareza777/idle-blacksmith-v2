@@ -311,7 +311,7 @@ namespace ForgeEmpire
             }
             var state=app.Sim.State;
             if(state.TotalMined>lastMined){Fly(0,Stations[0],Stations[0]+new Vector2(27,-25),.6f);lastMined=state.TotalMined;}
-            if(state.TotalCrafted>lastCrafted){Fly(2,Stations[2],new Vector2(257,417),.9f,state.SelectedRecipe);lastCrafted=state.TotalCrafted;}
+            if(state.TotalCrafted>lastCrafted){Fly(2,Stations[2],new Vector2(257,417),.9f,app.Sim.LastCraftedRecipe);lastCrafted=state.TotalCrafted;}
             if(state.TotalSold>lastSold){Fly(3,new Vector2(174,487),new Vector2(92,484),.7f);lastSold=state.TotalSold;}
             if(app.Sim.WorkshopTier>lastTier){lastTier=app.Sim.WorkshopTier;Notify("WORKSHOP EXPANDED · Welcome to your guild forge",true);}
             float phase=Mathf.PingPong(Time.unscaledTime*.80f,1);
@@ -344,8 +344,11 @@ namespace ForgeEmpire
             if(app.Sim.State.ReducedMotion)return;
             foreach(var flight in flights)if(!flight.Image.gameObject.activeSelf) {
                 flight.From=from;flight.To=to;flight.Time=0;flight.Duration=duration;
-                flight.Image.texture=Resources.Load<Texture2D>(recipe>=0?"Art/equipment":"Art/icons");
-                flight.Image.uvRect=recipe>=0?new Rect(recipe/20f,0,1f/20,1):new Rect(icon/8f,0,1f/8,1);
+                if(recipe>=0)HandDrawnArt.EquipmentFrame(flight.Image,recipe,22*Pixel,22*Pixel);
+                else {
+                    flight.Image.texture=Resources.Load<Texture2D>("Art/icons");flight.Image.uvRect=new Rect(icon/8f,0,1f/8,1);
+                    flight.Image.rectTransform.pivot=new Vector2(0,1);flight.Image.rectTransform.sizeDelta=new Vector2(22*Pixel,22*Pixel);
+                }
                 flight.Image.rectTransform.anchoredPosition=new Vector2(from.x*Pixel,-from.y*Pixel);
                 flight.Image.gameObject.SetActive(true);return;
             }
@@ -358,7 +361,7 @@ namespace ForgeEmpire
             gold.text=Compact(s.Gold);ore.text=Compact(s.Ore);ingots.text=Compact(s.Ingots);
             for(int i=0;i<3;i++) {
                 rackSwords[i].gameObject.SetActive(s.Inventory.Count>i);
-                if(s.Inventory.Count>i)rackSwords[i].uvRect=new Rect(s.Inventory[i].RecipeId/20f,0,1f/20,1);
+                if(s.Inventory.Count>i)HandDrawnArt.EquipmentFrame(rackSwords[i],s.Inventory[i].RecipeId,27*Pixel,27*Pixel);
                 orePieces[i].gameObject.SetActive(s.Ore>i*2);
                 ingotPieces[i].gameObject.SetActive(s.Ingots>i);
             }

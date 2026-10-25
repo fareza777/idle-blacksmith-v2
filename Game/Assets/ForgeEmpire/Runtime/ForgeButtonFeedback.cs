@@ -4,13 +4,14 @@ using UnityEngine.UI;
 
 namespace ForgeEmpire
 {
-    public sealed class ForgeButtonFeedback : MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler
+    public sealed class ForgeButtonFeedback : MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler,ISelectHandler,IDeselectHandler
     {
         Button button;
         RectTransform[] visuals;
         Vector2[] origins;
         bool pressed;
         float weight;
+        Image focusLine;
         void Start()
         {
             button=GetComponent<Button>();visuals=new RectTransform[transform.childCount];origins=new Vector2[visuals.Length];
@@ -29,9 +30,20 @@ namespace ForgeEmpire
                 else if(before>0)visuals[i].anchoredPosition=origins[i];
             }
         }
-        public void OnPointerDown(PointerEventData data){pressed=true;}
+        public void OnPointerDown(PointerEventData data){pressed=true;if(focusLine)focusLine.gameObject.SetActive(false);}
         public void OnPointerUp(PointerEventData data){pressed=false;}
         public void OnPointerExit(PointerEventData data){pressed=false;}
-        void OnDisable(){pressed=false;weight=0;}
+        public void OnSelect(BaseEventData data)
+        {
+            if(data is PointerEventData||Application.isMobilePlatform)return;
+            if(!focusLine)
+            {
+                var rect=(RectTransform)transform;
+                focusLine=ForgeUI.Fill("KeyboardFocus",transform,12,rect.rect.height-6,Mathf.Max(12,rect.rect.width-24),3,ForgeUI.Gold);
+            }
+            focusLine.gameObject.SetActive(true);
+        }
+        public void OnDeselect(BaseEventData data){if(focusLine)focusLine.gameObject.SetActive(false);}
+        void OnDisable(){pressed=false;weight=0;if(focusLine)focusLine.gameObject.SetActive(false);}
     }
 }

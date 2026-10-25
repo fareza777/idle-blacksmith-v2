@@ -10,18 +10,20 @@ namespace ForgeEmpire
         static RawImage CampaignSprite(string name,Transform parent,string asset,int frame,int count,float x,float y,float width,float height)
         {
             if(asset=="heroes")return HandDrawnArt.Person(name,parent,"heroes",frame,new Vector2(x+width*.5f,y+height*.96f),width,height);
+            if(asset=="enemies"||asset=="guardians")return HandDrawnArt.Person(name,parent,asset,frame,new Vector2(x+width*.5f,y+height*.96f),width,height);
+            if(asset=="equipment")return HandDrawnArt.Icon(name,parent,frame,x,y,width,height);
+            if(asset=="worldmap")return ForgeUI.Picture(name,parent,HandDrawnArt.Texture("worldmap"),x,y,width,height);
+            if(asset=="battlefields")return HandDrawnArt.Landscape(name,parent,frame,x,y,width,height,true);
             var image=ForgeUI.Picture(name,parent,Resources.Load<Texture2D>("Art/"+asset),x,y,width,height);
             image.uvRect=new Rect(frame/(float)count,0,1f/count,1);return image;
         }
         static RawImage Landscape(string name,Transform parent,int region,float x,float y,float width,float height)
         {
-            var image=CampaignSprite(name,parent,"battlefields",region,5,x,y,width,height);
-            float fraction=Mathf.Min(1,height/(width*180/320));
-            image.uvRect=new Rect(region/5f,(1-fraction)*.5f,.2f,fraction);return image;
+            return HandDrawnArt.Landscape(name,parent,region,x,y,width,height);
         }
         static RawImage EquipmentIcon(string name,Transform parent,int recipe,float x,float y,float size)
         {
-            return CampaignSprite(name,parent,"equipment",Mathf.Clamp(recipe,0,19),20,x,y,size,size);
+            return HandDrawnArt.Icon(name,parent,Mathf.Clamp(recipe,0,19),x,y,size,size);
         }
         string QuestGoal(QuestDefinition quest)
         {
@@ -206,24 +208,30 @@ namespace ForgeEmpire
         {
             var sim=app.Sim;var battle=sim.State.Campaign.Battle;
             if(battle.Active||battle.Finished){ShowBattle();return;}
-            var p=Page("world","Five frontiers await","Beyond the forge",ShowWorld);
+            var p=Page("world",sim.CampaignComplete?"The valley restored":"Chapter "+(sim.UnlockedRegion+1)+" of 5 · "+GameContent.Regions[sim.UnlockedRegion].Name,"Atlas of the valley",ShowWorld);
             string hero=GameContent.Heroes[sim.State.Campaign.SelectedHero].Name;
             float y=Paragraph(p,"MapParty",hero+" · "+sim.HeroPower+" Power · "+sim.HeroGuard+" Guard",0,ForgeUI.Small,ForgeUI.Teal)+Gap;
+            y=Paragraph(p,"MapObjective","Next: "+sim.NextStep.Title,y,ForgeUI.Small,ForgeUI.Cream)+Gap;
             float mapY=y;const float mapHeight=1275;
             CampaignSprite("WorldMap",p,"worldmap",0,1,0,mapY,1020,mapHeight);
-            Vector2[] locations={new Vector2(77,383),new Vector2(261,322),new Vector2(94,223),new Vector2(275,155),new Vector2(188,63)};
+            // Top-left normalized landmarks calibrated to the selected painting.
+            Vector2[] locations={new Vector2(.21f,.80f),new Vector2(.77f,.67f),new Vector2(.30f,.265f),new Vector2(.74f,.28f),new Vector2(.55f,.095f)};
             for(int i=0;i<5;i++)
             {
-                int id=i;bool unlocked=i<=sim.UnlockedRegion;
-                float x=locations[i].x/384*1020,posY=mapY+locations[i].y/480*mapHeight;
-                if(!unlocked){ForgeUI.Glyph("LockedRegion"+i,p,"lock",x-26,posY-26,52,ForgeUI.Muted);continue;}
-                var pin=ForgeUI.Medallion("Region"+i,p,x-56,posY-56,112,()=>ShowRegion(id));
-                var pinText=pin.GetComponentInChildren<Text>();pinText.text=(i+1).ToString();pinText.rectTransform.anchoredPosition=Vector2.zero;pinText.rectTransform.sizeDelta=new Vector2(112,112);pinText.color=ForgeUI.Gold;
+                int id=i;bool unlocked=i<=sim.UnlockedRegion,cleared=sim.IsFrontierCleared(i),current=i==sim.UnlockedRegion&&!sim.CampaignComplete;
+                float x=locations[i].x*1020,posY=mapY+locations[i].y*mapHeight;
+                if(current)ForgeUI.Light("CurrentFrontier",p,x-86,posY-86,172,172).color=new Color(1,.77f,.35f,.28f);
+                var pin=ForgeUI.Medallion("Region"+i,p,x-56,posY-56,112,()=>ShowRegion(id),cleared?"check":!unlocked?"lock":null);
+                var pinText=pin.GetComponentInChildren<Text>();pinText.text=unlocked&&!cleared?(i+1).ToString():"";pinText.rectTransform.anchoredPosition=Vector2.zero;pinText.rectTransform.sizeDelta=new Vector2(112,112);pinText.color=current?ForgeUI.Gold:ForgeUI.Teal;
                 string label=GameContent.Regions[i].Name;
-                float textX=Mathf.Clamp(x-210,0,600),height=ForgeUI.Height(label,396,ForgeUI.Small,FontStyle.Bold)+20;
-                ForgeUI.TextShadow(ForgeUI.Label("RegionName"+i,p,label,textX+12,posY+64,396,height-20,ForgeUI.Small,ForgeUI.Cream,FontStyle.Bold,TextAnchor.MiddleCenter));
+                float textX=Mathf.Clamp(x-210,0,600),height=ForgeUI.Height(label,420,ForgeUI.Small,FontStyle.Bold);
+                var name=ForgeUI.Label("RegionName"+i,p,label,textX,posY+64,420,height,ForgeUI.Small,ForgeUI.Cream,FontStyle.Bold,TextAnchor.UpperCenter);
+                var outline=name.gameObject.AddComponent<Outline>();outline.effectColor=ForgeUI.Background;outline.effectDistance=new Vector2(2,-2);
             }
             y+=mapHeight+Gap;
+            y=Paragraph(p,"MapLegend","Gold: current frontier · Check: restored · Lock: a future chapter",y,ForgeUI.Small,ForgeUI.Muted)+Gap;
+            y=Paragraph(p,"MapNextUnlock",sim.ChapterUnlock,y,ForgeUI.Small,ForgeUI.Teal)+Gap;
+            y=AddAction(p,"MapContinue","Continue · "+sim.NextStep.Button,y,ResumeJourney);
             y=AddAction(p,"MapHeroes","Prepare your hero ›",y,ShowHeroes,false);
             y=AddAction(p,"MapQuests","Quest journal ›",y,()=>ShowQuests(false),false);
             EndPage(y);
@@ -231,14 +239,27 @@ namespace ForgeEmpire
         void ShowRegion(int regionId)
         {
             var sim=app.Sim;var region=GameContent.Regions[regionId];
-            var p=Page("region","Adventure / "+region.Weakness+" weakness",region.Name,()=>ShowRegion(regionId));
+            bool unlocked=regionId<=sim.UnlockedRegion;
+            var p=Page("region",unlocked?"Adventure / "+region.Weakness+" weakness":"A frontier ahead",region.Name,()=>ShowRegion(regionId));
             Landscape("RegionBackdrop",p,regionId,0,0,1020,360);
+            HandDrawnArt.Person("RegionGuardian",p,"guardians",regionId*4,new Vector2(835,344),256,290);
             float y=Paragraph(p,"RegionLore",region.Description.Split('.')[0]+".",388)+Gap;
+            if(!unlocked)
+            {
+                y=Paragraph(p,"RegionUnlockRequirement",sim.RegionUnlockText(regionId),y,ForgeUI.Subheading,ForgeUI.Gold,true)+Gap;
+                y=Paragraph(p,"RegionPreview",region.BossName+" guards this frontier. Its routes supply "+WorkshopSimulation.MaterialName(regionId).ToLowerInvariant()+"; opening the region unlocks four recipes.",y,ForgeUI.Small,ForgeUI.Muted)+Gap;
+                y=AddAction(p,"LockedRegionJourney","Continue your current journey",y,ResumeJourney);
+                EndPage(y);return;
+            }
             var hero=sim.State.Campaign.Heroes[sim.State.Campaign.SelectedHero];
             double multiplier=sim.WeaponMultiplier(regionId);
             string element=hero.Weapon==null?"No weapon equipped":GameContent.Recipes[hero.Weapon.RecipeId].Element+" weapon";
             y=Paragraph(p,"PartyStats",GameContent.Heroes[sim.State.Campaign.SelectedHero].Name+" · "+sim.HeroPower+" Power · "+sim.HeroGuard+" Guard\n"+element+" · "+(multiplier>1?"+"+Math.Round((multiplier-1)*100)+"% weapon damage":multiplier<1?"25% damage resisted":"normal damage"),y,ForgeUI.Small,multiplier<1?ForgeUI.Orange:ForgeUI.Teal)+Gap;
             if(hero.Armor==null)y=Paragraph(p,"ArmorWarning","No armor equipped. Craft protection for tougher routes.",y,ForgeUI.Small,ForgeUI.Orange)+Gap;
+            y=Paragraph(p,"RegionElements",ElementAdvice(regionId),y,ForgeUI.Small,ForgeUI.Muted)+Gap;
+            int[] suggestedPower={15,28,44,62,86},suggestedGuard={9,16,25,35,49};
+            y=Paragraph(p,"RegionPreparation","Supply trail suggested: "+suggestedPower[regionId]+" Power · "+suggestedGuard[regionId]+" Guard. Elite and guardian routes are harder.",y,ForgeUI.Small,ForgeUI.Muted)+Gap;
+            y=Paragraph(p,"RegionStoryGoal",sim.GuardianObjective(regionId),y,ForgeUI.Small,ForgeUI.Gold)+Gap;
             string[] names={"Supply trail","Dangerous hunt","Boss · "+region.BossName};
             string[] hints={"2 encounters · Lower risk · Material supply","3 encounters · Elite enemies · More rewards","3 encounters · Region guardian · Advance the story"};
             for(int route=0;route<3;route++)
@@ -258,6 +279,14 @@ namespace ForgeEmpire
             }
             y=Paragraph(p,"ExpeditionHint","Your workshop keeps working while your hero travels.",y,ForgeUI.Small,ForgeUI.Muted);
             EndPage(y);
+        }
+        string ElementAdvice(int region)
+        {
+            var sim=app.Sim;string element=GameContent.Regions[region].Weakness;
+            int weaponBonus=sim.State.Campaign.SelectedHero==2?60:30,armorBonus=sim.State.Campaign.SelectedHero==2?30:20;
+            string weapon=sim.WeaponMultiplier(region)>1?"Your weapon matches: +"+weaponBonus+"% damage.":element+" weapons give +"+weaponBonus+"% damage.";
+            string armor=sim.ArmorMultiplier(region)<1?"Your armor matches: "+armorBonus+"% less incoming damage.":element+" armor gives "+armorBonus+"% less incoming damage.";
+            return weapon+"\n"+armor;
         }
     }
 }

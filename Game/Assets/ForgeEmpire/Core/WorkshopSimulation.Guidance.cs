@@ -129,6 +129,13 @@ namespace ForgeEmpire
             return quest.Objective;
         }
 
+        public double ArmorMultiplier(int region)
+        {
+            if(region<0||region>=5)return 1;
+            var hero=State.Campaign.Heroes[State.Campaign.SelectedHero];
+            string element=hero.Armor==null?"Iron":GameContent.Recipes[hero.Armor.RecipeId].Element;
+            return element==GameContent.Regions[region].Weakness?(State.Campaign.SelectedHero==2?.7:.8):1;
+        }
         public double WeaponMultiplier(int region)
         {
             if (region < 0 || region >= 5) return 1;

@@ -8,7 +8,25 @@ namespace ForgeEmpire
         public string ChapterTitle { get { return ChapterTitles[UnlockedRegion]; } }
         public string ChapterUnlock
         {
-            get { return UnlockedRegion<4?"Defeat "+GameContent.Regions[UnlockedRegion].BossName+" to open "+GameContent.Regions[UnlockedRegion+1].Name+" and 4 new recipes.":"Defeat the Starbound Sentinel to free the valley. Complete the town, master 20 recipes and keep your guild growing."; }
+            get { return CampaignComplete?"The valley is free. Restore the town, master 20 recipes and keep your guild growing.":GuardianObjective(UnlockedRegion); }
+        }
+        public bool IsFrontierCleared(int region)
+        {
+            return region>=0&&region<5&&State.Campaign.QuestClaims[region*3+2];
+        }
+        public string GuardianObjective(int region)
+        {
+            if(region<0||region>=5)return "Unknown frontier.";
+            if(IsFrontierCleared(region))return "Return for materials, gold and hero XP. This frontier is already restored.";
+            string story="\""+GameContent.Quests[region*3+2].Title+"\"";
+            string action=State.Campaign.BossKills[region]>0?"Claim "+story:"Defeat "+GameContent.Regions[region].BossName+", then claim "+story;
+            return action+(region<4?" to open "+GameContent.Regions[region+1].Name+" and 4 new recipes.":" to free the valley and complete the final chapter.");
+        }
+        public string RegionUnlockText(int region)
+        {
+            if(region<0||region>=5)return "Unknown frontier.";
+            if(region<=UnlockedRegion)return IsFrontierCleared(region)?"Restored · Routes remain open for materials and trade.":"Open · Your current chapter frontier.";
+            return "Defeat "+GameContent.Regions[region-1].BossName+", then claim \""+GameContent.Quests[(region-1)*3+2].Title+"\" to open "+GameContent.Regions[region].Name+".";
         }
         public bool CampaignComplete { get { return State.Campaign.QuestClaims[14]; } }
         public int MasterworkRecipes
@@ -35,7 +53,7 @@ namespace ForgeEmpire
             switch(index%7)
             {
                 case 0:return chapter==0?"Arm Rowan for the road":"Forge a "+place+" weapon";
-                case 1:return "Earn the warden's backing";
+                case 1:return "Earn "+GameContent.Quests[chapter*3].Npc+"'s backing";
                 case 2:return "Secure the supply trail";
                 case 3:return "Forge protection for your hero";
                 case 4:return "Bring the missing townsfolk home";

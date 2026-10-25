@@ -116,7 +116,7 @@ namespace ForgeEmpire
                 float nameH=ForgeUI.Height(item.Name,842,ForgeUI.Subheading,FontStyle.Bold);
                 EquipmentIcon("ItemIcon"+i,p,item.RecipeId,0,y,144);
                 ForgeUI.Label("ItemName"+i,p,item.Name,174,y,846,nameH,ForgeUI.Subheading,ForgeUI.Cream,FontStyle.Bold);
-                string meta=WorkshopSimulation.QualityName(item.Quality)+" ("+item.Quality+"/3) · "+recipe.Element+" "+recipe.Slot.ToString().ToLowerInvariant()+(sim.IsCommissionReserved(item)?" · Reserved for order":"");
+                string meta=WorkshopSimulation.QualityName(item.Quality)+" ("+item.Quality+"/3) · "+recipe.Element+" "+recipe.Slot.ToString().ToLowerInvariant()+(sim.IsCommissionReserved(item)?" · Reserved for order":sim.IsJourneyReserved(item)?" · For your current journey":"");
                 float metaH=ForgeUI.Height(meta,846,ForgeUI.Small);
                 ForgeUI.Label("ItemMeta"+i,p,meta,174,y+nameH+10,846,metaH,ForgeUI.Small,ForgeUI.Teal);
                 y+=Mathf.Max(144,nameH+metaH+10)+20;

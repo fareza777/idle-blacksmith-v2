@@ -28,6 +28,47 @@ internal static class ProgressionTests
     }
     public static void Run(Action<string,Action> test)
     {
+        test("craft result art keeps the paid recipe when a different automatic job is planned",delegate{
+            var sim=Chapter(4);sim.State.Ingots=100;sim.State.Campaign.Materials[3]=100;sim.State.Automated[2]=true;
+            sim.PlanRecipe(16);Check(sim.TryStart(Station.Forge),"could not begin first item");sim.PlanRecipe(17);
+            sim.Advance(sim.GetDuration(Station.Forge)+.01);
+            Check((int)Read(sim,"LastCraftedRecipe")==16,"completion art uses next recipe instead of paid item");
+            Check(sim.IsRunning(Station.Forge)&&sim.State.PendingRecipe==17,"next automatic job not started");
+            sim.Advance(sim.GetDuration(Station.Forge)+.01);
+            Check((int)Read(sim,"LastCraftedRecipe")==17,"next completion art did not update");
+        });
+        test("frontier map completion requires the claimed guardian story and promises the actual next unlock",delegate{
+            var sim=Chapter(0);var c=sim.State.Campaign;
+            Check(!(bool)Call(sim,"IsFrontierCleared",0),"fresh frontier shown as cleared");
+            c.BossKills[0]=1;c.QuestClaims[0]=c.QuestClaims[1]=true;
+            Check(!(bool)Call(sim,"IsFrontierCleared",0)&&sim.UnlockedRegion==0,"boss kill alone opened the map");
+            string waiting=(string)Call(sim,"GuardianObjective",0);
+            Check(waiting.Contains(GameContent.Quests[2].Title)&&waiting.Contains(GameContent.Regions[1].Name),"claim step or next destination absent");
+            Check(sim.ClaimQuest(2),"legitimate guardian claim rejected");
+            Check((bool)Call(sim,"IsFrontierCleared",0)&&sim.UnlockedRegion==1,"claimed frontier not cleared");
+            Check(((string)Call(sim,"GuardianObjective",0)).Contains("Return"),"repeat guardian promises a new chapter");
+            Check(((string)Call(sim,"RegionUnlockText",4)).Contains(GameContent.Quests[11].Title),"future frontier lacks its actual prerequisite");
+            Check(!(bool)Call(sim,"IsFrontierCleared",-1)&&!(bool)Call(sim,"IsFrontierCleared",5),"invalid frontier accepted");
+        });
+        test("final guardian guidance distinguishes final claim from repeat mastery",delegate{
+            var sim=Chapter(4);var c=sim.State.Campaign;
+            string goal=(string)Call(sim,"GuardianObjective",4);
+            Check(goal.Contains(GameContent.Quests[14].Title)&&!goal.Contains("next chapter"),"final boss promises nonexistent chapter");
+            c.BossKills[4]=1;c.QuestClaims[12]=c.QuestClaims[13]=true;
+            Check(sim.ClaimQuest(14),"final reward unavailable");
+            Check((bool)Call(sim,"IsFrontierCleared",4)&&((string)Call(sim,"GuardianObjective",4)).Contains("Return"),"endgame map not complete");
+            Check(!sim.ChapterUnlock.StartsWith("Defeat"),"completed campaign still demands its defeated boss");
+        });
+        test("armor advice predicts the actual expedition snapshot for every hero and frontier",delegate{
+            for(int hero=0;hero<3;hero++)for(int region=0;region<5;region++)for(int recipe=2;recipe<20;recipe+=4)
+            {
+                var sim=Chapter(4);sim.State.Campaign.Heroes[hero].Recruited=true;sim.State.Campaign.SelectedHero=hero;
+                sim.State.Campaign.Heroes[hero].Weapon=Gear(16);sim.State.Campaign.Heroes[hero].Armor=Gear(recipe);
+                double preview=(double)Call(sim,"ArmorMultiplier",region);
+                Check(sim.StartExpedition(region,0),"prepared hero cannot depart");
+                Check(Math.Abs(preview-sim.State.Campaign.Battle.SnapshotProtection)<1e-8,"armor preview differs from battle damage protection");
+            }
+        });
         test("journey exposes seven purposeful milestones in every chapter",delegate{
             for(int chapter=0;chapter<5;chapter++)
             {

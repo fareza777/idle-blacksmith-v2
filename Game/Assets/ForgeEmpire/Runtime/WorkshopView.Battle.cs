@@ -6,8 +6,7 @@ namespace ForgeEmpire
 {
     public sealed partial class WorkshopView
     {
-        RawImage battleHero,battleEnemy;
-        Image battleHit,battleGuard,enemyAlert;
+        RawImage battleHero,battleEnemy,battleHeroShadow,battleEnemyShadow,battleHit,battleGuard,enemyAlert;
         RectTransform heroHealthFill,enemyHealthFill;
         Text battleState,battleVitals,battleEnemyName,battleLoot,battleFooter,enemyTell,heroDamage,enemyDamage;
         readonly Button[] skillButtons=new Button[3];
@@ -15,6 +14,8 @@ namespace ForgeEmpire
         double shownHeroHP,shownEnemyHP;
         float heroHurtUntil,enemyHurtUntil;
         float battleLootTop;
+        int presentedRegion=-1,presentedRoute=-1,presentedWave=-1;
+        float enemyArrivedAt;
 
         public void ShowBattle()
         {
@@ -26,11 +27,13 @@ namespace ForgeEmpire
             float y=stateHeight+Gap;
             var stage=ForgeUI.Rect("BattleStage",p,0,y,1020,574);
             CampaignSprite("Battlefield",stage,"battlefields",b.Region,5,0,0,1020,574);
-            enemyAlert=ForgeUI.Fill("EnemyThreat",stage,670,190,300,300,new Color(1,.55f,.2f,0));
+            enemyAlert=ForgeUI.Light("EnemyThreat",stage,625,180,350,350);enemyAlert.color=Color.clear;
+            battleHeroShadow=ForgeUI.Light("HeroGroundShadow",stage,138,457,204,30);battleHeroShadow.color=new Color(0,0,0,.62f);
+            battleEnemyShadow=ForgeUI.Light("EnemyGroundShadow",stage,690,457,200,30);battleEnemyShadow.color=new Color(0,0,0,.62f);
             battleHero=CampaignSprite("BattleHero",stage,"heroes",b.HeroIndex*4,12,90,183,300,300);
             battleEnemy=CampaignSprite("BattleEnemy",stage,"enemies",b.Region*4,20,700,243,230,230);
-            battleGuard=ForgeUI.Fill("BattleGuard",stage,78,174,324,324,new Color(.45f,.85f,.8f,0));
-            battleHit=ForgeUI.Fill("BattleHit",stage,0,0,1020,574,new Color(1,.76f,.4f,0));
+            battleGuard=ForgeUI.Light("BattleGuard",stage,70,166,340,340);battleGuard.color=Color.clear;
+            battleHit=ForgeUI.Light("BattleHit",stage,650,210,300,280);battleHit.color=Color.clear;
             enemyTell=ForgeUI.Label("EnemyTelegraph",stage,"",430,18,570,176,ForgeUI.Body,ForgeUI.Orange,FontStyle.Bold,TextAnchor.MiddleCenter);
             heroDamage=ForgeUI.Label("HeroDamage",stage,"",60,100,360,150,ForgeUI.Subheading,ForgeUI.Orange,FontStyle.Bold,TextAnchor.MiddleCenter);
             enemyDamage=ForgeUI.Label("EnemyDamage",stage,"",640,100,360,150,ForgeUI.Subheading,ForgeUI.Cream,FontStyle.Bold,TextAnchor.MiddleCenter);
@@ -73,12 +76,13 @@ namespace ForgeEmpire
             float footerHeight=ForgeUI.Size(ForgeUI.Small)*4;
             battleFooter=ForgeUI.Label("BattleIdleHint",p,"",0,y,1020,footerHeight,ForgeUI.Small,ForgeUI.Muted,FontStyle.Normal,TextAnchor.UpperLeft);y+=footerHeight;
             shownHeroHP=b.HeroHP;shownEnemyHP=b.EnemyHP;heroHurtUntil=enemyHurtUntil=0;
+            presentedRegion=presentedRoute=presentedWave=-1;
             modalRefresh.Add(RefreshBattle);EndPage(y);TickBattle(0);
         }
         void RefreshBattle()
         {
             var b=app.Sim.State.Campaign.Battle;
-            battleState.text=b.Finished?(b.Won?"Victory · Your craft prevailed":"Retreat · Reforge and return"):"Encounter "+(b.Wave+1)+" / "+app.Sim.BattleWaveCount;
+            battleState.text=b.Finished?(b.Won?"Victory · Your craft prevailed":"Defeat · Reforge and return"):(b.Route==2&&b.Wave==2?"Guardian · ":"")+"Encounter "+(b.Wave+1)+" / "+app.Sim.BattleWaveCount;
             battleVitals.text=GameContent.Heroes[b.HeroIndex].Name+"\n"+Math.Ceiling(b.HeroHP)+" / "+Math.Ceiling(b.HeroMaxHP)+" health";
             battleEnemyName.text=app.Sim.EncounterName+"\n"+Math.Ceiling(b.EnemyHP)+" / "+Math.Ceiling(b.EnemyMaxHP)+" health";
             double[] cooldowns={b.StrikeCooldown,b.GuardCooldown,b.HealCooldown};string[] names={"Strike","Brace","Recover"};
@@ -110,22 +114,42 @@ namespace ForgeEmpire
         {
             if(modalKind!="battle"||!battleHero)return;
             var b=app.Sim.State.Campaign.Battle;bool still=app.Sim.State.ReducedMotion;
-            if(b.HeroHP<shownHeroHP){heroHurtUntil=sceneTime+.6f;heroDamage.text="−"+Math.Ceiling(shownHeroHP-b.HeroHP);app.Play("mine");}
+            bool changed=presentedRegion!=b.Region||presentedRoute!=b.Route||presentedWave!=b.Wave;
+            if(changed)
+            {
+                presentedRegion=b.Region;presentedRoute=b.Route;presentedWave=b.Wave;
+                shownHeroHP=b.HeroHP;shownEnemyHP=b.EnemyHP;heroHurtUntil=enemyHurtUntil=0;
+                heroDamage.text=enemyDamage.text="";enemyArrivedAt=sceneTime;
+            }
+            if(b.HeroHP<shownHeroHP){heroHurtUntil=sceneTime+.6f;heroDamage.text="−"+Math.Ceiling(shownHeroHP-b.HeroHP);heroDamage.color=ForgeUI.Orange;app.Play("mine");}
+            else if(b.HeroHP>shownHeroHP){heroHurtUntil=sceneTime+.6f;heroDamage.text="+"+Math.Ceiling(b.HeroHP-shownHeroHP);heroDamage.color=ForgeUI.Teal;}
             if(b.EnemyHP<shownEnemyHP){enemyHurtUntil=sceneTime+.6f;enemyDamage.text="−"+Math.Ceiling(shownEnemyHP-b.EnemyHP);app.Play("forge");}
             shownHeroHP=b.HeroHP;shownEnemyHP=b.EnemyHP;
-            int heroPose=b.Finished&&b.Won?3:heroHurtUntil>sceneTime?2:enemyHurtUntil>sceneTime?1:0;
-            int enemyPose=b.Finished&&b.Won?3:enemyHurtUntil>sceneTime?2:heroHurtUntil>sceneTime||b.Active&&b.Elapsed%6>=4.5?1:0;
-            HandDrawnArt.Pose(battleHero,"heroes",b.HeroIndex*4+heroPose,new Vector2(240,471),300,300);
-            battleEnemy.uvRect=new Rect((b.Region*4+enemyPose)/20f,0,1f/20,1);
-            float size=b.Route==2&&b.Wave==app.Sim.BattleWaveCount-1?320:230;
-            battleEnemy.rectTransform.sizeDelta=new Vector2(size,size);
-            float impact=still?0:Mathf.Sin(Mathf.Clamp01((enemyHurtUntil-sceneTime)/.6f)*Mathf.PI)*18;
-            battleHero.rectTransform.anchoredPosition=new Vector2(240+impact,-471);
-            battleEnemy.rectTransform.anchoredPosition=new Vector2(700-(size-230)*.5f+impact*.5f,-(450-size*.9f));
-            heroHealthFill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,498*Mathf.Clamp01((float)(b.HeroHP/Math.Max(1,b.HeroMaxHP))));
-            enemyHealthFill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,498*Mathf.Clamp01((float)(b.EnemyHP/Math.Max(1,b.EnemyMaxHP))));
-            battleGuard.color=new Color(.45f,.85f,.8f,b.GuardSeconds>0?.18f:0);
-            battleHit.color=new Color(1,.76f,.4f,!still&&enemyHurtUntil-sceneTime>.48f?.12f:0);
+            bool guardian=b.Route==2&&b.Wave==app.Sim.BattleWaveCount-1;
+            float heroHit=Mathf.Clamp01((heroHurtUntil-sceneTime)/.6f),enemyHit=Mathf.Clamp01((enemyHurtUntil-sceneTime)/.6f);
+            float enemyAttack=heroDamage.text.StartsWith("−")?heroHit:0;
+            float anticipation=b.Active?Mathf.Clamp01((float)(b.Elapsed%6-4.5)/1.5f):0;
+            int heroPose=b.Finished?(b.Won?3:2):heroHit>.15f&&heroDamage.text.StartsWith("−")?2:enemyHit>.35f?1:0;
+            int enemyPose=b.Finished&&b.Won?3:enemyHit>.15f?2:(enemyAttack>.35f||anticipation>.65f)?1:0;
+            float heroOffset=still?0:24*enemyHit*enemyHit-10*enemyAttack*enemyAttack;
+            float enemyOffset=still?0:-28*enemyAttack*enemyAttack+12*enemyHit*enemyHit+7*anticipation*anticipation;
+            HandDrawnArt.Pose(battleHero,"heroes",b.HeroIndex*4+heroPose,new Vector2(240+heroOffset,471),300,300);
+            HandDrawnArt.Pose(battleEnemy,guardian?"guardians":"enemies",b.Region*4+enemyPose,new Vector2(790+enemyOffset,471),guardian?360:280,guardian?360:280);
+            battleHeroShadow.rectTransform.anchoredPosition=new Vector2(138+heroOffset,-457);
+            float shadowWidth=guardian?260:190;
+            battleEnemyShadow.rectTransform.sizeDelta=new Vector2(shadowWidth,30);
+            battleEnemyShadow.rectTransform.anchoredPosition=new Vector2(790+enemyOffset-shadowWidth*.5f,-457);
+            float appearance=still||!app.enabled?1:EaseOut((sceneTime-enemyArrivedAt)/.18f);
+            battleEnemy.color=new Color(1,1,1,appearance*(b.Finished&&b.Won?.78f:1));
+            float heroWidth=498*Mathf.Clamp01((float)(b.HeroHP/Math.Max(1,b.HeroMaxHP))),enemyWidth=498*Mathf.Clamp01((float)(b.EnemyHP/Math.Max(1,b.EnemyMaxHP)));
+            float blend=still||changed||delta<=0?1:1-Mathf.Exp(-delta*16);
+            heroHealthFill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,Mathf.Lerp(heroHealthFill.rect.width,heroWidth,blend));
+            enemyHealthFill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,Mathf.Lerp(enemyHealthFill.rect.width,enemyWidth,blend));
+            battleGuard.color=new Color(.45f,.85f,.8f,b.GuardSeconds>0?.28f:0);
+            battleHit.color=new Color(1,.76f,.4f,!still&&enemyHit>.8f?.26f:0);
+            enemyAlert.color=new Color(1,.55f,.2f,anticipation*.2f);
+            if(!still){heroDamage.rectTransform.anchoredPosition=new Vector2(60,-100-24*(1-heroHit));enemyDamage.rectTransform.anchoredPosition=new Vector2(640,-100-24*(1-enemyHit));}
+            else{heroDamage.rectTransform.anchoredPosition=new Vector2(60,-100);enemyDamage.rectTransform.anchoredPosition=new Vector2(640,-100);}
             if(heroHurtUntil<=sceneTime)heroDamage.text="";
             if(enemyHurtUntil<=sceneTime)enemyDamage.text="";
         }

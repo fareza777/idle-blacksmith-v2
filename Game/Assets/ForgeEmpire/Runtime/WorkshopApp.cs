@@ -26,9 +26,11 @@ namespace ForgeEmpire
             var arguments=Environment.GetCommandLineArgs();
             bool previewRun=Array.IndexOf(arguments,"--redesign-preview")>=0||Array.IndexOf(arguments,"--redesign-motion")>=0;
             bool progressionRun=Array.IndexOf(arguments,"--progression-smoke")>=0;
-            bool qaRun=previewRun||progressionRun||Array.IndexOf(arguments,"--redesign-smoke")>=0;
+            bool illustratedRun=Array.IndexOf(arguments,"--illustrated-smoke")>=0;
+            bool qaRun=previewRun||progressionRun||illustratedRun||Array.IndexOf(arguments,"--redesign-smoke")>=0;
             if(qaRun)savePath=Application.isMobilePlatform?Path.Combine(Application.persistentDataPath,"redesign-qa",previewRun?"preview-workshop.json":"isolated-workshop.json"):Path.GetFullPath(Path.Combine(Application.dataPath,"../../../QA/redesign-20261024/"+(previewRun?"preview-workshop.json":"isolated-workshop.json")));
             if(progressionRun)savePath=Application.isMobilePlatform?Path.Combine(Application.persistentDataPath,"progression-qa/isolated-workshop.json"):Path.GetFullPath(Path.Combine(Application.dataPath,"../../../QA/progression-20261024/isolated-workshop.json"));
+            if(illustratedRun)savePath=Application.isMobilePlatform?Path.Combine(Application.persistentDataPath,"illustrated-qa/isolated-workshop.json"):Path.GetFullPath(Path.Combine(Application.dataPath,"../../../QA/illustrated-20261025/isolated-workshop.json"));
             bool recovered=false;
             var state=qaRun?new WorkshopState():WorkshopSave.Load(savePath,out recovered);
             if(previewRun)state.TutorialStep=1;

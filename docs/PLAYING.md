@@ -6,6 +6,8 @@ Saat menempa, tekan **Strike** ketika penunjuk melewati bagian terang. Tiga puku
 
 Ketuk progres **Chapter** di atas untuk membuka perjalanan bengkel. Ada lima bab dengan tujuh milestone per bab: perlengkapan, cerita, penjelajahan, penyelamatan warga, pekerja bengkel dan penjaga wilayah. Klaim hadiah cerita untuk membuka perkembangan berikutnya.
 
+Pada **Adventure**, atlas menampilkan semua nama wilayah. Lingkaran emas menandai bab saat ini, centang berarti wilayah sudah dipulihkan, dan kunci menandai bab mendatang. Wilayah terkunci tetap bisa dilihat untuk memeriksa guardian dan syarat pembukaannya. Kemenangan guardian perlu diikuti klaim hadiah cerita; mengulang guardian yang sudah selesai memberi bahan, emas dan pengalaman.
+
 Ekspedisi memberi bahan langka dan pengalaman hero. Gunakan **Brace** menjelang serangan berat; **Recover** memulihkan kesehatan sekali setiap perjalanan. Jika kalah, perlengkapan tetap aman. Ikuti arahan perbaikan kualitas dan latihan sebelum mencoba lagi.
 
 **Guild orders** ada di jurnal perjalanan. Periksa jumlah, kualitas dan hadiah sebelum menerima pesanan. Barang yang cocok aman dari penjual otomatis. Pesanan tidak kedaluwarsa; menyerahkannya memberi emas dan reputasi. Tingkat reputasi lebih tinggi membuka pesanan dengan jumlah/kualitas lebih tinggi.

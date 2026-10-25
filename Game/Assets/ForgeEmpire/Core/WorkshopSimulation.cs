@@ -6,6 +6,7 @@ namespace ForgeEmpire
     // Centralize economy changes so normalized state stays valid.
     public sealed partial class WorkshopSimulation
     {
+        public int LastCraftedRecipe { get; private set; }
         private const int StationCount = 4;
         private const int MaxLevel = 25;
         private const int InventoryCapacity = 120;
@@ -280,6 +281,7 @@ namespace ForgeEmpire
                         State.Campaign.CraftedCounts[recipe.Id] = Increment(State.Campaign.CraftedCounts[recipe.Id], 1);
                         State.Campaign.BestCraftQuality[recipe.Id]=Math.Max(State.Campaign.BestCraftQuality[recipe.Id],State.PendingQuality);
                         State.TotalCrafted = Increment(State.TotalCrafted, 1);
+                        LastCraftedRecipe = recipe.Id;
                         State.PendingQuality = 0;
                         State.PendingProtection = false;
                         State.ManualForge = false;

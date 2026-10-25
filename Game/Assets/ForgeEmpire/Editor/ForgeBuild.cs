@@ -19,7 +19,7 @@ namespace ForgeEmpire.Editor
         {
             PlayerSettings.companyName="EmberOakGames";
             PlayerSettings.productName="Idle Blacksmith - Forge Empire";
-            PlayerSettings.bundleVersion="0.4.0";
+            PlayerSettings.bundleVersion="0.5.0";
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.emberoak.forgeempire");
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone,"com.emberoak.forgeempire");
             PlayerSettings.defaultInterfaceOrientation=UIOrientation.Portrait;
@@ -35,7 +35,7 @@ namespace ForgeEmpire.Editor
             PlayerSettings.Android.minSdkVersion=(AndroidSdkVersions)26;
             PlayerSettings.Android.targetSdkVersion=(AndroidSdkVersions)36;
             PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;
-            PlayerSettings.Android.bundleVersionCode=4;
+            PlayerSettings.Android.bundleVersionCode=5;
             PlayerSettings.Android.renderOutsideSafeArea=true;
             // Legacy input receives Back as Escape, not through predictive-back callbacks.
             PlayerSettings.Android.predictiveBackSupport=false;
@@ -50,6 +50,13 @@ namespace ForgeEmpire.Editor
                 importer.textureType=TextureImporterType.Default;importer.filterMode=path.Contains("/HandDrawn/")?FilterMode.Bilinear:FilterMode.Point;importer.mipmapEnabled=false;
                 importer.wrapMode=TextureWrapMode.Clamp;importer.alphaIsTransparency=true;importer.npotScale=TextureImporterNPOTScale.None;
                 importer.textureCompression=TextureImporterCompression.Uncompressed;importer.maxTextureSize=4096;importer.isReadable=false;
+                if(path.Contains("/HandDrawn/"))
+                {
+                    var mobile=importer.GetPlatformTextureSettings("Android");mobile.name="Android";mobile.overridden=true;
+                    mobile.maxTextureSize=2048;mobile.format=TextureImporterFormat.ETC2_RGBA8;
+                    mobile.textureCompression=TextureImporterCompression.CompressedHQ;mobile.compressionQuality=80;
+                    importer.SetPlatformTextureSettings(mobile);
+                }
                 importer.SaveAndReimport();
             }
             foreach(string guid in AssetDatabase.FindAssets("t:AudioClip",new[]{"Assets/Resources/Audio"})) {
@@ -62,7 +69,7 @@ namespace ForgeEmpire.Editor
             var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
             var camera=new GameObject("Camera").AddComponent<Camera>();camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=ForgeUI.Background;camera.orthographic=true;camera.transform.position=new Vector3(0,0,-10);
             camera.gameObject.AddComponent<AudioListener>();
-            var app=new GameObject("ForgeEmpire");app.AddComponent<WorkshopApp>();app.AddComponent<WorkshopSmoke>();app.AddComponent<MobileFrameProbe>();app.AddComponent<RedesignSmoke>();app.AddComponent<HandDrawnMotionCapture>();app.AddComponent<ProgressionSmoke>();
+            var app=new GameObject("ForgeEmpire");app.AddComponent<WorkshopApp>();app.AddComponent<WorkshopSmoke>();app.AddComponent<MobileFrameProbe>();app.AddComponent<RedesignSmoke>();app.AddComponent<HandDrawnMotionCapture>();app.AddComponent<ProgressionSmoke>();app.AddComponent<IllustratedWorldSmoke>();
             EditorSceneManager.SaveScene(scene,ScenePath);
             EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(ScenePath,true)};
             AssetDatabase.SaveAssets();
@@ -77,7 +84,7 @@ namespace ForgeEmpire.Editor
                 Require(texture!=null,"Missing texture "+name);Require(texture.filterMode==FilterMode.Point,"Blurred texture "+name);checks+=2;
             }
             foreach(string name in new[]{"mine","smelt","forge","coin","click","workshop"}){Require(Resources.Load<AudioClip>("Audio/"+name)!=null,"Missing audio "+name);checks++;}
-            foreach(string name in new[]{"workshop","workers","walkers","heroes","props","idles"}){
+            foreach(string name in new[]{"workshop","workers","walkers","heroes","props","idles","equipment","enemies","guardians","worldmap","emberwood","marsh","frostpeak","caldera","starfall"}){
                 var texture=Resources.Load<Texture2D>("Art/HandDrawn/"+name);
                 Require(texture&&texture.filterMode==FilterMode.Bilinear,"Missing hand-drawn art "+name);checks++;
             }
