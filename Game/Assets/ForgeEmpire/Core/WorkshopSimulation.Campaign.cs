@@ -6,10 +6,10 @@ namespace ForgeEmpire
     {
         private const double BattleTick = .1;
         private const int BattleLimitTicks = 12000;
-        private static readonly int[] EnemyHealth = { 28, 70, 110, 170, 250 };
-        private static readonly int[] EnemyPower = { 14, 24, 36, 50, 68 };
-        private static readonly string[] ResistedElements = { "Flame", "Frost", "Frost", "Flame", "Void" };
-        private static readonly string[] EnemyNames = { "Cinderroot Stalker", "Mistbound Ferryman", "Icebound Sentinel", "Slag Colossus", "Void Sentry" };
+        private static readonly int[] EnemyHealth = { 28, 70, 110, 170, 250, 340 };
+        private static readonly int[] EnemyPower = { 14, 24, 36, 50, 68, 88 };
+        private static readonly string[] ResistedElements = { "Flame", "Frost", "Frost", "Flame", "Void", "Storm" };
+        private static readonly string[] EnemyNames = { "Cinderroot Stalker", "Mistbound Ferryman", "Icebound Sentinel", "Slag Colossus", "Void Sentry", "Sunwrought Keeper" };
 
         public int UnlockedRegion { get { return State.Campaign.Chapter; } }
         public int HeroPower { get { return PowerOf(State.Campaign.SelectedHero); } }
@@ -21,6 +21,7 @@ namespace ForgeEmpire
             get
             {
                 ExpeditionState b = State.Campaign.Battle;
+                if(SagaInProgress)return SagaEncounterName;
                 if (!b.Active && !b.Finished) return "No expedition";
                 return b.Route == 2 && b.Wave == 2 ? GameContent.Regions[b.Region].BossName : (b.Route == 1 ? "Elite " : "") + EnemyNames[b.Region];
             }
@@ -29,7 +30,8 @@ namespace ForgeEmpire
         {
             get
             {
-                for (int i = 0; i < 15; i++) if (!State.Campaign.QuestClaims[i]) return GameContent.Quests[i];
+                for(int region=0;region<GameContent.RegionCount;region++)for(int step=0;step<3;step++)
+                {int id=GameContent.MainQuestId(region,step);if(!State.Campaign.QuestClaims[id])return GameContent.Quests[id];}
                 return null;
             }
         }
@@ -64,24 +66,24 @@ namespace ForgeEmpire
         public bool TryEquip(int inventoryIndex)
         {
             CampaignState c = State.Campaign;
-            if (c.Battle.Active || inventoryIndex < 0 || inventoryIndex >= State.Inventory.Count) return false;
+            if (c.Battle.Active || SagaInProgress || inventoryIndex < 0 || inventoryIndex >= State.Inventory.Count) return false;
             HeroState hero = c.Heroes[c.SelectedHero];
             CraftedItem item = State.Inventory[inventoryIndex];
             if (!hero.Recruited || item == null || !ValidRecipe(item.RecipeId)) return false;
-            bool weapon = GameContent.Recipes[item.RecipeId].Slot == GearSlot.Weapon;
-            CraftedItem previous = weapon ? hero.Weapon : hero.Armor;
+            var slot=GameContent.Recipes[item.RecipeId].Slot;
+            CraftedItem previous = slot==GearSlot.Weapon?hero.Weapon:slot==GearSlot.Armor?hero.Armor:hero.Accessory;
             int resultingCount = State.Inventory.Count - 1 + (previous == null ? 0 : 1);
             if (resultingCount + (IsRunning(Station.Forge) ? 1 : 0) > InventoryCapacity) return false;
             State.Inventory.RemoveAt(inventoryIndex);
             if (previous != null) State.Inventory.Add(previous);
-            if (weapon) hero.Weapon = item; else hero.Armor = item;
+            if(slot==GearSlot.Weapon)hero.Weapon=item;else if(slot==GearSlot.Armor)hero.Armor=item;else hero.Accessory=item;
             CaptureJourney();
             return true;
         }
 
         public bool TryRecruit(int heroIndex)
         {
-            if (heroIndex < 0 || heroIndex >= 3 || State.Campaign.Heroes[heroIndex].Recruited) return false;
+            if (heroIndex < 0 || heroIndex >= GameContent.HeroCount || SagaInProgress || State.Campaign.Heroes[heroIndex].Recruited) return false;
             int cost = GameContent.Heroes[heroIndex].Cost;
             if (State.Gold < cost) return false;
             State.Gold -= cost;
@@ -91,15 +93,16 @@ namespace ForgeEmpire
 
         public bool SelectHero(int heroIndex)
         {
-            if (heroIndex < 0 || heroIndex >= 3 || !State.Campaign.Heroes[heroIndex].Recruited || State.Campaign.Battle.Active) return false;
+            if (heroIndex < 0 || heroIndex >= GameContent.HeroCount || !State.Campaign.Heroes[heroIndex].Recruited || State.Campaign.Battle.Active || SagaInProgress) return false;
             State.Campaign.SelectedHero = heroIndex;
             return true;
         }
 
         public bool StartExpedition(int region, int route)
         {
+            if(State.ChroniclesEnabled)return StartSaga(region,route);
             CampaignState c = State.Campaign;
-            if (region < 0 || region > c.Chapter || region >= 5 || route < 0 || route > 2 || c.Battle.Active || c.Battle.Finished) return false;
+            if (region < 0 || region > c.Chapter || region >= GameContent.RegionCount || route < 0 || route > 2 || c.Battle.Active || c.Battle.Finished) return false;
             HeroState hero = c.Heroes[c.SelectedHero];
             if (!hero.Recruited || (hero.Weapon == null && (region != 0 || route != 0))) return false;
             ExpeditionState b = new ExpeditionState { Active = true, Region = region, Route = route, HeroIndex = c.SelectedHero, EnemyKind = region };
@@ -114,6 +117,7 @@ namespace ForgeEmpire
 
         public bool UseBattleSkill(int skill)
         {
+            if(SagaInProgress)return UsePartySkill(skill);
             ExpeditionState b = State.Campaign.Battle;
             if (!b.Active || skill < 0 || skill > 2) return false;
             switch (skill)
@@ -140,6 +144,7 @@ namespace ForgeEmpire
 
         public bool ClaimExpedition()
         {
+            if(SagaInProgress)return ClaimSaga();
             CampaignState c = State.Campaign;
             ExpeditionState b = c.Battle;
             if (b.Active || !b.Finished) return false;
@@ -173,7 +178,7 @@ namespace ForgeEmpire
 
         public bool IsQuestAvailable(int id)
         {
-            if (id < 0 || id >= 30 || State.Campaign.QuestClaims[id]) return false;
+            if (id < 0 || id >= GameContent.QuestCount || State.Campaign.QuestClaims[id]) return false;
             QuestDefinition quest = GameContent.Quests[id];
             if (quest.Region > UnlockedRegion) return false;
             return !quest.Main || (MainQuest != null && MainQuest.Id == id);
@@ -181,7 +186,7 @@ namespace ForgeEmpire
 
         public int QuestProgress(int id)
         {
-            if (id < 0 || id >= 30) return 0;
+            if (id < 0 || id >= GameContent.QuestCount) return 0;
             QuestDefinition q = GameContent.Quests[id];
             CampaignState c = State.Campaign;
             if (c.QuestClaims[id]) return q.Target;
@@ -189,7 +194,7 @@ namespace ForgeEmpire
             switch (q.Kind)
             {
                 case QuestKind.Craft:
-                    for (int i = q.Region * 4; i < q.Region * 4 + 4; i++) progress = Increment(progress, c.CraftedCounts[i]);
+                    foreach(var recipe in GameContent.Recipes)if(recipe.Region==q.Region)progress=Increment(progress,c.CraftedCounts[recipe.Id]);
                     break;
                 case QuestKind.Expedition: progress = c.RegionWins[q.Region]; break;
                 case QuestKind.Boss: progress = c.BossKills[q.Region]; break;
@@ -229,8 +234,8 @@ namespace ForgeEmpire
             AddGold(q.RewardGold);
             c.Reputation = Increment(c.Reputation, q.RewardReputation);
             c.Materials[q.Region] = Increment(c.Materials[q.Region], q.RewardMaterial);
-            c.TownLevel = Math.Min(5, c.TownLevel + q.RewardTown);
-            if (q.Main && q.Kind == QuestKind.Boss) c.Chapter = Math.Min(4, q.Region + 1);
+            c.TownLevel = Math.Min(GameContent.RegionCount, c.TownLevel + q.RewardTown);
+            if (q.Main && q.Kind == QuestKind.Boss) c.Chapter = Math.Min(GameContent.RegionCount-1, q.Region + 1);
             CaptureJourney();
             return true;
         }
@@ -243,13 +248,13 @@ namespace ForgeEmpire
         private int PowerOf(int heroIndex)
         {
             HeroState h = State.Campaign.Heroes[heroIndex];
-            return GameContent.Heroes[heroIndex].Power + (h.Level - 1) * 2 + GearStat(h.Weapon, true) + GearStat(h.Armor, true);
+            return GameContent.Heroes[heroIndex].Power + (h.Level - 1) * 2 + GearStat(h.Weapon, true) + GearStat(h.Armor, true)+GearStat(h.Accessory,true);
         }
 
         private int GuardOf(int heroIndex)
         {
             HeroState h = State.Campaign.Heroes[heroIndex];
-            return GameContent.Heroes[heroIndex].Guard + h.Level - 1 + GearStat(h.Weapon, false) + GearStat(h.Armor, false);
+            return GameContent.Heroes[heroIndex].Guard + h.Level - 1 + GearStat(h.Weapon, false) + GearStat(h.Armor, false)+GearStat(h.Accessory,false);
         }
 
         private int HealthOf(int heroIndex)
@@ -259,9 +264,7 @@ namespace ForgeEmpire
 
         private static int GearStat(CraftedItem item, bool power)
         {
-            if (item == null) return 0;
-            RecipeDefinition recipe = GameContent.Recipes[item.RecipeId];
-            return (power ? recipe.Power : recipe.Guard) * (4 + item.Quality) / 4;
+            return ArtisanStat(item,power);
         }
 
         private void SnapshotHero(ExpeditionState b)
@@ -355,22 +358,22 @@ namespace ForgeEmpire
         {
             if (State.Campaign == null) State.Campaign = new CampaignState();
             CampaignState c = State.Campaign;
-            c.Materials = NormalizeCounters(c.Materials, 5);
-            c.CraftedCounts = NormalizeCounters(c.CraftedCounts, 20);
-            c.RegionWins = NormalizeCounters(c.RegionWins, 5);
-            c.EliteWins = NormalizeCounters(c.EliteWins, 5);
-            c.BossKills = NormalizeCounters(c.BossKills, 5);
-            c.QuestClaims = ResizeCampaign(c.QuestClaims, 30);
-            c.Heroes = ResizeCampaign(c.Heroes, 3);
+            c.Materials = NormalizeCounters(c.Materials, GameContent.RegionCount);
+            c.CraftedCounts = NormalizeCounters(c.CraftedCounts, GameContent.RecipeCount);
+            c.RegionWins = NormalizeCounters(c.RegionWins, GameContent.RegionCount);
+            c.EliteWins = NormalizeCounters(c.EliteWins, GameContent.RegionCount);
+            c.BossKills = NormalizeCounters(c.BossKills, GameContent.RegionCount);
+            c.QuestClaims = ResizeCampaign(c.QuestClaims, GameContent.QuestCount);
+            c.Heroes = ResizeCampaign(c.Heroes, GameContent.HeroCount);
             c.Reputation = Clamp(c.Reputation, 0, MaxCounter);
             c.ExpeditionsWon = Clamp(c.ExpeditionsWon, 0, MaxCounter);
             // Chapters and restoration are consequences, not independently forgeable unlocks.
             c.Chapter = 0;
-            for (int i = 0; i < 15 && c.QuestClaims[i]; i++)
-                if (i % 3 == 2) c.Chapter = Math.Min(4, i / 3 + 1);
+            for(int region=0;region<GameContent.RegionCount;region++)
+            {bool complete=true;for(int step=0;step<3;step++)if(!c.QuestClaims[GameContent.MainQuestId(region,step)])complete=false;if(!complete)break;c.Chapter=Math.Min(GameContent.RegionCount-1,region+1); }
             c.TownLevel = 0;
-            for (int i = 15; i < 30; i++) if (c.QuestClaims[i]) c.TownLevel += GameContent.Quests[i].RewardTown;
-            for (int i = 0; i < 3; i++)
+            for(int i=0;i<GameContent.QuestCount;i++)if(!GameContent.Quests[i].Main&&c.QuestClaims[i])c.TownLevel+=GameContent.Quests[i].RewardTown;
+            for (int i = 0; i < GameContent.HeroCount; i++)
             {
                 if (c.Heroes[i] == null) c.Heroes[i] = new HeroState();
                 HeroState h = c.Heroes[i];
@@ -379,8 +382,9 @@ namespace ForgeEmpire
                 h.Experience = Clamp(h.Experience, 0, h.Level == 30 ? 0 : h.Level * 30 - 1);
                 h.Weapon = NormalizeGear(h.Weapon, GearSlot.Weapon);
                 h.Armor = NormalizeGear(h.Armor, GearSlot.Armor);
+                h.Accessory=NormalizeGear(h.Accessory,GearSlot.Accessory);
             }
-            if (c.SelectedHero < 0 || c.SelectedHero >= 3 || !c.Heroes[c.SelectedHero].Recruited) c.SelectedHero = 0;
+            if (c.SelectedHero < 0 || c.SelectedHero >= GameContent.HeroCount || !c.Heroes[c.SelectedHero].Recruited) c.SelectedHero = 0;
             foreach (CraftedItem item in State.Inventory) if (!ValidRecipe(item.RecipeId)) item.RecipeId = 0;
             if (!IsRecipeUnlocked(State.SelectedRecipe)) State.SelectedRecipe = 0;
             if (!IsRunning(Station.Forge) || !IsRecipeUnlocked(State.PendingRecipe)) State.PendingRecipe = 0;
@@ -403,13 +407,14 @@ namespace ForgeEmpire
 
         private bool ValidBattleIdentity(ExpeditionState b)
         {
-            return b.Region >= 0 && b.Region < 5 && b.Region <= UnlockedRegion && b.Route >= 0 && b.Route <= 2 &&
-                b.HeroIndex >= 0 && b.HeroIndex < 3 && State.Campaign.Heroes[b.HeroIndex].Recruited;
+            return b.Region >= 0 && b.Region < GameContent.RegionCount && b.Region <= UnlockedRegion && b.Route >= 0 && b.Route <= 2 &&
+                b.HeroIndex >= 0 && b.HeroIndex < GameContent.HeroCount && State.Campaign.Heroes[b.HeroIndex].Recruited;
         }
 
         private void NormalizeBattle()
         {
             CampaignState c = State.Campaign;
+            if(State.Saga!=null&&State.Saga.Run!=null&&State.Saga.Run.TotalRooms>0)return;
             ExpeditionState b = c.Battle;
             if (b == null || (!b.Active && !b.Finished) || !ValidBattleIdentity(b) || b.Wave < 0 || b.Wave >= WaveCount(b.Route))
             {
@@ -421,8 +426,8 @@ namespace ForgeEmpire
                 (b.Active && b.EnemyHP == 0);
             // A finished result may outlive its loadout; retain the battle's own bounded snapshot.
             HeroDefinition hero = GameContent.Heroes[b.HeroIndex];
-            b.SnapshotPower = Clamp(b.SnapshotPower, hero.Power, hero.Power + 58 + GameContent.Recipes[17].Power * 7 / 4);
-            b.SnapshotGuard = Clamp(b.SnapshotGuard, hero.Guard, hero.Guard + 29 + GameContent.Recipes[19].Guard * 7 / 4);
+            b.SnapshotPower = Clamp(b.SnapshotPower, hero.Power, 1000);
+            b.SnapshotGuard = Clamp(b.SnapshotGuard, hero.Guard, 1000);
             b.SnapshotHealth = Clamp(b.SnapshotHealth, hero.Health, hero.Health + 232);
             b.SnapshotDamage = Clamp(b.SnapshotDamage, b.SnapshotPower * .75, b.SnapshotPower * (b.HeroIndex == 2 ? 1.6 : 1.3));
             b.SnapshotProtection = Clamp(b.SnapshotProtection, b.HeroIndex == 2 ? .7 : .8, 1);
@@ -454,7 +459,7 @@ namespace ForgeEmpire
             }
         }
 
-        private static bool ValidRecipe(int id) { return id >= 0 && id < 20; }
+        private static bool ValidRecipe(int id) { return id >= 0 && id < GameContent.RecipeCount; }
 
         private static T[] ResizeCampaign<T>(T[] values, int length)
         {

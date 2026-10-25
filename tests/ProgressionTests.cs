@@ -48,7 +48,7 @@ internal static class ProgressionTests
             Check((bool)Call(sim,"IsFrontierCleared",0)&&sim.UnlockedRegion==1,"claimed frontier not cleared");
             Check(((string)Call(sim,"GuardianObjective",0)).Contains("Return"),"repeat guardian promises a new chapter");
             Check(((string)Call(sim,"RegionUnlockText",4)).Contains(GameContent.Quests[11].Title),"future frontier lacks its actual prerequisite");
-            Check(!(bool)Call(sim,"IsFrontierCleared",-1)&&!(bool)Call(sim,"IsFrontierCleared",5),"invalid frontier accepted");
+            Check(!(bool)Call(sim,"IsFrontierCleared",-1)&&!(bool)Call(sim,"IsFrontierCleared",6),"invalid frontier accepted");
         });
         test("final guardian guidance distinguishes final claim from repeat mastery",delegate{
             var sim=Chapter(4);var c=sim.State.Campaign;
@@ -57,7 +57,7 @@ internal static class ProgressionTests
             c.BossKills[4]=1;c.QuestClaims[12]=c.QuestClaims[13]=true;
             Check(sim.ClaimQuest(14),"final reward unavailable");
             Check((bool)Call(sim,"IsFrontierCleared",4)&&((string)Call(sim,"GuardianObjective",4)).Contains("Return"),"endgame map not complete");
-            Check(!sim.ChapterUnlock.StartsWith("Defeat"),"completed campaign still demands its defeated boss");
+            Check(sim.ChapterUnlock.Contains("Dawnforge")&&!sim.ChapterUnlock.Contains("Defeat The Starbound Sentinel"),"new frontier does not replace the defeated boss");
         });
         test("armor advice predicts the actual expedition snapshot for every hero and frontier",delegate{
             for(int hero=0;hero<3;hero++)for(int region=0;region<5;region++)for(int recipe=2;recipe<20;recipe+=4)
@@ -164,11 +164,11 @@ internal static class ProgressionTests
             sim=new WorkshopSimulation(corrupted);Check(Read(sim,"ActiveCommission")==null,"malformed contract remained active");
         });
         test("completed campaign retains clear collection and contract goals",delegate{
-            var sim=Chapter(4);for(int i=0;i<30;i++)sim.State.Campaign.QuestClaims[i]=true;
-            sim=Reload(sim);Check(Int(sim,"JourneyMilestone")==35,"final campaign loops back to old chapter goals");
+            var sim=Chapter(5);for(int i=0;i<GameContent.QuestCount;i++)sim.State.Campaign.QuestClaims[i]=true;
+            sim=Reload(sim);Check(Int(sim,"JourneyMilestone")==42,"final campaign loops back to old chapter goals");
             Check(ActionOf(sim)=="Commission"&&((string)Read(sim,"GuildRank")).Length>0,"no playable endgame goal");
             Check((bool)Call(sim,"TryAcceptCommission",0),"endgame orders unavailable");
-            Check(Int(sim.NextStep,"RecipeId")==16,"endgame order missing latest recipes");
+            Check(Int(sim.NextStep,"RecipeId")==20,"endgame order missing latest recipes");
         });
         test("guild reputation raises order complexity with explicit quality and quantity",delegate{
             var sim=Chapter(4);sim.State.Campaign.Reputation=300;
@@ -273,7 +273,7 @@ internal static class ProgressionTests
             Check((bool)Call(sim,"TryDeliverCommission"),"batch cannot be delivered");sim.Advance(.01);
             Check(sim.IsRunning(Station.Forge),"worker did not resume after finished order");
         });
-        test("guided journey can finish all five chapters from zero supplies without gifted resources",delegate{
+        test("guided journey can finish all six chapters from zero supplies without gifted resources",delegate{
             var sim=new WorkshopSimulation(new WorkshopState());int actions=0,defeats=0;
             while(!(bool)Read(sim,"CampaignComplete")&&actions++<4000)
             {
@@ -320,7 +320,7 @@ internal static class ProgressionTests
                 if(actions%17==0)sim=Reload(sim);
             }
             Check((bool)Read(sim,"CampaignComplete"),"journey stuck after "+actions+" actions at "+sim.NextStep.Title+"; defeats "+defeats);
-            Check(sim.State.Campaign.TownLevel==5&&Array.TrueForAll(sim.State.Automated,x=>x),"journey skipped rebuilding or idle economy");
+            Check(sim.State.Campaign.TownLevel==6&&Array.TrueForAll(sim.State.Automated,x=>x),"journey skipped rebuilding or idle economy");
             Check(sim.State.Gold>=0&&actions>35,"journey completed without actual gameplay");
             Console.WriteLine("JOURNEY_PLAYTHROUGH "+actions+" actions · "+defeats+" defeats · "+WorkshopSimulation.Number(sim.State.SimulationTime)+" simulated seconds");
         });

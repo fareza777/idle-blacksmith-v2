@@ -17,9 +17,14 @@ namespace ForgeEmpire.Editor
 
         static void Setup()
         {
+            foreach(var target in new[]{NamedBuildTarget.Standalone,NamedBuildTarget.Android})
+            {
+                string symbols=PlayerSettings.GetScriptingDefineSymbols(target);
+                if(Array.IndexOf(symbols.Split(';'),"FORGE_QA")<0)PlayerSettings.SetScriptingDefineSymbols(target,(symbols+";FORGE_QA").Trim(';'));
+            }
             PlayerSettings.companyName="EmberOakGames";
             PlayerSettings.productName="Idle Blacksmith - Forge Empire";
-            PlayerSettings.bundleVersion="0.5.0";
+            PlayerSettings.bundleVersion="0.6.0";
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.emberoak.forgeempire");
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone,"com.emberoak.forgeempire");
             PlayerSettings.defaultInterfaceOrientation=UIOrientation.Portrait;
@@ -35,7 +40,7 @@ namespace ForgeEmpire.Editor
             PlayerSettings.Android.minSdkVersion=(AndroidSdkVersions)26;
             PlayerSettings.Android.targetSdkVersion=(AndroidSdkVersions)36;
             PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;
-            PlayerSettings.Android.bundleVersionCode=5;
+            PlayerSettings.Android.bundleVersionCode=6;
             PlayerSettings.Android.renderOutsideSafeArea=true;
             // Legacy input receives Back as Escape, not through predictive-back callbacks.
             PlayerSettings.Android.predictiveBackSupport=false;
@@ -62,14 +67,14 @@ namespace ForgeEmpire.Editor
             foreach(string guid in AssetDatabase.FindAssets("t:AudioClip",new[]{"Assets/Resources/Audio"})) {
                 string path=AssetDatabase.GUIDToAssetPath(guid);var importer=(AudioImporter)AssetImporter.GetAtPath(path);
                 importer.forceToMono=true;var settings=importer.defaultSampleSettings;
-                settings.loadType=path.EndsWith("workshop.wav")?AudioClipLoadType.CompressedInMemory:AudioClipLoadType.DecompressOnLoad;
+                settings.loadType=path.EndsWith("workshop.wav")||path.Contains("/Chronicles/region-")||path.Contains("/Chronicles/ambience-")||path.Contains("/Chronicles/boss-")?AudioClipLoadType.CompressedInMemory:AudioClipLoadType.DecompressOnLoad;
                 settings.compressionFormat=AudioCompressionFormat.Vorbis;settings.quality=.65f;
                 importer.defaultSampleSettings=settings;importer.SaveAndReimport();
             }
             var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
             var camera=new GameObject("Camera").AddComponent<Camera>();camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=ForgeUI.Background;camera.orthographic=true;camera.transform.position=new Vector3(0,0,-10);
             camera.gameObject.AddComponent<AudioListener>();
-            var app=new GameObject("ForgeEmpire");app.AddComponent<WorkshopApp>();app.AddComponent<WorkshopSmoke>();app.AddComponent<MobileFrameProbe>();app.AddComponent<RedesignSmoke>();app.AddComponent<HandDrawnMotionCapture>();app.AddComponent<ProgressionSmoke>();app.AddComponent<IllustratedWorldSmoke>();
+            var app=new GameObject("ForgeEmpire");app.AddComponent<WorkshopApp>();app.AddComponent<WorkshopSmoke>();app.AddComponent<MobileFrameProbe>();app.AddComponent<RedesignSmoke>();app.AddComponent<HandDrawnMotionCapture>();app.AddComponent<ProgressionSmoke>();app.AddComponent<IllustratedWorldSmoke>();app.AddComponent<ChroniclesSmoke>();
             EditorSceneManager.SaveScene(scene,ScenePath);
             EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(ScenePath,true)};
             AssetDatabase.SaveAssets();
@@ -88,6 +93,18 @@ namespace ForgeEmpire.Editor
                 var texture=Resources.Load<Texture2D>("Art/HandDrawn/"+name);
                 Require(texture&&texture.filterMode==FilterMode.Bilinear,"Missing hand-drawn art "+name);checks++;
             }
+            foreach(string name in new[]{"hero-rowan","hero-lyra","hero-kael","hero-mira","hero-toren","hero-edda","enemy-0","enemy-1","enemy-2","enemy-3","enemy-4","enemy-5","gear-0","gear-1","gear-2","gear-3","gear-4","boss-0","boss-1","boss-2","worldmap-chronicles","dawnforge","forge-closeup","people","landmarks"})
+            {Require(Resources.Load<Texture2D>("Art/HandDrawn/"+name),"Missing Chronicles painting "+name);checks++;}
+            foreach(string prefix in new[]{"region-","ambience-","boss-"})for(int i=0;i<6;i++)
+            {Require(Resources.Load<AudioClip>("Audio/Chronicles/"+prefix+i),"Missing Chronicles audio "+prefix+i);checks++;}
+            var artisan=new WorkshopSimulation(new WorkshopState{Ingots=10,ChroniclesEnabled=true});Require(artisan.BeginMasterwork(0,0)&&artisan.StrikeMasterwork(1),"Artisan setup failed");
+            var artisanReload=new WorkshopSimulation(JsonUtility.FromJson<WorkshopState>(JsonUtility.ToJson(artisan.State)));
+            artisanReload.Advance(100);Require(artisanReload.MasterworkActive&&artisanReload.State.TotalCrafted==0&&artisanReload.State.Artisan.Project.Stage==ArtisanStage.Shape,"Unity save lost paid artisan stage");checks++;
+            var legacyBattle=new WorkshopSimulation(new WorkshopState{Ingots=2});legacyBattle.TryStart(Station.Forge);legacyBattle.Advance(4.5);legacyBattle.TryEquip(0);Require(legacyBattle.StartExpedition(0,0),"Legacy battle setup failed");
+            var legacyRaw=JsonUtility.FromJson<WorkshopState>(JsonUtility.ToJson(legacyBattle.State));
+            bool emptyRecord=legacyRaw.Saga!=null&&legacyRaw.Saga.Run!=null;
+            var legacyReload=new WorkshopSimulation(legacyRaw);Require(legacyReload.State.Campaign.Battle.Active&&!legacyReload.SagaInProgress,"Unity empty saga record erased an active legacy expedition");checks++;
+            Debug.Log("CHRONICLES_LEGACY_SAVE_PASS: empty nested Saga.Run="+emptyRecord);
             var state=new WorkshopState();var sim=new WorkshopSimulation(state);
             sim.TryStart(Station.Mine);sim.Advance(.5);
             string json=JsonUtility.ToJson(state);var restored=JsonUtility.FromJson<WorkshopState>(json);
@@ -119,7 +136,7 @@ namespace ForgeEmpire.Editor
         static void Build(BuildTarget target,string path)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(path));
-            var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes=new[]{ScenePath},locationPathName=path,target=target,options=BuildOptions.Development });
+            var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes=new[]{ScenePath},locationPathName=path,target=target,options=BuildOptions.None });
             if(report.summary.result!=BuildResult.Succeeded)throw new Exception("Build failed: "+report.summary.result);
             Debug.Log("FORGE_BUILD_SUCCESS "+path+" "+report.summary.totalSize+" bytes");
         }

@@ -9,6 +9,7 @@ namespace ForgeEmpire
         public WorkshopSimulation Sim { get; private set; }
         public WorkshopView View { get; private set; }
         AudioSource effects, music;
+        ChronicleAudio chronicleAudio;
         AudioClip mineClip, smeltClip, forgeClip, coinClip, clickClip;
         string savePath;
         float nextSave;
@@ -27,14 +28,17 @@ namespace ForgeEmpire
             bool previewRun=Array.IndexOf(arguments,"--redesign-preview")>=0||Array.IndexOf(arguments,"--redesign-motion")>=0;
             bool progressionRun=Array.IndexOf(arguments,"--progression-smoke")>=0;
             bool illustratedRun=Array.IndexOf(arguments,"--illustrated-smoke")>=0;
-            bool qaRun=previewRun||progressionRun||illustratedRun||Array.IndexOf(arguments,"--redesign-smoke")>=0;
+            bool chroniclesRun=Array.IndexOf(arguments,"--chronicles-smoke")>=0;
+            bool qaRun=previewRun||progressionRun||illustratedRun||chroniclesRun||Array.IndexOf(arguments,"--redesign-smoke")>=0;
             if(qaRun)savePath=Application.isMobilePlatform?Path.Combine(Application.persistentDataPath,"redesign-qa",previewRun?"preview-workshop.json":"isolated-workshop.json"):Path.GetFullPath(Path.Combine(Application.dataPath,"../../../QA/redesign-20261024/"+(previewRun?"preview-workshop.json":"isolated-workshop.json")));
             if(progressionRun)savePath=Application.isMobilePlatform?Path.Combine(Application.persistentDataPath,"progression-qa/isolated-workshop.json"):Path.GetFullPath(Path.Combine(Application.dataPath,"../../../QA/progression-20261024/isolated-workshop.json"));
             if(illustratedRun)savePath=Application.isMobilePlatform?Path.Combine(Application.persistentDataPath,"illustrated-qa/isolated-workshop.json"):Path.GetFullPath(Path.Combine(Application.dataPath,"../../../QA/illustrated-20261025/isolated-workshop.json"));
+            if(chroniclesRun)savePath=Application.isMobilePlatform?Path.Combine(Application.persistentDataPath,"chronicles-qa/isolated-workshop.json"):Path.GetFullPath(Path.Combine(Application.dataPath,"../../../QA/chronicles-20261025/isolated-workshop.json"));
             bool recovered=false;
             var state=qaRun?new WorkshopState():WorkshopSave.Load(savePath,out recovered);
             if(previewRun)state.TutorialStep=1;
             if(state.TutorialStep==0&&state.TotalCrafted==0)state.KeepCraftedEquipment=true;
+            state.ChroniclesEnabled=!qaRun||chroniclesRun;
             Sim=new WorkshopSimulation(state);
             lastForegroundTime=Time.realtimeSinceStartupAsDouble;
             double away=state.LastSavedUtc>0?Math.Max(0,(DateTime.UtcNow.Ticks-state.LastSavedUtc)/(double)TimeSpan.TicksPerSecond):0;
@@ -43,6 +47,7 @@ namespace ForgeEmpire
             music=gameObject.AddComponent<AudioSource>();music.playOnAwake=false;music.loop=true;music.volume=.21f;
             mineClip=Resources.Load<AudioClip>("Audio/mine");smeltClip=Resources.Load<AudioClip>("Audio/smelt");forgeClip=Resources.Load<AudioClip>("Audio/forge");coinClip=Resources.Load<AudioClip>("Audio/coin");clickClip=Resources.Load<AudioClip>("Audio/click");
             music.clip=Resources.Load<AudioClip>("Audio/workshop");
+            if(state.ChroniclesEnabled){chronicleAudio=gameObject.AddComponent<ChronicleAudio>();chronicleAudio.Initialize(this,effects);}
             View=new GameObject("WorkshopUI").AddComponent<WorkshopView>();View.Build(this);
             UpdateAudio();Save();nextSave=Time.unscaledTime+10;
             lastCrafted=state.TotalCrafted;lastSold=state.TotalSold;lastMined=state.TotalMined;
@@ -66,6 +71,7 @@ namespace ForgeEmpire
         public void Work(Station station)
         {
             View.FocusStation(station);
+            if(station==Station.Forge&&Sim.State.ChroniclesEnabled&&(Sim.MasterworkActive||!Sim.IsRunning(station))){View.ShowArtisan();return;}
             if(station==Station.Forge&&Sim.IsRunning(station)){Strike();return;}
             if(!Sim.TryStart(station,station==Station.Forge))return;
             if(station==Station.Forge)View.ExpectCraftResult();
@@ -75,6 +81,7 @@ namespace ForgeEmpire
 
         public void Strike()
         {
+            if(Sim.State.ChroniclesEnabled){View.ShowArtisan(Sim.State.PendingRecipe);return;}
             if(Sim.TryBeginTempering()){View.ExpectCraftResult();Play("click");Save();View.Refresh();return;}
             float accuracy=View.StrikeAccuracy;
             if(!Sim.TryStrike(accuracy))return;
@@ -152,12 +159,14 @@ namespace ForgeEmpire
         public void Play(string name)
         {
             if(effects==null||Sim==null||!Sim.State.SoundEnabled)return;
+            if(chronicleAudio&&chronicleAudio.Impact(name))return;
             AudioClip clip=name=="mine"?mineClip:name=="smelt"?smeltClip:name=="forge"?forgeClip:name=="coin"?coinClip:clickClip;
             if(clip)effects.PlayOneShot(clip);
         }
         public void UpdateAudio()
         {
             if(music==null||Sim==null)return;
+            if(chronicleAudio){music.Stop();return;}
             if(Sim.State.MusicEnabled){if(!music.isPlaying&&music.clip)music.Play();}
             else music.Pause();
         }

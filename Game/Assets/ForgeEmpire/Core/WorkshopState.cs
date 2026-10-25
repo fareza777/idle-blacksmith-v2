@@ -13,6 +13,8 @@ namespace ForgeEmpire
         public int Quality;
         public int RecipeId;
         public bool Protected;
+        public int Alloy, Temper, Rune, Provenance;
+        public bool Masterwork;
     }
 
     [Serializable]
@@ -59,5 +61,9 @@ namespace ForgeEmpire
         public bool TrackCommission;
         public bool ReserveJourneyGear;
         public int ReservedJourneyRecipe;
+        public bool ChroniclesEnabled;
+        public ArtisanState Artisan = new ArtisanState();
+        public SagaState Saga = new SagaState();
+        public WorldState World = new WorldState();
     }
 }

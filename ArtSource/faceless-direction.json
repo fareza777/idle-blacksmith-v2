@@ -1,0 +1,110 @@
+{
+  "direction": "Human faces are plain, with eyes, nose and mouth removed. Hair, clothing, anatomy and poses retained. Animal creature faces preserved.",
+  "tool": "Built-in image_gen.imagegen editing",
+  "prompts": {
+    "people": "Edit the supplied game asset sheet. SINGLE REQUEST: make EVERY HUMAN FACE completely FACELESS / FEATURELESS. Remove all eyes, eyebrows, eyelids, noses, nostrils, lips, mouth lines, teeth and facial expression marks from EVERY pose and EVERY portrait. Replace the face area with a clean uninterrupted smooth matte skin-colored plane with only very gentle broad watercolor shading, like a tasteful faceless wooden illustration figure. No eye sockets, no nose bridge shadows, no mouth indentation. Smooth the nose profile into a simple oval face contour. Preserve each person's skin tone, hairstyle, hairline, ears, beard silhouette, head size, neck, clothing, hands, weapons, equipment, body anatomy, pose and painterly hand-drawn style. The beard may remain as a solid hair shape but never define a mouth. Do NOT add a mask, bandage, visor, new accessory, smile or decorative face mark. Preserve EXACTLY the same number of sprites/portraits, same order, layout, relative coordinates, scale, spacing, crop and canvas aspect ratio. Do not move, enlarge or rearrange anyone. Keep the transparent background and gutters; for the portrait sheet remove its colored background completely to genuine alpha, leaving eight individually isolated complete busts. All image pixels outside faces/background should match the reference as closely as possible. No text or labels. Every single human face in the sheet must be blank.",
+    "humanoidEnemies": "Edit this game sprite atlas without changing the layout, number of sprites, identities, poses, equipment, clothing, scale or spacing. Make the HUMAN and HUMANOID faces featureless: remove their eyes, glowing eye dots, eyebrows, nose forms, nostrils, mouths, lips, skull-face sockets and expression lines. Exposed human faces become smooth blank matte skin planes. Human-shaped masks or helmets have smooth uninterrupted faceplates with no eye holes or mouth slits, preserving their surrounding helmet design. Hooded human faces become a plain dark featureless oval. Preserve every animal/monster beast face (boars, wolves, reptiles, dragons, birds, slugs, insects and other nonhuman creatures) exactly as they are: this change is for human-shaped characters only. Keep beautiful detailed hand-drawn ink/gouache artwork elsewhere, all complete silhouettes and original exact atlas order. Remove the colored matte/gradient background if any; output genuine transparent RGBA empty air between every sprite, no checkerboard painting, no floor/shadows, no text. Do not rearrange, resize or add sprites."
+  },
+  "edits": [
+    {
+      "asset": "workers",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-dfff6175-3619-438e-b590-958f75f0888b.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\workers.png"
+    },
+    {
+      "asset": "walkers",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-05cbcb6e-298c-4acd-a01f-ac1e653ffd52.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\walkers.png"
+    },
+    {
+      "asset": "idles",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-390fc0d3-5cfb-4e33-8fc2-390a6c7b2bea.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\idles.png"
+    },
+    {
+      "asset": "heroes",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-b5690d69-3195-4b54-9a1c-1f8fd1f4bdf0.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\heroes.png"
+    },
+    {
+      "asset": "hero-rowan",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-1511cd52-e868-47c2-ab0c-959d1b2e7d40.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\hero-rowan.png"
+    },
+    {
+      "asset": "hero-lyra",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-11f925c7-acfc-46d1-9bea-a5942c6959f3.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\hero-lyra.png"
+    },
+    {
+      "asset": "hero-kael",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-8e98745d-255b-400f-a730-5b286685846e.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\hero-kael.png"
+    },
+    {
+      "asset": "hero-mira",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-2d5d3129-2c95-4b56-be15-8a02d905072b.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\hero-mira.png"
+    },
+    {
+      "asset": "hero-toren",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-422d6a3a-3c1a-4164-abcd-0935c99e03a5.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\hero-toren.png"
+    },
+    {
+      "asset": "hero-edda",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-f5461d61-9f1e-4b9f-b48e-a062a2fb352b.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\hero-edda.png"
+    },
+    {
+      "asset": "people",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-f468d4ae-2c95-44a8-a2fd-6eb3809d64f7.png",
+      "editReference": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-c3139dda-c7de-4be9-b0be-4fef0490a9fd.png"
+    },
+    {
+      "asset": "enemy-0",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-1b9be5ea-636d-43fd-9484-5c29068bacc7.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\enemy-0.png"
+    },
+    {
+      "asset": "enemy-1",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-0d42d486-455f-4896-9c0f-cb71d55c54a8.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\enemy-1.png"
+    },
+    {
+      "asset": "enemy-2",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-e62180a6-0916-44a9-8fa7-bc7774e17719.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\enemy-2.png"
+    },
+    {
+      "asset": "enemy-3",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-25c8f261-ca87-4a6b-bf6b-07dbf619ad7c.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\enemy-3.png"
+    },
+    {
+      "asset": "enemy-4",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-61f2a615-313d-4ae5-9cc4-0f8fb422ab3f.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\enemy-4.png"
+    },
+    {
+      "asset": "enemy-5",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-e3322cdb-c35c-4223-b6df-113edeaec4c3.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\enemy-5.png"
+    },
+    {
+      "asset": "boss-0",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-10a1e3d9-d06d-434e-9f23-8507f5ce8769.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\boss-0.png"
+    },
+    {
+      "asset": "boss-1",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-b6d8d790-e116-4973-925a-3c30d3202a70.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\boss-1.png"
+    },
+    {
+      "asset": "boss-2",
+      "source": "C:\\Users\\FAJAR\\.codex\\generated_images\\01a16c9c-59a4-7c30-85c9-09f131cb68b2\\exec-2f48eb16-81ce-42e6-9dc0-4fee9c61af10.png",
+      "editReference": "D:\\Idle Blacksmith\\Game\\Assets\\Resources\\Art\\HandDrawn\\boss-2.png"
+    }
+  ]
+}

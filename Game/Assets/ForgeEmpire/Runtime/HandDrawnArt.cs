@@ -57,16 +57,16 @@ namespace ForgeEmpire
         }
         public static void EquipmentFrame(RawImage image,int frame,float width,float height)
         {
-            var sheet=Get("equipment");var f=GetFrame(sheet,frame);
+            var sheet=Get(frame<20?"equipment":"gear-"+((frame-20)/20));var f=GetFrame(sheet,frame<20?frame:(frame-20)%20);
             image.texture=sheet.Texture;image.uvRect=new Rect(f.x,f.y,f.w,f.h);
             int sourceWidth=sheet.Layout.width>0?sheet.Layout.width:sheet.Texture.width,sourceHeight=sheet.Layout.height>0?sheet.Layout.height:sheet.Texture.height;
             float w=f.w*sourceWidth,h=f.h*sourceHeight,scale=Mathf.Min(width/w,height/h);
             image.rectTransform.pivot=new Vector2(.5f,.5f);image.rectTransform.sizeDelta=new Vector2(w*scale,h*scale);
         }
-        static readonly string[] regions={"emberwood","marsh","frostpeak","caldera","starfall"};
+        static readonly string[] regions={"emberwood","marsh","frostpeak","caldera","starfall","dawnforge"};
         public static RawImage Landscape(string name,Transform parent,int region,float x,float y,float width,float height,bool battle=false)
         {
-            var texture=Texture(regions[Mathf.Clamp(region,0,4)]);
+            var texture=Texture(regions[Mathf.Clamp(region,0,5)]);
             var image=ForgeUI.Picture(name,parent,texture,x,y,width,height);
             float source=texture.width/(float)texture.height,target=width/height;
             float cropWidth=Mathf.Min(1,target/source),cropHeight=Mathf.Min(1,source/target);
@@ -77,6 +77,12 @@ namespace ForgeEmpire
         {
             var sheet=Get("props");var f=sheet.Layout.frames[frame];
             var image=ForgeUI.Picture(name,parent,sheet.Texture,x,y,width,height);image.uvRect=new Rect(f.x,f.y,f.w,f.h);return image;
+        }
+        public static RawImage Piece(string name,Transform parent,string atlas,int frame,float x,float y,float width,float height)
+        {
+            var sheet=Get(atlas);var f=GetFrame(sheet,frame);var image=ForgeUI.Picture(name,parent,sheet.Texture,0,0,width,height);
+            image.uvRect=new Rect(f.x,f.y,f.w,f.h);float w=f.w*sheet.Layout.width,h=f.h*sheet.Layout.height,scale=Mathf.Min(width/w,height/h);
+            image.rectTransform.pivot=new Vector2(.5f,.5f);image.rectTransform.sizeDelta=new Vector2(w*scale,h*scale);image.rectTransform.anchoredPosition=new Vector2(x+width*.5f,-y-height*.5f);return image;
         }
     }
 }

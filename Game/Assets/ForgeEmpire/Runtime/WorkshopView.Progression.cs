@@ -46,7 +46,7 @@ namespace ForgeEmpire
             if(!journeyFollowing)return;
             var advice=app.Sim.NextStep;
             stationTitle.text=advice.Title;stationInfo.text=advice.Detail;
-            bool striking=advice.Action==GuideAction.Forge&&app.Sim.IsRunning(Station.Forge);
+            bool striking=advice.Action==GuideAction.Forge&&app.Sim.IsRunning(Station.Forge)&&!app.Sim.MasterworkActive;
             actionButton.gameObject.SetActive(!striking);strikeButton.gameObject.SetActive(striking);
             marker.parent.gameObject.SetActive(striking);
             actionText.text=advice.Button;
@@ -99,7 +99,7 @@ namespace ForgeEmpire
             app.ClaimCampaignQuest(id,false);
             string rewards="+"+quest.RewardGold+" gold · +"+quest.RewardReputation+" reputation";
             if(quest.RewardMaterial>0)rewards+="\n+"+quest.RewardMaterial+" "+WorkshopSimulation.MaterialName(quest.Region).ToLowerInvariant();
-            if(quest.RewardTown>0)rewards+="\nTown restored · "+sim.State.Campaign.TownLevel+" / 5";
+            if(quest.RewardTown>0)rewards+="\nTown restored · "+sim.State.Campaign.TownLevel+" / "+GameContent.RegionCount;
             string title=sim.UnlockedRegion>chapter?"Welcome to "+GameContent.Regions[sim.UnlockedRegion].Name:sim.CampaignComplete&&id==14?"The valley is free":quest.Title;
             ShowProgressReward(title,rewards,quest.Consequence);
         }
@@ -124,6 +124,7 @@ namespace ForgeEmpire
             EquipmentIcon("CraftResultItem",p,item.RecipeId,350,0,320);
             float y=Paragraph(p,"CraftResultQuality",WorkshopSimulation.QualityName(item.Quality)+" · "+item.Quality+" / 3",334,ForgeUI.Subheading,ForgeUI.Gold,true)+Gap;
             y=Paragraph(p,"CraftResultStats",sim.ItemPower(item)+" Power · "+sim.ItemGuard(item)+" Guard · "+recipe.Element,y,ForgeUI.Subheading,ForgeUI.Teal)+Gap;
+            if(sim.State.ChroniclesEnabled)y=Paragraph(p,"CraftResultBuild",WorkshopSimulation.ItemBuildDescription(item),y,ForgeUI.Small,ForgeUI.Teal)+Gap;
             bool reserved=sim.IsCommissionReserved(item);
             var active=sim.ActiveCommission;
             bool belowQuality=active!=null&&active.RecipeId==item.RecipeId&&item.Quality<active.MinimumQuality;
@@ -169,10 +170,10 @@ namespace ForgeEmpire
         public void ShowJourney()
         {
             var sim=app.Sim;int chapter=sim.UnlockedRegion;
-            var p=Page("journey","Chapter "+(chapter+1)+" of 5 · "+sim.GuildRank,sim.CampaignComplete?"Your master forge":sim.ChapterTitle,ShowJourney);
+            var p=Page("journey","Chapter "+(chapter+1)+" of "+GameContent.RegionCount+" · "+sim.GuildRank,sim.CampaignComplete?"Your master forge":sim.ChapterTitle,ShowJourney);
             bool compact=root.rect.height<1600;
             if(!compact)Landscape("JourneyLandscape",p,chapter,0,0,1020,260);
-            float y=Paragraph(p,"JourneyProgress",sim.CampaignComplete?"Story complete · 35 milestones":sim.ChapterProgress+" / 7 milestones · "+GameContent.Regions[chapter].Name,compact?0:284,compact?ForgeUI.Small:ForgeUI.Subheading,ForgeUI.Gold,true)+Gap;
+            float y=Paragraph(p,"JourneyProgress",sim.CampaignComplete?"Story complete · "+GameContent.RegionCount*7+" milestones":sim.ChapterProgress+" / 7 milestones · "+GameContent.Regions[chapter].Name,compact?0:284,compact?ForgeUI.Small:ForgeUI.Subheading,ForgeUI.Gold,true)+Gap;
             ForgeUI.Fill("JourneyTrack",p,0,y,1020,8,ForgeUI.Line);
             ForgeUI.Fill("JourneyProgressFill",p,0,y,1020*sim.ChapterProgress/7f,8,ForgeUI.Teal);y+=Gap+12;
             y=Paragraph(p,"JourneyCurrentGoal",sim.NextStep.Title,y,ForgeUI.Subheading,null,true)+12;
@@ -187,7 +188,7 @@ namespace ForgeEmpire
                 y=Paragraph(p,"Milestone"+i,sim.MilestoneTitle(i),y,ForgeUI.Small,done?ForgeUI.Teal:current?ForgeUI.Cream:ForgeUI.Muted,current,68,952)+24;
             }
             y+=Gap;y=Paragraph(p,"LongTermTitle","The road ahead",y,ForgeUI.Subheading,null,true)+Gap;
-            for(int i=0;i<5;i++)
+            for(int i=0;i<GameContent.RegionCount;i++)
             {
                 string status=sim.IsFrontierCleared(i)?"Restored":i==chapter?"Your current chapter":sim.RegionUnlockText(i);
                 y=Paragraph(p,"ChapterRoadmap"+i,(i+1)+". "+GameContent.Regions[i].Name+"\n"+status,y,ForgeUI.Small,i<=chapter?ForgeUI.Cream:ForgeUI.Muted)+Gap;
@@ -251,6 +252,7 @@ namespace ForgeEmpire
         }
         void ShowMastery()
         {
+            if(app.Sim.State.ChroniclesEnabled){ShowLegends();return;}
             var sim=app.Sim;var c=sim.State.Campaign;
             var p=Page("mastery","Your workshop's legacy",sim.GuildRank,ShowMastery);
             int crafted=0,mastered=0,recruited=0,stories=0;
@@ -277,6 +279,7 @@ namespace ForgeEmpire
         }
         void ShowDeparture(int region,int route)
         {
+            if(app.Sim.State.ChroniclesEnabled){ShowSagaDeparture(region,route);return;}
             var sim=app.Sim;var place=GameContent.Regions[region];var rewards=sim.PreviewRouteRewards(region,route);
             string name=route==2?place.BossName:route==1?"Rescue expedition":"Supply trail";
             var p=Page("departure",place.Name+" · "+(route==0?2:3)+" encounters",name,()=>ShowDeparture(region,route));

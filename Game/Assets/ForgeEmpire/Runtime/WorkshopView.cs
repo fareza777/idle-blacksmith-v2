@@ -286,6 +286,7 @@ namespace ForgeEmpire
             TickWorkflow();
             TickTownLife(delta);
             TickBattle(delta);
+            TickSaga(delta);TickArtisan();
             for(int i=0;i<4;i++) {
                 bool running=app.Sim.IsRunning((Station)i);float progress=(float)app.Sim.GetProgress((Station)i);
                 if(running&&(!previousRunning[i]||progress<previousProgress[i]-.1f))animationTimes[i]=0;
@@ -374,7 +375,7 @@ namespace ForgeEmpire
             selection.anchoredPosition=new Vector2(Stations[(int)selected].x*Pixel-12,-((Stations[(int)selected].y-96)*Pixel));
             workLight.rectTransform.anchoredPosition=new Vector2(Stations[(int)selected].x*Pixel-300,-((Stations[(int)selected].y-28)*Pixel-250));
             int index=(int)selected;bool busy=app.Sim.IsRunning(selected),canWork=Supplied(index);
-            bool striking=selected==Station.Forge&&busy;
+            bool striking=selected==Station.Forge&&busy&&!app.Sim.MasterworkActive;
             stationTitle.text=selected==Station.Forge?GameContent.Recipes[app.Sim.State.SelectedRecipe].Name:names[index];
             var recipe=GameContent.Recipes[busy&&index==2?s.PendingRecipe:s.SelectedRecipe];
             string conversion=index==0?"2 ore each trip":index==1?"2 ore → 1 ingot":index==2?app.Sim.RecipeCost(recipe.Id):"Oldest unmarked gear → gold";
@@ -384,7 +385,9 @@ namespace ForgeEmpire
             actionButton.gameObject.SetActive(!striking);strikeButton.gameObject.SetActive(striking);
             strikeButton.GetComponentInChildren<Text>().text=s.ManualForge?"Strike":"Temper by hand";
             actionButton.interactable=!busy;
+            if(selected==Station.Forge&&app.Sim.MasterworkActive)actionButton.interactable=true;
             actionText.text=busy?"Working…":canWork?(index==2?(s.KeepCraftedEquipment?"Forge & keep":"Forge for sale"):index==0?"Mine ore":index==1?"Smelt iron":"Sell next item"):index==1?"Get ore":index==2?(s.Inventory.Count>=120?"Open storage":s.Ingots<recipe.Ingots?"Get ingots":"Find materials"):"Open storage";
+            if(selected==Station.Forge&&app.Sim.MasterworkActive){actionText.text="Continue masterwork";stationInfo.text=app.Sim.State.Artisan.Project.Stage+" · Materials reserved";}
             upgradeButton.interactable=true;
             upgradeText.text="Improve";
             marker.parent.gameObject.SetActive(striking);

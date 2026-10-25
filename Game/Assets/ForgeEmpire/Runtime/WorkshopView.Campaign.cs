@@ -23,7 +23,7 @@ namespace ForgeEmpire
         }
         static RawImage EquipmentIcon(string name,Transform parent,int recipe,float x,float y,float size)
         {
-            return HandDrawnArt.Icon(name,parent,Mathf.Clamp(recipe,0,19),x,y,size,size);
+            return HandDrawnArt.Icon(name,parent,Mathf.Clamp(recipe,0,GameContent.RecipeCount-1),x,y,size,size);
         }
         string QuestGoal(QuestDefinition quest)
         {
@@ -35,7 +35,7 @@ namespace ForgeEmpire
             ForgeUI.Button("MainQuestTab",p,"Story",0,0,498,ActionHeight,side?ForgeUI.Surface:ForgeUI.Gold,side?ForgeUI.Cream:ForgeUI.Background,()=>{rebuildingPage=true;try{ShowQuests(false);}finally{rebuildingPage=false;}});
             ForgeUI.Button("SideQuestTab",p,"Town",522,0,498,ActionHeight,side?ForgeUI.Gold:ForgeUI.Surface,side?ForgeUI.Background:ForgeUI.Cream,()=>{rebuildingPage=true;try{ShowQuests(true);}finally{rebuildingPage=false;}});
             float y=ActionHeight+Gap;
-            if(side)y=Paragraph(p,"TownProgress","Town restoration: "+app.Sim.State.Campaign.TownLevel+" / 5. Rescue your townsfolk to bring the valley back to life.",y,ForgeUI.Small,ForgeUI.Teal)+Gap;
+            if(side)y=Paragraph(p,"TownProgress","Town restoration: "+app.Sim.State.Campaign.TownLevel+" / "+GameContent.RegionCount+". Rescue your townsfolk to bring the valley back to life.",y,ForgeUI.Small,ForgeUI.Teal)+Gap;
             int hidden=0,completed=0,shown=0;
             foreach(var definition in GameContent.Quests)
             {
@@ -99,6 +99,7 @@ namespace ForgeEmpire
 
         public void ShowRecipes()
         {
+            if(app.Sim.State.ChroniclesEnabled){catalogRegion=app.Sim.UnlockedRegion;ShowChronicleCatalog();return;}
             var p=Page("recipes","Workshop / Forge","Choose a recipe",ShowRecipes);
             var sim=app.Sim;
             float materialsHeight=ForgeUI.Height("1000000000 iron ingots available",1020,ForgeUI.Subheading,FontStyle.Bold);
@@ -134,6 +135,7 @@ namespace ForgeEmpire
         }
         void ShowRecipeDetail(int id)
         {
+            if(app.Sim.State.ChroniclesEnabled){ShowArtisan(id);return;}
             var recipe=GameContent.Recipes[id];
             var p=Page("recipe-detail",GameContent.Regions[recipe.Region].Name,recipe.Name,()=>ShowRecipeDetail(id));
             EquipmentIcon("RecipeDetailIcon",p,id,350,0,320);
@@ -150,6 +152,7 @@ namespace ForgeEmpire
 
         public void ShowHeroes()
         {
+            if(app.Sim.State.ChroniclesEnabled){ShowParty();return;}
             var p=Page("heroes","Your companions","Heroes of the valley",ShowHeroes);
             var sim=app.Sim;var campaign=sim.State.Campaign;
             float tileHeight=180+112*ForgeUI.TextScale;
@@ -207,6 +210,7 @@ namespace ForgeEmpire
         public void ShowWorld()
         {
             var sim=app.Sim;var battle=sim.State.Campaign.Battle;
+            if(sim.State.ChroniclesEnabled){if(sim.SagaInProgress)ShowSaga();else if(battle.Active||battle.Finished)ShowBattle();else ShowAtlas();return;}
             if(battle.Active||battle.Finished){ShowBattle();return;}
             var p=Page("world",sim.CampaignComplete?"The valley restored":"Chapter "+(sim.UnlockedRegion+1)+" of 5 · "+GameContent.Regions[sim.UnlockedRegion].Name,"Atlas of the valley",ShowWorld);
             string hero=GameContent.Heroes[sim.State.Campaign.SelectedHero].Name;
@@ -238,6 +242,7 @@ namespace ForgeEmpire
         }
         void ShowRegion(int regionId)
         {
+            if(app.Sim.State.ChroniclesEnabled){ShowChronicleRegion(regionId);return;}
             var sim=app.Sim;var region=GameContent.Regions[regionId];
             bool unlocked=regionId<=sim.UnlockedRegion;
             var p=Page("region",unlocked?"Adventure / "+region.Weakness+" weakness":"A frontier ahead",region.Name,()=>ShowRegion(regionId));

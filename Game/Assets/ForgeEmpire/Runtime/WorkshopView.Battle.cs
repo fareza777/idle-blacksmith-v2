@@ -19,6 +19,7 @@ namespace ForgeEmpire
 
         public void ShowBattle()
         {
+            if(app.Sim.SagaInProgress){ShowSaga();return;}
             var b=app.Sim.State.Campaign.Battle;
             if(!b.Active&&!b.Finished){ShowWorld();return;}
             var p=Page("battle","On an expedition",GameContent.Regions[b.Region].Name,ShowBattle);

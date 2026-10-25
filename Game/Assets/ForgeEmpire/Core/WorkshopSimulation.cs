@@ -42,6 +42,9 @@ namespace ForgeEmpire
             NormalizeState();
             NormalizeCampaign();
             NormalizeProgression();
+            NormalizeArtisan();
+            NormalizeWorld();
+            NormalizeSaga();
         }
 
         public bool TryStart(Station station,bool manual=false)
@@ -124,6 +127,7 @@ namespace ForgeEmpire
 
         public bool TryBeginTempering()
         {
+            if(MasterworkActive)return false;
             if(!IsRunning(Station.Forge)||State.ManualForge||State.Progress[2]>=1)return false;
             // The automatic shaping phase already paid for the piece. Hand tempering
             // starts a fresh timing window on that same reserved piece.
@@ -132,6 +136,7 @@ namespace ForgeEmpire
 
         public bool TryStrike(double accuracy)
         {
+            if(MasterworkActive)return false;
             if (!Finite(accuracy) || accuracy < 0 || accuracy > 1 || !IsRunning(Station.Forge)) return false;
             if (State.Progress[(int)Station.Forge] >= 1) return false;
             if (State.SimulationTime - State.LastStrikeTime + ClockTolerance < 0.2) return false;
@@ -166,6 +171,7 @@ namespace ForgeEmpire
                 bool active = false;
                 for (int i = 0; i < StationCount; i++)
                 {
+                    if(i==2&&ArtisanBlocksClock)continue;
                     if (!State.Running[i]) continue;
                     active = true;
                     step = Math.Min(step, (1 - State.Progress[i]) * GetDuration((Station)i));
@@ -174,13 +180,13 @@ namespace ForgeEmpire
 
                 for (int i = 0; i < StationCount; i++)
                 {
-                    if (State.Running[i])
+                    if (State.Running[i]&&!(i==2&&ArtisanBlocksClock))
                         State.Progress[i] = Math.Min(1, State.Progress[i] + step / GetDuration((Station)i));
                 }
                 remaining -= step;
             }
             // Battle stats are snapshotted, so production ordering cannot alter combat.
-            AdvanceCampaign(seconds);
+            if(SagaInProgress)AdvanceSaga(seconds);else AdvanceCampaign(seconds);
             // No wall clock access: the caller owns LastSavedUtc and supplies deltas.
             AdvanceClock(seconds);
         }
@@ -204,6 +210,11 @@ namespace ForgeEmpire
                 duration *= 1 + GameContent.Recipes[recipe].Region * .3 + (recipe % 4 == 1 || recipe % 4 == 3 ? .1 : 0);
             }
             duration /= 1 + 0.14 * (State.Levels[index] - 1);
+            if(State.World!=null&&State.World.Projects!=null&&State.World.Projects.Length==6)
+            {
+                if(station==Station.Mine)duration*=1-State.World.Projects[0]*.06;
+                if(station==Station.Forge)duration*=1-State.World.Projects[3]*.06;
+            }
             return station==Station.Forge&&IsRunning(Station.Forge)&&State.ManualForge?Math.Max(6,duration):duration;
         }
 
@@ -254,6 +265,7 @@ namespace ForgeEmpire
             bool completed = false;
             for (int i = 0; i < StationCount; i++)
             {
+                if(i==2&&ArtisanBlocksClock)continue;
                 if (!State.Running[i] || State.Progress[i] < 1 - ProgressTolerance) continue;
                 State.Running[i] = false;
                 State.Progress[i] = 0;
@@ -270,14 +282,16 @@ namespace ForgeEmpire
                     case Station.Forge:
                         // The active forge owns a reserved inventory slot.
                         RecipeDefinition recipe = GameContent.Recipes[State.PendingRecipe];
-                        State.Inventory.Add(new CraftedItem
+                        var creation=new CraftedItem
                         {
                             RecipeId = recipe.Id,
                             Name = recipe.Name,
                             Quality = State.PendingQuality,
                             Value = recipe.Value + recipe.Value * State.PendingQuality / 4,
                             Protected = State.PendingProtection
-                        });
+                        };
+                        DecorateCraftedItem(creation);
+                        State.Inventory.Add(creation);
                         State.Campaign.CraftedCounts[recipe.Id] = Increment(State.Campaign.CraftedCounts[recipe.Id], 1);
                         State.Campaign.BestCraftQuality[recipe.Id]=Math.Max(State.Campaign.BestCraftQuality[recipe.Id],State.PendingQuality);
                         State.TotalCrafted = Increment(State.TotalCrafted, 1);

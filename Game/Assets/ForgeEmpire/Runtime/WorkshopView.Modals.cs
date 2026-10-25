@@ -100,7 +100,7 @@ namespace ForgeEmpire
             y=Paragraph(p,"StockCapacity",state.Inventory.Count+" / 120 slots · "+sim.HeroPower+" Power · "+sim.HeroGuard+" Guard",y,ForgeUI.Small,ForgeUI.Muted)+Gap;
             y=Paragraph(p,"StockPurpose","Kept equipment stays safe from the merchant.",y,ForgeUI.Small,ForgeUI.Muted)+Gap;
             if(sim.ActiveCommission!=null)y=AddAction(p,"InventoryOrder","Guild order · "+sim.CommissionProgress+" / "+sim.ActiveCommission.Quantity+" ready",y,ShowGuildOrders,false);
-            if(state.Campaign.Battle.Active)
+            if(state.Campaign.Battle.Active||sim.SagaInProgress)
                 y=Paragraph(p,"EquipmentLocked","Equipment is locked until this expedition ends. You can still keep or sell stored gear.",y,ForgeUI.Small,ForgeUI.Orange)+Gap;
             var displayed=new List<CraftedItem>(state.Inventory);
             if(displayed.Count==0)
@@ -121,13 +121,14 @@ namespace ForgeEmpire
                 ForgeUI.Label("ItemMeta"+i,p,meta,174,y+nameH+10,846,metaH,ForgeUI.Small,ForgeUI.Teal);
                 y+=Mathf.Max(144,nameH+metaH+10)+20;
                 y=Paragraph(p,"ItemStats"+i,sim.ItemPower(item)+" Power · "+sim.ItemGuard(item)+" Guard",y,ForgeUI.Body,ForgeUI.Cream)+12;
+                if(state.ChroniclesEnabled)y=Paragraph(p,"ItemBuild"+i,WorkshopSimulation.ItemBuildDescription(item),y,ForgeUI.Small,ForgeUI.Teal)+12;
                 int power=sim.EquipmentDelta(i,true),guard=sim.EquipmentDelta(i,false);
                 y=Paragraph(p,"ItemCompare"+i,hero+": "+Signed(power)+" Power · "+Signed(guard)+" Guard",y,ForgeUI.Small,power+guard>=0?ForgeUI.Teal:ForgeUI.Orange)+20;
                 var equip=ForgeUI.Button("InventoryEquip"+i,p,"Equip",0,y,480,ActionHeight,ForgeUI.Gold,ForgeUI.Background,()=>{
                     int index=state.Inventory.IndexOf(item);
                     if(index>=0&&app.Equip(index))RebuildCurrentPage();
                 });
-                equip.interactable=!state.Campaign.Battle.Active;
+                equip.interactable=!state.Campaign.Battle.Active&&!sim.SagaInProgress;
                 ForgeUI.Button("InventoryProtect"+i,p,item.Protected?"Kept":"Keep",504,y,240,ActionHeight,item.Protected?ForgeUI.Teal:ForgeUI.Surface,item.Protected?ForgeUI.Background:ForgeUI.Cream,()=>{
                     int index=state.Inventory.IndexOf(item);
                     if(sim.TryProtectItem(index,!item.Protected))
@@ -143,7 +144,7 @@ namespace ForgeEmpire
                 sell.interactable=!item.Protected&&!sim.IsCommissionReserved(item)&&!sim.IsJourneyReserved(item)&&!sim.IsRunning(Station.Market);
                 y+=ActionHeight+Gap;
                 modalRefresh.Add(()=>{
-                    equip.interactable=!state.Campaign.Battle.Active;
+                    equip.interactable=!state.Campaign.Battle.Active&&!sim.SagaInProgress;
                     sell.interactable=state.Inventory.Contains(item)&&!item.Protected&&!sim.IsCommissionReserved(item)&&!sim.IsJourneyReserved(item)&&!sim.IsRunning(Station.Market);
                 });
             }

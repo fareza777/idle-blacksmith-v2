@@ -4,34 +4,34 @@ namespace ForgeEmpire
 {
     public sealed partial class WorkshopSimulation
     {
-        static readonly string[] ChapterTitles={"Reopen the old road","Light the ferry home","Relight the mountain watch","Cool the ancient furnace","Bring the stars home"};
+        static readonly string[] ChapterTitles={"Reopen the old road","Light the ferry home","Relight the mountain watch","Cool the ancient furnace","Bring the stars home","Choose a living dawn"};
         public string ChapterTitle { get { return ChapterTitles[UnlockedRegion]; } }
         public string ChapterUnlock
         {
-            get { return CampaignComplete?"The valley is free. Restore the town, master 20 recipes and keep your guild growing.":GuardianObjective(UnlockedRegion); }
+            get { return CampaignComplete?"The valley is free. Restore the town, master 108 recipes and keep your guild growing.":GuardianObjective(UnlockedRegion); }
         }
         public bool IsFrontierCleared(int region)
         {
-            return region>=0&&region<5&&State.Campaign.QuestClaims[region*3+2];
+            return region>=0&&region<GameContent.RegionCount&&State.Campaign.QuestClaims[GameContent.MainQuestId(region,2)];
         }
         public string GuardianObjective(int region)
         {
-            if(region<0||region>=5)return "Unknown frontier.";
+            if(region<0||region>=GameContent.RegionCount)return "Unknown frontier.";
             if(IsFrontierCleared(region))return "Return for materials, gold and hero XP. This frontier is already restored.";
-            string story="\""+GameContent.Quests[region*3+2].Title+"\"";
+            string story="\""+GameContent.Quests[GameContent.MainQuestId(region,2)].Title+"\"";
             string action=State.Campaign.BossKills[region]>0?"Claim "+story:"Defeat "+GameContent.Regions[region].BossName+", then claim "+story;
-            return action+(region<4?" to open "+GameContent.Regions[region+1].Name+" and 4 new recipes.":" to free the valley and complete the final chapter.");
+            return action+(region<GameContent.RegionCount-1?" to open "+GameContent.Regions[region+1].Name+" and 18 regional recipes.":" to free the valley and complete the final chapter.");
         }
         public string RegionUnlockText(int region)
         {
-            if(region<0||region>=5)return "Unknown frontier.";
+            if(region<0||region>=GameContent.RegionCount)return "Unknown frontier.";
             if(region<=UnlockedRegion)return IsFrontierCleared(region)?"Restored · Routes remain open for materials and trade.":"Open · Your current chapter frontier.";
-            return "Defeat "+GameContent.Regions[region-1].BossName+", then claim \""+GameContent.Quests[(region-1)*3+2].Title+"\" to open "+GameContent.Regions[region].Name+".";
+            return "Defeat "+GameContent.Regions[region-1].BossName+", then claim \""+GameContent.Quests[GameContent.MainQuestId(region-1,2)].Title+"\" to open "+GameContent.Regions[region].Name+".";
         }
-        public bool CampaignComplete { get { return State.Campaign.QuestClaims[14]; } }
+        public bool CampaignComplete { get { return State.Campaign.QuestClaims[GameContent.MainQuestId(GameContent.RegionCount-1,2)]; } }
         public int MasterworkRecipes
         {
-            get { int count=0;for(int i=0;i<20;i++)if(State.Campaign.CraftedCounts[i]>0&&State.Campaign.BestCraftQuality[i]>=3)count++;return count; }
+            get { int count=0;for(int i=0;i<GameContent.RecipeCount;i++)if(State.Campaign.CraftedCounts[i]>0&&State.Campaign.BestCraftQuality[i]>=3)count++;return count; }
         }
         public int ChapterProgress
         {
@@ -41,23 +41,23 @@ namespace ForgeEmpire
         {
             get
             {
-                if(CampaignComplete)return 35;
+                if(CampaignComplete)return GameContent.RegionCount*7;
                 for(int i=UnlockedRegion*7;i<UnlockedRegion*7+7;i++)if(!MilestoneComplete(i))return i;
                 return UnlockedRegion*7+6;
             }
         }
         public string MilestoneTitle(int index)
         {
-            if(index<0||index>=35)return "A master forge";
+            if(index<0||index>=GameContent.RegionCount*7)return "A master forge";
             int chapter=index/7;string place=GameContent.Regions[chapter].Name;
             switch(index%7)
             {
                 case 0:return chapter==0?"Arm Rowan for the road":"Forge a "+place+" weapon";
-                case 1:return "Earn "+GameContent.Quests[chapter*3].Npc+"'s backing";
+                case 1:return "Earn "+GameContent.Quests[GameContent.MainQuestId(chapter,0)].Npc+"'s backing";
                 case 2:return "Secure the supply trail";
                 case 3:return "Forge protection for your hero";
                 case 4:return "Bring the missing townsfolk home";
-                case 5:return chapter<4?"Hire your "+new[]{"miner","smelter","blacksmith","merchant"}[chapter]:"Build a level 5 guild workshop";
+                case 5:return chapter<4?"Hire your "+new[]{"miner","smelter","blacksmith","merchant"}[chapter]:"Build a level "+(chapter==5?7:5)+" guild workshop";
                 default:return "Defeat "+GameContent.Regions[chapter].BossName;
             }
         }
@@ -75,32 +75,32 @@ namespace ForgeEmpire
                 }
                 return false;
             }
-            if(step==1)return c.QuestClaims[chapter*3];
-            if(step==2)return c.QuestClaims[chapter*3+1];
-            if(step==4)return c.QuestClaims[16+chapter*3];
+            if(step==1)return c.QuestClaims[GameContent.MainQuestId(chapter,0)];
+            if(step==2)return c.QuestClaims[GameContent.MainQuestId(chapter,1)];
+            if(step==4)return c.QuestClaims[GameContent.SideQuestId(chapter,1)];
             if(step==5)
             {
                 if(chapter<4)return State.Automated[chapter];
-                foreach(int level in State.Levels)if(level<5)return false;
+                foreach(int level in State.Levels)if(level<(chapter==5?7:5))return false;
                 return true;
             }
-            return c.QuestClaims[chapter*3+2];
+            return c.QuestClaims[GameContent.MainQuestId(chapter,2)];
         }
         public bool MilestoneComplete(int index)
         {
-            return index>=0&&index<35&&(State.Campaign.JourneyMilestones[index]||MilestoneCondition(index));
+            return index>=0&&index<GameContent.RegionCount*7&&(State.Campaign.JourneyMilestones[index]||MilestoneCondition(index));
         }
         void CaptureJourney()
         {
             if(State.Campaign==null||State.Campaign.JourneyMilestones==null)return;
-            for(int i=0;i<35;i++)if(MilestoneCondition(i))State.Campaign.JourneyMilestones[i]=true;
+            for(int i=0;i<GameContent.RegionCount*7;i++)if(MilestoneCondition(i))State.Campaign.JourneyMilestones[i]=true;
         }
         void NormalizeProgression()
         {
-            var c=State.Campaign;c.JourneyMilestones=ResizeCampaign(c.JourneyMilestones,35);
-            c.BestCraftQuality=NormalizeCounters(c.BestCraftQuality,20);
-            for(int i=0;i<20;i++)c.BestCraftQuality[i]=Math.Min(3,c.BestCraftQuality[i]);
-            c.RetryLevel=Clamp(c.RetryLevel,0,30);c.LastLostRegion=Clamp(c.LastLostRegion,0,4);c.LastLostRoute=Clamp(c.LastLostRoute,0,2);
+            var c=State.Campaign;c.JourneyMilestones=ResizeCampaign(c.JourneyMilestones,GameContent.RegionCount*7);
+            c.BestCraftQuality=NormalizeCounters(c.BestCraftQuality,GameContent.RecipeCount);
+            for(int i=0;i<GameContent.RecipeCount;i++)c.BestCraftQuality[i]=Math.Min(3,c.BestCraftQuality[i]);
+            c.RetryLevel=Clamp(c.RetryLevel,0,30);c.LastLostRegion=Clamp(c.LastLostRegion,0,GameContent.RegionCount-1);c.LastLostRoute=Clamp(c.LastLostRoute,0,2);
             State.ContractsCompleted=Clamp(State.ContractsCompleted,0,MaxCounter);
             if(!IsRecipeUnlocked(State.ReservedJourneyRecipe))State.ReserveJourneyGear=false;
             var contract=State.Contract;
@@ -175,6 +175,8 @@ namespace ForgeEmpire
         }
         NextStepAdvice ProgressionAdvice()
         {
+            if(SagaInProgress)return TaskAdvice(State.Saga.Run.Phase==SagaPhase.Result?GuideAction.CollectLoot:GuideAction.Battle,"Your party's journey",SagaNextAction,"Continue the expedition");
+            if(MasterworkActive)return TaskAdvice(GuideAction.Forge,"Finish your masterwork",State.Artisan.Project.Stage+" · "+GameContent.Recipes[State.Artisan.Project.RecipeId].Name,"Continue crafting",State.Artisan.Project.RecipeId,station:Station.Forge);
             var c=State.Campaign;var battle=c.Battle;
             if(battle.Finished)return TaskAdvice(GuideAction.CollectLoot,battle.Won?"Your hero has returned":"A setback, a stronger plan",battle.Won?"Collect the expedition spoils to advance your journey.":"Your gear is safe. Improve quality and train before the next attempt.",battle.Won?"Collect expedition loot":"Prepare another attempt");
             if(battle.Active)return TaskAdvice(GuideAction.Battle,"Your expedition is underway","Strike for damage. Brace before the heavy hit. Recover once.","Return to the expedition");
@@ -185,8 +187,8 @@ namespace ForgeEmpire
                 return ProjectAdvice(order.RecipeId,false,order.MinimumQuality);
             }
             int milestone=JourneyMilestone;
-            if(milestone==35)return TaskAdvice(GuideAction.Commission,"Your master forge awaits","Master 20 recipes, restore all 5 buildings and fulfill guild orders.","Choose a guild order");
-            int chapter=milestone/7,step=milestone%7,quest=chapter*3+(step==2?1:step==6?2:0);
+            if(milestone==GameContent.RegionCount*7)return TaskAdvice(GuideAction.Commission,"Your master forge awaits","Master 108 recipes, restore all 6 buildings and fulfill guild orders.","Choose a guild order");
+            int chapter=milestone/7,step=milestone%7,quest=GameContent.MainQuestId(chapter,step==2?1:step==6?2:0);
             if(step==0)return ProjectAdvice(chapter*4,true);
             if(step==3)return ProjectAdvice(chapter*4+2,true);
             if(step==1||step==2||step==6)
@@ -197,12 +199,12 @@ namespace ForgeEmpire
             }
             if(step==4)
             {
-                int rescue=16+chapter*3;
+                int rescue=GameContent.SideQuestId(chapter,1);
                 if(IsQuestReady(rescue))return TaskAdvice(GuideAction.ClaimQuest,"The townsfolk are safe","Claim the rescue reward to restore part of your town.","Welcome them home",quest:rescue);
                 return ExpeditionAdvice(chapter,1,MilestoneTitle(milestone));
             }
             Station station=(Station)Math.Min(3,chapter);
-            if(chapter==4){for(int i=0;i<4;i++)if(State.Levels[i]<5){station=(Station)i;break;}}
+            if(chapter>=4){for(int i=0;i<4;i++)if(State.Levels[i]<(chapter==5?7:5)){station=(Station)i;break;}}
             double cost=chapter<4?GetAutomationCost(station):GetUpgradeCost(station);
             if(State.Gold<cost)return TaskAdvice(GuideAction.Commission,"Fund your next improvement",MilestoneTitle(milestone)+" · Need "+Math.Ceiling(cost-State.Gold)+" more gold. Fulfill a guild order.",order==null?"Find a guild order":"Continue your order");
             return TaskAdvice(chapter<4?GuideAction.Hire:GuideAction.Upgrade,MilestoneTitle(milestone),chapter<4?"Pay "+cost+" gold once. Materials keep moving while you explore.":"Improve "+station+" · "+Math.Ceiling(cost)+" gold",""+(chapter<4?"Hire ":"Improve ")+station+" · "+Math.Ceiling(cost)+" G",station:station);

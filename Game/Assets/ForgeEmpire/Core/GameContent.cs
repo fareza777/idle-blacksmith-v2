@@ -4,6 +4,8 @@ namespace ForgeEmpire
     {
         public int Id, Region, Ingots, RareCost, Value, Power, Guard, Icon;
         public GearSlot Slot;
+        public WeaponKind Kind;
+        public GearEffect Effect;
         public string Name, Description, Element;
     }
 
@@ -30,10 +32,10 @@ namespace ForgeEmpire
         public int RecipeId, Quality, RewardMaterial, RewardTown;
     }
 
-    public static class GameContent
+    public static partial class GameContent
     {
         // Stable atlas/save ordering: sword, axe, mail, ward in each region.
-        public static readonly RecipeDefinition[] Recipes =
+        static readonly RecipeDefinition[] BaseRecipes =
         {
             Recipe(0, 0, GearSlot.Weapon, "Iron Sword", "A dependable neutral blade. Quality improves power; frost is stronger against Emberwood's burning beasts.", "Iron", 2, 0, 24, 12, 0),
             Recipe(1, 0, GearSlot.Weapon, "Rimewood Axe", "Cold sap bites through Emberwood and Caldera flames. Frost deals 30% more there, but marsh and Frostpeak resist it.", "Frost", 3, 0, 32, 11, 0),
@@ -57,7 +59,7 @@ namespace ForgeEmpire
             Recipe(19, 4, GearSlot.Armor, "Nightstar Ward", "The heaviest physical guard in the forge. Void offers no elemental protection from Starfall; Storm does.", "Void", 11, 3, 420, 0, 48)
         };
 
-        public static readonly RegionDefinition[] Regions =
+        static readonly RegionDefinition[] BaseRegions =
         {
             new RegionDefinition { Id = 0, Name = "Emberwood", BossName = "The Thornback", Weakness = "Frost", Description = "Burning roots choke the old road. Frost breaks their heat; Flame is resisted. Supply: 2 waves, suggested power 15 and guard 9. Unarmed Rowan can scout but will struggle. Cinders forge marsh equipment." },
             new RegionDefinition { Id = 1, Name = "Whispering Marsh", BossName = "The Mire Warden", Weakness = "Flame", Description = "Lost ferries drift through venomous mist. Flame sears the spirits; Frost is resisted. Supply: suggested power 28 and guard 16. Marsh glass forges Frostpeak equipment." },
@@ -66,14 +68,14 @@ namespace ForgeEmpire
             new RegionDefinition { Id = 4, Name = "Starfall Citadel", BossName = "The Starbound Sentinel", Weakness = "Storm", Description = "A fallen star feeds the citadel's void wards. Storm disrupts them; Void is resisted. Supply: suggested power 86 and guard 49. Star shards reward the restored town and endgame trade." }
         };
 
-        public static readonly HeroDefinition[] Heroes =
+        static readonly HeroDefinition[] BaseHeroes =
         {
             new HeroDefinition { Id = 0, Name = "Rowan", Role = "Guardian", Cost = 0, Power = 3, Guard = 3, Health = 105, Description = "The town's last guardian. High health and guard, one attack per second. Reliable with mail; an unarmed supply scout can lose, so forge a weapon first." },
             new HeroDefinition { Id = 1, Name = "Lyra", Role = "Ranger", Cost = 180, Power = 8, Guard = 1, Health = 85, Description = "A pathfinder searching for the lost caravans. Attacks every 0.8 seconds with high power, but lower health and guard demand armor and well-timed guarding." },
             new HeroDefinition { Id = 2, Name = "Kael", Role = "Runesmith", Cost = 360, Power = 6, Guard = 2, Health = 95, Description = "Keeper of the shattered star-runes. Attacks every 1.2 seconds. Matching a region's weakness grants 60% bonus damage instead of 30%; elemental armor protects 30% instead of 20%." }
         };
 
-        public static readonly QuestDefinition[] Quests =
+        static readonly QuestDefinition[] BaseQuests =
         {
             Quest(0, 0, true, QuestKind.Craft, "A Blade for the Road", "Warden Elowen", "The Thornback has driven the charcoal wagons home. Elowen needs proof that your cold forge can arm a scout.", "Craft any Emberwood recipe.", "Elowen funds your first scouting party and opens the road ledger.", 1, 30, 5),
             Quest(1, 0, true, QuestKind.Expedition, "Beyond the Burn Line", "Warden Elowen", "Smoke hides the way to the old bridge. Return alive from an expedition with news of the burning woods.", "Win and claim an Emberwood expedition.", "A safe trail lets charcoal wagons reach the workshop again.", 1, 45, 8),
