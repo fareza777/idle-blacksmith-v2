@@ -6,5 +6,6 @@ Folder ini disediakan agar tes dan verifikasi build dapat menulis hasil setelah 
 - `node tools/test-native-android.mjs progression <serial-emulator>` menguji alur APK pada emulator.
 - `node tools/test-native-android.mjs regression <serial-emulator>` menguji regresi tampilan APK pada emulator.
 - `node tools/test-native-android.mjs illustrated <serial-emulator>` menguji atlas, guardian, peta dan semua latar wilayah.
+- `node tools/test-native-android.mjs chronicles <serial-emulator>` menguji artisan, party, battle, outfit lengkap, pause dan teks besar. Hasil terbaru ditulis ke `battle-forge-20261026/android/chronicles`.
 
-Ringkasan pengujian versi 0.5.0 terdapat di `docs/VERIFICATION-0.5.0.md`.
+Ringkasan terbaru terdapat di `docs/VERIFICATION-0.7.0.md`; catatan 0.5.0 dan 0.6.0 dipertahankan di folder yang sama.

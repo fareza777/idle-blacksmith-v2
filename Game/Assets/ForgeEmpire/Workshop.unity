@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1467450933
+--- !u!1 &202496385
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,9 +127,144 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1467450936}
-  - component: {fileID: 1467450935}
-  - component: {fileID: 1467450934}
+  - component: {fileID: 202496394}
+  - component: {fileID: 202496393}
+  - component: {fileID: 202496392}
+  - component: {fileID: 202496391}
+  - component: {fileID: 202496390}
+  - component: {fileID: 202496389}
+  - component: {fileID: 202496388}
+  - component: {fileID: 202496387}
+  - component: {fileID: 202496386}
+  m_Layer: 0
+  m_Name: ForgeEmpire
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &202496386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202496385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 964be6230d3f29f48a40e8bab1f6d91d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.ChroniclesSmoke
+--- !u!114 &202496387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202496385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b303ac0c55ff9345999fe4993519da2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.IllustratedWorldSmoke
+--- !u!114 &202496388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202496385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 010a36732e64ad34b8b5bb3d1d4c0d5f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.ProgressionSmoke
+--- !u!114 &202496389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202496385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95c5f986ac0456e42878bb2836b1240c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.HandDrawnMotionCapture
+--- !u!114 &202496390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202496385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4337ca79f6596d44bf8f5753cabb4ed, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.RedesignSmoke
+--- !u!114 &202496391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202496385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15099e41e1fc8e649a6107278278762c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.MobileFrameProbe
+--- !u!114 &202496392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202496385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ed4daa3574301443b96d67b2067d7c0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.WorkshopSmoke
+--- !u!114 &202496393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202496385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f6a4ff3a0f67db4fbbb3fdd2563ec82, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.WorkshopApp
+--- !u!4 &202496394
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202496385}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1118013174
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1118013177}
+  - component: {fileID: 1118013176}
+  - component: {fileID: 1118013175}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -137,21 +272,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1467450934
+--- !u!81 &1118013175
 AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1467450933}
+  m_GameObject: {fileID: 1118013174}
   m_Enabled: 1
---- !u!20 &1467450935
+--- !u!20 &1118013176
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1467450933}
+  m_GameObject: {fileID: 1118013174}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
@@ -196,151 +331,16 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &1467450936
+--- !u!4 &1118013177
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1467450933}
+  m_GameObject: {fileID: 1118013174}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1522716157
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1522716166}
-  - component: {fileID: 1522716165}
-  - component: {fileID: 1522716164}
-  - component: {fileID: 1522716163}
-  - component: {fileID: 1522716162}
-  - component: {fileID: 1522716161}
-  - component: {fileID: 1522716160}
-  - component: {fileID: 1522716159}
-  - component: {fileID: 1522716158}
-  m_Layer: 0
-  m_Name: ForgeEmpire
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1522716158
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1522716157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 964be6230d3f29f48a40e8bab1f6d91d, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.ChroniclesSmoke
---- !u!114 &1522716159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1522716157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b303ac0c55ff9345999fe4993519da2, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.IllustratedWorldSmoke
---- !u!114 &1522716160
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1522716157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 010a36732e64ad34b8b5bb3d1d4c0d5f, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.ProgressionSmoke
---- !u!114 &1522716161
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1522716157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95c5f986ac0456e42878bb2836b1240c, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.HandDrawnMotionCapture
---- !u!114 &1522716162
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1522716157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4337ca79f6596d44bf8f5753cabb4ed, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.RedesignSmoke
---- !u!114 &1522716163
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1522716157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15099e41e1fc8e649a6107278278762c, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.MobileFrameProbe
---- !u!114 &1522716164
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1522716157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ed4daa3574301443b96d67b2067d7c0, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.Tests.WorkshopSmoke
---- !u!114 &1522716165
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1522716157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f6a4ff3a0f67db4fbbb3fdd2563ec82, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::ForgeEmpire.WorkshopApp
---- !u!4 &1522716166
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1522716157}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -350,5 +350,5 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1467450936}
-  - {fileID: 1522716166}
+  - {fileID: 1118013177}
+  - {fileID: 202496394}

@@ -69,6 +69,7 @@ if __name__=='__main__':
     import sys
     names=sys.argv[1:]
     sheets=[('hero-'+hero,5,'hero',4) for hero in ['rowan','lyra','kael','mira','toren','edda']]+[('enemy-'+str(r),8,'enemy',4) for r in range(6)]+[('gear-'+str(r),5,'item',4) for r in range(5)]+[('boss-'+str(r),4,'enemy',4) for r in range(3)]+[('people',2,'item',4),('landmarks',3,'item',4),('workers',3,'person',6),('walkers',4,'person',8),('idles',4,'person',2),('heroes',3,'person',4)]
+    sheets += [('worn-'+hero+'-'+family,5,'hero',4) for hero in ['rowan','lyra','kael','mira','toren','edda'] for family in ['mail','leather','robe']]
     report=[];errors=[]
     for name,rows,kind,columns in sheets:
         if names and name not in names:continue

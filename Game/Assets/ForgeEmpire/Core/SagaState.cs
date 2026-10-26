@@ -1,8 +1,19 @@
 using System;
+using System.Collections.Generic;
 
 namespace ForgeEmpire
 {
     public enum SagaPhase { Choice, Combat, Camp, Result }
+    public enum SagaEventKind { Windup, Hit, Skill, Heal, Block, Break, Phase, Result }
+    [Serializable] public sealed class SagaCombatEvent
+    {
+        public int Id,Tick,SourceSlot=-1,TargetSlot=-1;
+        public double Amount;
+        public SagaEventKind Kind;
+        // Enemy identifies the recipient; SourceSlot -1 identifies the enemy actor.
+        public bool Enemy;
+        public string Text="";
+    }
     [Serializable] public sealed class SagaState
     {
         public int[] Party={0,-1,-1};
@@ -13,6 +24,7 @@ namespace ForgeEmpire
     [Serializable] public sealed class SagaUnitState
     {
         public int HeroId=-1,Power,Guard,Attacks,Effects,AttackTicks,WeaponRecipe=-1,ArmorRecipe=-1,ActionUntilTick;
+        public int NextAttackTick,WindupTick,ImpactTick;
         public double HP,MaxHP,Cooldown,Barrier,Protection=1,Damage=1,CounterSeconds;
         public string Action="ready";
     }
@@ -20,10 +32,15 @@ namespace ForgeEmpire
     {
         public int Region,Route,Modifier,Room,TotalRooms,ClearedRooms,EnemyId=-1,BossId=-1,BossPhase,Mechanic=-1;
         public int RewardGold,RewardMaterial,BonusGold,BonusMaterial,Tick,RoomTick,PulseCount,Pressure,ResponseMask,Seed;
+        public int TimingVersion,EventSerial,ThreatStartTick,ThreatImpactTick,ThreatTarget=-1,NextEnemyTick,NextMechanicTick;
+        public int SkillReadyTick;
+        public int BreakUntilTick,BreakRecoveryUntilTick;
         public double EnemyHP,EnemyMaxHP,EnemyBarrier,EnemyGuard,TickRemainder,SlowSeconds,DisruptSeconds,GuardSeconds;
+        public double BreakMeter;
         public SagaPhase Phase;
         public SagaUnitState[] Units=new SagaUnitState[3];
+        public List<SagaCombatEvent> Events=new List<SagaCombatEvent>();
         public string Telegraph="",LastEvent="The trail begins.";
-        public bool Won,CampUsed,Reborn;
+        public bool Won,CampUsed,Reborn,Paused,ThreatMechanic;
     }
 }

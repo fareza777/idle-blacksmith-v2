@@ -20,6 +20,7 @@ namespace ForgeEmpire
         public void ShowSaga()
         {
             var sim=app.Sim;if(!sim.SagaInProgress){ShowWorld();return;}var run=sim.State.Saga.Run;
+            if(run.Phase==SagaPhase.Combat){ShowSagaCombat();return;}sagaCombatPage=false;
             sagaShownPhase=run.Phase;sagaStageAt=sceneTime;sagaPreviousEnemyHP=(float)run.EnemyHP;sagaEnemyHurtAt=-10;
             string title=run.Phase==SagaPhase.Result?(run.Won?"The party returns":"A chance to reforge"):run.Phase==SagaPhase.Choice?"The road divides":run.Phase==SagaPhase.Camp?"A quiet shelter":sim.SagaEncounterName;
             var p=Page("saga",GameContent.Regions[run.Region].Name+" / Room "+(run.Room+1)+" of "+run.TotalRooms,title,ShowSaga);
@@ -114,6 +115,7 @@ namespace ForgeEmpire
         }
         void TickSaga(float delta)
         {
+            if(sagaCombatPage&&modalKind=="saga"){TickSagaCombat(delta);return;}
             if(modalKind!="saga"||!app.Sim.SagaInProgress)return;var run=app.Sim.State.Saga.Run;bool reduced=app.Sim.State.ReducedMotion;
             sagaAtmosphere?.Tick(sceneTime,reduced);
             for(int slot=0;slot<3;slot++)

@@ -24,7 +24,7 @@ namespace ForgeEmpire.Editor
             }
             PlayerSettings.companyName="EmberOakGames";
             PlayerSettings.productName="Idle Blacksmith - Forge Empire";
-            PlayerSettings.bundleVersion="0.6.0";
+            PlayerSettings.bundleVersion="0.7.0";
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.emberoak.forgeempire");
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone,"com.emberoak.forgeempire");
             PlayerSettings.defaultInterfaceOrientation=UIOrientation.Portrait;
@@ -40,7 +40,7 @@ namespace ForgeEmpire.Editor
             PlayerSettings.Android.minSdkVersion=(AndroidSdkVersions)26;
             PlayerSettings.Android.targetSdkVersion=(AndroidSdkVersions)36;
             PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;
-            PlayerSettings.Android.bundleVersionCode=6;
+            PlayerSettings.Android.bundleVersionCode=7;
             PlayerSettings.Android.renderOutsideSafeArea=true;
             // Legacy input receives Back as Escape, not through predictive-back callbacks.
             PlayerSettings.Android.predictiveBackSupport=false;
@@ -97,6 +97,13 @@ namespace ForgeEmpire.Editor
             {Require(Resources.Load<Texture2D>("Art/HandDrawn/"+name),"Missing Chronicles painting "+name);checks++;}
             foreach(string prefix in new[]{"region-","ambience-","boss-"})for(int i=0;i<6;i++)
             {Require(Resources.Load<AudioClip>("Audio/Chronicles/"+prefix+i),"Missing Chronicles audio "+prefix+i);checks++;}
+            foreach(string hero in ChronicleWardrobe.Heroes)foreach(string family in ChronicleWardrobe.Families)
+            {
+                string name="worn-"+hero+"-"+family;
+                Require(Resources.Load<Texture2D>("Art/HandDrawn/"+name),"Missing worn outfit "+name);
+                var layout=Resources.Load<TextAsset>("Art/HandDrawn/"+name+"-layout");
+                Require(layout&&JsonUtility.FromJson<HandDrawnArt.Layout>(layout.text).frames.Length==20,"Missing worn poses "+name);checks+=2;
+            }
             var artisan=new WorkshopSimulation(new WorkshopState{Ingots=10,ChroniclesEnabled=true});Require(artisan.BeginMasterwork(0,0)&&artisan.StrikeMasterwork(1),"Artisan setup failed");
             var artisanReload=new WorkshopSimulation(JsonUtility.FromJson<WorkshopState>(JsonUtility.ToJson(artisan.State)));
             artisanReload.Advance(100);Require(artisanReload.MasterworkActive&&artisanReload.State.TotalCrafted==0&&artisanReload.State.Artisan.Project.Stage==ArtisanStage.Shape,"Unity save lost paid artisan stage");checks++;

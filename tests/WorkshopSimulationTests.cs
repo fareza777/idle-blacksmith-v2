@@ -877,6 +877,7 @@ internal static class WorkshopSimulationTests
         PresentationTests.Run(Test);
         ProgressionTests.Run(Test);
         ChroniclesTests.Run(Test);
+        WardrobeTests.Run(Test);
         ArtisanTests.Run(Test);
         SagaTests.Run(Test);
         ChronicleJourneyTests.Run(Test);

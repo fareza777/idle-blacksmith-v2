@@ -119,6 +119,7 @@ namespace ForgeEmpire
         }
         void ShowCraftResult(CraftedItem item)
         {
+            if(item!=null&&item.Masterwork){ShowArtisanResult(item);return;}
             var sim=app.Sim;var recipe=GameContent.Recipes[item.RecipeId];
             var p=Page("craft-result","A creation from your forge",recipe.Name,()=>ShowCraftResult(item));
             EquipmentIcon("CraftResultItem",p,item.RecipeId,350,0,320);

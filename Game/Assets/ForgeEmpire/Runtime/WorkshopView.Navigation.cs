@@ -125,7 +125,7 @@ namespace ForgeEmpire
             DestroyPage();
             currentPage=new PageEntry{Kind=kind,Render=render};modalKind=kind;
             if(kind=="heroes"||kind=="inventory"||kind=="recruit"||kind=="party"||kind=="party-assignment"||kind=="companion")primaryTab=1;
-            else if(kind=="world"||kind=="region"||kind=="battle"||kind=="atlas"||kind=="chronicle-region"||kind=="saga-departure"||kind=="saga"||kind=="restoration"||kind=="npc"||kind=="mastery"&&app.Sim.State.ChroniclesEnabled)primaryTab=2;
+            else if(kind=="world"||kind=="region"||kind=="battle"||kind=="atlas"||kind=="chronicle-region"||kind=="saga-departure"||kind=="saga"||kind=="saga-journal"||kind=="restoration"||kind=="npc"||kind=="mastery"&&app.Sim.State.ChroniclesEnabled)primaryTab=2;
             else if(kind!="settings")primaryTab=0;
             modal=ForgeUI.Fill("Page",root,0,0,1080,root.rect.height-NavHeight,ForgeUI.Background).rectTransform;
             modal.GetComponent<Image>().raycastTarget=true;

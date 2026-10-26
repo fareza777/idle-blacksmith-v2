@@ -33,7 +33,7 @@ namespace ForgeEmpire
             if(qaRun)savePath=Application.isMobilePlatform?Path.Combine(Application.persistentDataPath,"redesign-qa",previewRun?"preview-workshop.json":"isolated-workshop.json"):Path.GetFullPath(Path.Combine(Application.dataPath,"../../../QA/redesign-20261024/"+(previewRun?"preview-workshop.json":"isolated-workshop.json")));
             if(progressionRun)savePath=Application.isMobilePlatform?Path.Combine(Application.persistentDataPath,"progression-qa/isolated-workshop.json"):Path.GetFullPath(Path.Combine(Application.dataPath,"../../../QA/progression-20261024/isolated-workshop.json"));
             if(illustratedRun)savePath=Application.isMobilePlatform?Path.Combine(Application.persistentDataPath,"illustrated-qa/isolated-workshop.json"):Path.GetFullPath(Path.Combine(Application.dataPath,"../../../QA/illustrated-20261025/isolated-workshop.json"));
-            if(chroniclesRun)savePath=Application.isMobilePlatform?Path.Combine(Application.persistentDataPath,"chronicles-qa/isolated-workshop.json"):Path.GetFullPath(Path.Combine(Application.dataPath,"../../../QA/chronicles-20261025/isolated-workshop.json"));
+            if(chroniclesRun)savePath=Application.isMobilePlatform?Path.Combine(Application.persistentDataPath,"chronicles-qa/isolated-workshop.json"):Path.GetFullPath(Path.Combine(Application.dataPath,"../../../QA/battle-forge-20261026/isolated-workshop.json"));
             bool recovered=false;
             var state=qaRun?new WorkshopState():WorkshopSave.Load(savePath,out recovered);
             if(previewRun)state.TutorialStep=1;

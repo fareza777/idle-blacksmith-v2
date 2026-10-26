@@ -1,10 +1,21 @@
 # Idle Blacksmith v2 — Ember & Oak
 
-Game bengkel pandai besi untuk Windows dan Android, dengan workshop hand-drawn, produksi otomatis, artisan crafting dan ekspedisi party. Versi proyek saat ini: **0.6.0 — Chronicles**.
+Game bengkel pandai besi untuk Windows dan Android, dengan workshop hand-drawn, produksi otomatis, artisan crafting dan ekspedisi party. Versi proyek saat ini: **0.7.0 — Battle & Forge**.
 
 <img src="docs/images/workshop-0.6.0.png" alt="Workshop hand-drawn dengan karakter berwajah polos" width="320" />
 
-<img src="docs/images/map-0.6.0.png" alt="Atlas enam wilayah dan perkembangan dunia" width="260" /> <img src="docs/images/battle-0.6.0.png" alt="Party tiga hero dalam ekspedisi Chronicles" width="260" />
+<img src="docs/images/battle-0.7.0.png" alt="Battle dengan target, countdown, armor yang dikenakan dan komando skill" width="260" /> <img src="docs/images/forge-0.7.0.png" alt="Bench tempa dengan item, feedback akurasi dan kontrol tetap terjangkau" width="260" />
+
+## Baru di 0.7.0
+
+- Battle dengan persiapan, pendekatan, kontak dan pemulihan yang terjadwal; pukulan anggota party bergantian dan damage terjadi pada kontak.
+- Aksi lawan menampilkan target dan hitungan waktu, respons skill guardian, tactical pause, serta jurnal aksi sebenarnya. Produksi workshop terus berjalan ketika battle dijeda.
+- Stagger dari serangan dan skill membuka dua detik guard break dengan tambahan 35% damage, disertai jeda pemulihan sebelum break berikutnya.
+- Delapan belas atlas tubuh lengkap: enam hero × mail/leather/robe × dua puluh pose. Armor mengikuti tubuh dan gerakan; wajah manusia tetap polos.
+- Creation menunjukkan biaya sebelum mulai, preview statistik dibanding gear hero, tiga catatan akurasi yang tersimpan, serta heat/hammer/quench/rune dan reveal barang akhir.
+- Komando battle, timing pukulan, dan pilihan Equip/Keep tetap terjangkau, termasuk pada teks 150% dan layar ringkas.
+
+Panduan kontrol terbaru: [Battle & Forge](docs/PLAYING-BATTLE-FORGE.md). Cakupan pengujian dan batasnya dicatat di [verifikasi 0.7.0](docs/VERIFICATION-0.7.0.md).
 
 ## Baru di 0.6.0
 
@@ -16,7 +27,7 @@ Game bengkel pandai besi untuk Windows dan Android, dengan workshop hand-drawn, 
 - Semua wajah manusia polos tanpa mata, hidung dan mulut, sesuai arahan visual terbaru.
 - Koleksi pola dan tujuan bab terlihat; teks 100/125/150%, Reduced motion dan save lama tetap didukung.
 
-Panduan terbaru: [Chronicles](docs/PLAYING-CHRONICLES.md). Data konten dan alat validasi dijelaskan di [CONTENT-AUTHORING](docs/CONTENT-AUTHORING.md); kit playtest manusia ada di [PLAYTEST-CHRONICLES](docs/PLAYTEST-CHRONICLES.md).
+Panduan sistem dunia: [Chronicles](docs/PLAYING-CHRONICLES.md). Data konten dan alat validasi dijelaskan di [CONTENT-AUTHORING](docs/CONTENT-AUTHORING.md); kit playtest manusia ada di [PLAYTEST-CHRONICLES](docs/PLAYTEST-CHRONICLES.md).
 
 ## Fondasi ilustrasi 0.5.0
 
@@ -40,7 +51,7 @@ Tambang bijih → lebur ingot → tempa perlengkapan → pakai pada hero → jel
 - Penempaan manual dengan timing pukulan, hasil yang langsung bisa dipakai, dan perlindungan barang untuk tujuan/pesanan.
 - Ukuran teks 100/125/150% dan Reduced motion.
 
-Lihat [panduan bermain terbaru](docs/PLAYING-CHRONICLES.md) dan [verifikasi 0.6.0](docs/VERIFICATION-0.6.0.md). Catatan [verifikasi 0.5.0](docs/VERIFICATION-0.5.0.md) dipertahankan sebagai riwayat rilis sebelumnya.
+Lihat [panduan dasar Chronicles](docs/PLAYING-CHRONICLES.md) dan [kontrol Battle & Forge](docs/PLAYING-BATTLE-FORGE.md). Catatan [verifikasi 0.6.0](docs/VERIFICATION-0.6.0.md) dan [0.5.0](docs/VERIFICATION-0.5.0.md) dipertahankan sebagai riwayat rilis sebelumnya.
 
 ## Membuka proyek
 
@@ -71,7 +82,7 @@ Jalankan method yang dipilih melalui opsi Unity `-executeMethod`. Contoh PowerSh
   -logFile "$PWD/QA/build.log"
 ```
 
-Tutup editor yang sedang memakai proyek sebelum menjalankan build batch. Build Android menggunakan ARM64, minimum API 26, target API 36, dan version code 6. Build script menghasilkan release build; alat pengujian hanya aktif melalui argumen khusus dan memakai profil simpan terpisah.
+Tutup editor yang sedang memakai proyek sebelum menjalankan build batch. Build Android menggunakan ARM64, minimum API 26, target API 36, dan version code 7. Build script menghasilkan release build; alat pengujian hanya aktif melalui argumen khusus dan memakai profil simpan terpisah.
 
 ## Tes
 
@@ -79,7 +90,7 @@ Dengan Node.js dan Unity terpasang di lokasi standar Windows di atas:
 
 ```powershell
 node tools/test-core.mjs local
-node --test tests/art.test.mjs tests/illustrated-art.test.mjs tests/chronicle-content.test.mjs tests/chronicles-art.test.mjs
+node --test tests/art.test.mjs tests/illustrated-art.test.mjs tests/chronicle-content.test.mjs tests/chronicles-art.test.mjs tests/worn-armor.test.mjs
 node tools/validate-chronicle-content.mjs
 ```
 

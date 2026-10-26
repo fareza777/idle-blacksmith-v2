@@ -10,7 +10,7 @@ if (!['progression', 'regression', 'illustrated','chronicles'].includes(mode) ||
   throw new Error('Usage: node tools/test-native-android.mjs progression|regression|illustrated|chronicles explicit-emulator-serial');
 }
 const adb = path.join(process.env.LOCALAPPDATA, 'Android', 'Sdk', 'platform-tools', 'adb.exe');
-const output = path.join(root, 'QA',mode==='chronicles'?'chronicles-20261025':'illustrated-20261025', 'android', mode);
+const output = path.join(root, 'QA',mode==='chronicles'?'battle-forge-20261026':'illustrated-20261025', 'android', mode);
 fs.mkdirSync(output, { recursive: true });
 function call(args, required = true, timeout = 30000) {
   const result = spawnSync(adb, args, { encoding: 'utf8', windowsHide: true, timeout });
@@ -22,7 +22,8 @@ function call(args, required = true, timeout = 30000) {
 const device = (...args) => call(['-s', serial, ...args]);
 if (serial.startsWith('127.')) call(['connect', serial]);
 if (device('get-state') !== 'device') throw new Error('The requested emulator is not ready');
-console.log(device('install', '-r', path.join(root, 'Builds', 'Android', 'ForgeEmpire.apk')));
+// Transferring a release APK can exceed the short command timeout on a cold emulator.
+console.log(call(['-s', serial, 'install', '-r', path.join(root, 'Builds', 'Android', 'ForgeEmpire.apk')], true, 120000));
 const folder = mode==='chronicles'?'chronicles-qa':mode === 'illustrated' ? 'illustrated-qa' : mode === 'progression' ? 'progression-qa' : 'redesign-qa';
 const filename = mode==='chronicles'?'chronicles-result.json':mode === 'illustrated' ? 'illustrated-result.json' : mode === 'progression' ? 'progression-result.json' : 'native-result.json';
 const remote = `/sdcard/Android/data/com.emberoak.forgeempire/files/${folder}`;
