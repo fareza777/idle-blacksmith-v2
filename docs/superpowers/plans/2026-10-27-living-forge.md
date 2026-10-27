@@ -61,6 +61,8 @@ Root owns Editor/ForgeBuild.cs, native QA probes, version/docs/screenshots/packa
 - [x] Freeze Game; build Windows, run new/legacy suites, inspect final screenshots/motion and repair observed defects with focused evidence.
 - [x] Freeze Game; build Android, run emulator tests only after Unity exits and test normal OS-touch onboarding.
 - [x] Fresh independent whole-change source/visual review, resolve material findings and verify final source export.
-- [ ] Package/hash, docs0.8/versioncode8, commit/push existing branch/update attached draft PR. Install normally on connected authorized phone if available; report exact device limitation otherwise.
+- [x] Package/hash, docs 0.8/version code 8, commit/push existing branch/update attached draft PR. Install normally on connected authorized phone if available; report exact device limitation otherwise.
 
-Final evidence: Core332/0; assets143/0, repeated from staged-source export; Unity196 checks on Windows07/Android02; nativeLivingForge15239 on both targets; legacy1211/793/2019 on both. Independent source and final12-image attachment review closed material findings. WindowsZIP147entries/CRC andAPK0.8/code8 verified. Physical phone absent, APK delivery retained; push/update draftPR follows existing authorization.
+Final evidence: Core 332/0; assets 143/0, repeated from staged-source export; Unity 196 checks on Windows07/Android02; native Living Forge 15,239 on both targets; legacy 1,211/793/2,019 on both. Independent source and final 12-image attachment review closed material findings. Windows ZIP 147 entries/CRC and APK 0.8/code 8 verified. A normal Android session resumed its save and opened the workshop and atlas through OS taps. The physical phone was absent; the APK has not been installed on it.
+
+Delivery: feature commit `393f82f0bf141fbf197ee05d08bd896a917b45c0` was pushed to `feat/illustrated-world`, and [existing draft PR #1](https://github.com/fareza777/idle-blacksmith-v2/pull/1) was updated for Living Forge 0.8. Build packages, hashes, validation details and device limits are recorded in [VERIFICATION-0.8.0.md](../../VERIFICATION-0.8.0.md).
