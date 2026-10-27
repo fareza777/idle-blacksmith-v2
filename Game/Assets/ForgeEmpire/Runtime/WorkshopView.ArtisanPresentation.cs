@@ -32,20 +32,34 @@ namespace ForgeEmpire
         void ArtisanShapingDock(MasterworkProject project)
         {
             var sim=app.Sim;
+            var method=WorkshopSimulation.ArtisanMethodFor(project.RecipeId);
+            bool guided=sim.State.Artisan.Guided||sim.State.ReducedMotion;
+            string action=method==ArtisanMethod.Fitting?"Fit":method==ArtisanMethod.Engraving?"Trace":"Strike";
+            string area=ArtisanBenchScene.WorkAreaName(project.RecipeId,project.Strikes);
             var last=project.Strikes>0&&project.Feedback!=null?project.Feedback[project.Strikes-1]:null;
-            string caption=last==null?"Hit gold · Quality "+project.Quality+" / 3":"Strike "+last.Strike+" · "+Mathf.RoundToInt((float)last.Accuracy*100)+"% · Quality "+project.Quality+" / 3";
-            float textH=Mathf.Max(ForgeUI.Height(caption,1020,ForgeUI.Small),ForgeUI.Height("Strike 3 · 100% · Quality 3 / 3",1020,ForgeUI.Small));
-            float strikeH=Mathf.Max(ActionHeight,ForgeUI.Height("Strike · 3 / 3",972,ForgeUI.Body,FontStyle.Bold)+30);
-            var dock=ArtisanActionDock("ArtisanCommandDock",textH+strikeH+98);
+            string caption=last!=null?"Last "+Mathf.RoundToInt((float)last.Accuracy*100)+"% · Quality "+project.Quality+" / 3":guided?"Guided · 86% per tap":"Aim for the gold mark";
+            float textH=ForgeUI.Height(caption,1020,ForgeUI.Small);
+            float strikeH=Mathf.Max(ActionHeight,ForgeUI.Height(action+" · "+area+" · 3 / 3",972,ForgeUI.Body,FontStyle.Bold)+30);
+            float guideH=Mathf.Max(70,ForgeUI.Height(sim.State.ReducedMotion?"Guided placement · Reduced motion":"Guided placement: ON",972,ForgeUI.Small,FontStyle.Bold)+20);
+            var dock=ArtisanActionDock("ArtisanCommandDock",textH+strikeH+guideH+(guided?66:122));
             artisanTiming=ForgeUI.Label("ArtisanTimingText",dock,caption,0,14,1020,textH,ForgeUI.Small,ForgeUI.Teal);
             float y=textH+32;
-            ForgeUI.Fill("ArtisanTimingTrack",dock,0,y,1020,24,ForgeUI.Surface);ForgeUI.Fill("ArtisanSweetSpot",dock,419.28f,y-8,181.44f,40,ForgeUI.Gold);
-            artisanCursor=ForgeUI.Fill("ArtisanCursor",dock,0,y-14,12,52,ForgeUI.Cream).rectTransform;y+=58;
-            ForgeUI.Button("ArtisanStrike",dock,"Strike · "+(project.Strikes+1)+" / 3",0,y,1020,strikeH,ForgeUI.Gold,ForgeUI.Background,()=>{
-                float accuracy=1-Mathf.Abs(Mathf.PingPong(sceneTime*.72f,1)-.5f)*2;
+            float aim=(float)WorkshopSimulation.ArtisanTimingTarget(project.RecipeId,project.Strikes);
+            if(!guided)
+            {
+                ForgeUI.Fill("ArtisanTimingTrack",dock,0,y,1020,24,ForgeUI.Surface);ForgeUI.Fill("ArtisanSweetSpot",dock,(aim-.09f)*1008+6,y-8,181.44f,40,ForgeUI.Gold);
+                artisanCursor=ForgeUI.Fill("ArtisanCursor",dock,0,y-14,12,52,ForgeUI.Cream).rectTransform;y+=58;
+            }
+            ForgeUI.Button("ArtisanStrike",dock,action+" · "+area+" · "+(project.Strikes+1)+" / 3",0,y,1020,strikeH,ForgeUI.Gold,ForgeUI.Background,()=>{
+                double accuracy=guided?.86:WorkshopSimulation.ArtisanTimingAccuracy(project.RecipeId,project.Strikes,WorkshopSimulation.ArtisanTimingMarker(project.RecipeId,sceneTime));
                 if(sim.StrikeMasterwork(accuracy)){app.Save();app.Play("forge");QueueArtisanCue(ArtisanBenchScene.Cue.Strike);RebuildArtisanPage();}
-            });
+            });y+=strikeH+10;
+            var guide=ForgeUI.Button("ArtisanGuided",dock,sim.State.ReducedMotion?"Guided placement · Reduced motion":"Guided placement: "+(guided?"ON":"OFF"),0,y,1020,guideH,ForgeUI.Surface,ForgeUI.Cream,()=>{sim.State.Artisan.Guided=!sim.State.Artisan.Guided;app.Save();RebuildArtisanPage();},ForgeUI.Small);
+            guide.interactable=!sim.State.ReducedMotion;
         }
+
+        static string ArtisanMethodTitle(int recipeId)
+        {return WorkshopSimulation.ArtisanMethodFor(recipeId)==ArtisanMethod.Fitting?"Balanced fitting":WorkshopSimulation.ArtisanMethodFor(recipeId)==ArtisanMethod.Engraving?"Channel engraving":"Strike sequence";}
 
         void BuildArtisanBench(Transform parent,CraftedItem item,ArtisanStage stage,int strikes,float height,bool target=false,bool result=false)
         {
@@ -58,14 +72,16 @@ namespace ForgeEmpire
             artisanBench.Tick(sceneTime,app.Sim.State.ReducedMotion);
         }
 
-        static string ArtisanStageName(ArtisanStage stage)
+        static string ArtisanStageName(ArtisanStage stage,int recipeId=0)
         {
-            return stage==ArtisanStage.Heat?"1 / 4 · Heat":stage==ArtisanStage.Shape?"2 / 4 · Shape":stage==ArtisanStage.Quench?"3 / 4 · Quench":stage==ArtisanStage.Engrave?"4 / 4 · Rune":"Ready to reveal";
+            var method=WorkshopSimulation.ArtisanMethodFor(recipeId);
+            return stage==ArtisanStage.Heat?"1 / 4 · Warm":stage==ArtisanStage.Shape?"2 / 4 · "+(method==ArtisanMethod.Fitting?"Fit":method==ArtisanMethod.Engraving?"Trace":"Shape"):stage==ArtisanStage.Quench?"3 / 4 · Quench":stage==ArtisanStage.Engrave?"4 / 4 · Rune":"Ready to reveal";
         }
 
-        float ArtisanSteps(Transform parent,float y,ArtisanStage stage)
+        float ArtisanSteps(Transform parent,float y,ArtisanStage stage,int recipeId=0)
         {
-            string[] labels={"Heat","Shape","Quench","Rune"};
+            var method=WorkshopSimulation.ArtisanMethodFor(recipeId);
+            string[] labels={"Warm",method==ArtisanMethod.Fitting?"Fit":method==ArtisanMethod.Engraving?"Trace":"Shape","Quench","Rune"};
             float height=0;foreach(string label in labels)height=Mathf.Max(height,ForgeUI.Height(label,243,ForgeUI.Small,FontStyle.Bold));
             int step=stage==ArtisanStage.Heat?0:stage==ArtisanStage.Shape?1:stage==ArtisanStage.Quench?2:3;
             for(int i=0;i<4;i++)
@@ -94,6 +110,7 @@ namespace ForgeEmpire
             float top=y;
             y=Paragraph(parent,actionId+"Title",title,y,ForgeUI.Body,ForgeUI.Cream,true,0,textWidth)+8;
             if(stats)y=Paragraph(parent,actionId+"Preview",ArtisanStats(build),y,ForgeUI.Small,ForgeUI.Teal,false,0,textWidth)+8;
+            if(stats&&WorkshopSimulation.ItemTechniqueEffect(build)!=GearEffect.None)y=Paragraph(parent,actionId+"Affinities",WorkshopSimulation.ItemAffinitiesDescription(build),y,ForgeUI.Small,ForgeUI.Teal,false,0,textWidth)+8;
             if(stats)
             {
                 var campaign=app.Sim.State.Campaign;var hero=campaign.Heroes[campaign.SelectedHero];
@@ -114,21 +131,23 @@ namespace ForgeEmpire
 
         static string ArtisanLastStrike(MasterworkProject project)
         {
-            if(project.Strikes==0)return "Three shaping strikes · quality grows with accurate hits.";
+            string mark=WorkshopSimulation.ArtisanMethodFor(project.RecipeId)==ArtisanMethod.Fitting?"Fit":WorkshopSimulation.ArtisanMethodFor(project.RecipeId)==ArtisanMethod.Engraving?"Trace":"Strike";
+            if(project.Strikes==0)return "Three "+mark.ToLowerInvariant()+" marks · quality grows with accurate placement.";
             var feedback=project.Feedback!=null&&project.Feedback.Length>=project.Strikes?project.Feedback[project.Strikes-1]:null;
             if(feedback==null)return project.Strikes+" / 3 strikes saved · quality "+project.Quality+" / 3";
-            string rating=feedback.Accuracy>=.82?"True strike":feedback.Accuracy>=.5?"Steady strike":"Glancing strike";
-            return "Strike "+feedback.Strike+" · "+rating+" · "+(feedback.QualityAfter>feedback.QualityBefore?"+1 quality":feedback.Accuracy>=.82?"quality at maximum":"quality held");
+            string rating=feedback.Accuracy>=.82?"True mark":feedback.Accuracy>=.5?"Steady mark":"Wide mark";
+            return mark+" "+feedback.Strike+" · "+rating+" · "+(feedback.QualityAfter>feedback.QualityBefore?"+1 quality":feedback.Accuracy>=.82?"quality at maximum":"quality held");
         }
 
         float ArtisanStrikeHistory(Transform parent,MasterworkProject project,float y)
         {
-            y=Paragraph(parent,"ArtisanTechniqueTitle","Your shaping marks",y,ForgeUI.Small,ForgeUI.Gold,true)+12;
+            string mark=WorkshopSimulation.ArtisanMethodFor(project.RecipeId)==ArtisanMethod.Fitting?"Fit":WorkshopSimulation.ArtisanMethodFor(project.RecipeId)==ArtisanMethod.Engraving?"Trace":"Strike";
+            y=Paragraph(parent,"ArtisanTechniqueTitle","Your "+ArtisanMethodTitle(project.RecipeId).ToLowerInvariant()+" marks",y,ForgeUI.Small,ForgeUI.Gold,true)+12;
             for(int i=0;i<project.Strikes;i++)
             {
                 var f=project.Feedback!=null&&i<project.Feedback.Length?project.Feedback[i]:null;
-                string caption=f==null?"Strike "+(i+1)+" · earlier saved technique":
-                    "Strike "+f.Strike+" · "+Mathf.RoundToInt((float)f.Accuracy*100)+"% accuracy · "+(f.QualityAfter>f.QualityBefore?"+1 quality":f.Accuracy>=.82?"quality at maximum":"quality held");
+                string caption=f==null?mark+" "+(i+1)+" · earlier saved technique":
+                    mark+" "+f.Strike+" · "+Mathf.RoundToInt((float)f.Accuracy*100)+"% accuracy · "+(f.QualityAfter>f.QualityBefore?"+1 quality":f.Accuracy>=.82?"quality at maximum":"quality held");
                 y=Paragraph(parent,"ArtisanStrikeRecord"+i,caption,y,ForgeUI.Small,f!=null&&f.QualityAfter>f.QualityBefore?ForgeUI.Teal:ForgeUI.Muted)+10;
             }
             return y;
@@ -162,8 +181,8 @@ namespace ForgeEmpire
                 int current=sim.State.Inventory.IndexOf(item);if(current>=0)sim.TryProtectItem(current,true);
                 app.Save();ResumeJourney();
             });
-            y=Paragraph(p,"CraftResultBuild",WorkshopSimulation.AlloyOptions[item.Alloy].Name+" · "+WorkshopSimulation.TemperOptions[item.Temper].Name+"\n"+WorkshopSimulation.RuneOptions[item.Rune].Name+" · "+recipe.Element,y,ForgeUI.Small,ForgeUI.Cream)+14;
-            y=Paragraph(p,"CraftResultEffect",WorkshopSimulation.EffectDescription(WorkshopSimulation.ItemEffect(item)),y,ForgeUI.Small,ForgeUI.Teal)+18;
+            y=Paragraph(p,"CraftResultBuild",WorkshopSimulation.AlloyOptions[item.Alloy].Name+" · "+WorkshopSimulation.TemperOptions[item.Temper].Name+"\n"+WorkshopSimulation.TechniqueOptionsFor(item.RecipeId)[item.Technique].Name+" · "+WorkshopSimulation.RuneOptions[item.Rune].Name+" · "+recipe.Element,y,ForgeUI.Small,ForgeUI.Cream)+14;
+            y=Paragraph(p,"CraftResultEffect",WorkshopSimulation.ItemAffinitiesDescription(item),y,ForgeUI.Small,ForgeUI.Teal)+18;
             if(sim.IsCommissionReserved(item))y=Paragraph(p,"CraftResultPurpose","This piece also qualifies for your guild order. Keep it in storage to deliver it.",y,ForgeUI.Small,ForgeUI.Muted)+18;
             var history=sim.State.Artisan.LastCreation;
             if(history!=null&&history.CreationNumber==item.Provenance&&history.RecipeId==item.RecipeId)y=ArtisanStrikeHistory(p,history,y);

@@ -12,6 +12,7 @@ internal static class ChroniclesTests
     }
     public static void Run(Action<string,Action> test)
     {
+        LivingWorldTests.Run(test);
         test("Chronicles expands content with stable original identities",()=>{
             Check(GameContent.Recipes.Length==108&&GameContent.Regions.Length==6&&GameContent.Heroes.Length==6,"expanded catalog");
             Check(ChronicleContent.Enemies.Length==48&&ChronicleContent.Bosses.Length==12,"enemy catalog");

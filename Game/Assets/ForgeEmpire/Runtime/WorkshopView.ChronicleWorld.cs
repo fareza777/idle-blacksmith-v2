@@ -85,19 +85,15 @@ namespace ForgeEmpire
             var sim=app.Sim;var p=Page("atlas","Chapter "+(sim.UnlockedRegion+1)+" / 6","A living valley",ShowAtlas);
             float y=Paragraph(p,"AtlasGoal",sim.LongTermGoal,0,ForgeUI.Small,ForgeUI.Gold)+Gap;
             y=Paragraph(p,"AtlasParty",PartySummary(sim)+"\nNext: "+sim.NextStep.Title,y,ForgeUI.Small,ForgeUI.Teal)+Gap;
-            const float height=1275;ForgeUI.Picture("ChronicleAtlas",p,HandDrawnArt.Texture("worldmap-chronicles"),0,y,1020,height);
-            Vector2[] points={new Vector2(.22f,.76f),new Vector2(.75f,.77f),new Vector2(.23f,.40f),new Vector2(.76f,.44f),new Vector2(.48f,.18f),new Vector2(.82f,.13f)};
+            y=BuildLivingAtlas(p,y);
+            y=Paragraph(p,"AtlasRegionNavigation","Regions & route previews",y,ForgeUI.Subheading,null,true)+Gap;
             for(int region=0;region<6;region++)
             {
-                int id=region;float x=points[id].x*1020,py=y+points[id].y*height;bool cleared=sim.IsFrontierCleared(id),open=id<=sim.UnlockedRegion;
-                var pin=ForgeUI.Medallion("AtlasRegion"+id,p,x-48,py-48,96,()=>ShowChronicleRegion(id),cleared?"check":open?null:"lock");
-                if(open&&!cleared){var text=pin.GetComponentInChildren<Text>();text.text=(id+1).ToString();text.color=ForgeUI.Gold;}
-                string name=GameContent.Regions[id].Name+(sim.State.World.Projects[id]>0?"\nRestored "+sim.State.World.Projects[id]+" / 3":"");
-                float w=380,tx=Mathf.Clamp(x-w*.5f,0,1020-w),h=ForgeUI.Height(name,w,ForgeUI.Small,FontStyle.Bold);
-                var label=ForgeUI.Label("AtlasName"+id,p,name,tx,py+56,w,h,ForgeUI.Small,ForgeUI.Cream,FontStyle.Bold,TextAnchor.UpperCenter);
-                var outline=label.gameObject.AddComponent<Outline>();outline.effectColor=ForgeUI.Background;outline.effectDistance=new Vector2(2,-2);
+                int id=region;string status=sim.IsFrontierCleared(id)?"Story restored":id<=sim.UnlockedRegion?"Open":"Locked";
+                y=AddAction(p,"AtlasRegionButton"+id,(id+1)+". "+GameContent.Regions[id].Name+" · "+status,y,()=>ShowChronicleRegion(id),false);
             }
-            y+=height+Gap;y=AddAction(p,"AtlasContinue","Continue the chapter",y,ResumeJourney);
+            y=AddWorldGoals(p,y);
+            y=AddAction(p,"AtlasContinue",sim.SagaInProgress?"Continue the expedition":"Continue the chapter",y,ContinueLivingGoal);
             y=AddAction(p,"AtlasPartyButton","Prepare the party",y,ShowParty,false);
             y=AddAction(p,"AtlasTown","Town restoration & people",y,ShowRestoration,false);
             y=AddAction(p,"AtlasMastery","Guardians, legends & legacy",y,ShowLegends,false);
@@ -118,6 +114,9 @@ namespace ForgeEmpire
             {
                 int id=route;Rule(p,y);y+=Gap;y=Paragraph(p,"ChronicleRouteName"+id,names[id],y,ForgeUI.Subheading,null,true)+12;
                 y=Paragraph(p,"ChronicleRouteHelp"+id,descriptions[id],y,ForgeUI.Small,ForgeUI.Muted)+16;
+                var reward=sim.PreviewRouteRewards(region,id);string blocker=sim.ExpeditionBlocker(region,id);
+                y=Paragraph(p,"ChronicleRouteReward"+id,"Base victory: "+reward.Gold+" gold · "+reward.Material+" "+WorkshopSimulation.MaterialName(region).ToLowerInvariant()+" · "+reward.Experience+" XP"+(id>=2?"\nGuardian victory: mastery; collect the result to keep its reward.":""),y,ForgeUI.Small,ForgeUI.Gold)+16;
+                if(blocker.Length>0)y=Paragraph(p,"ChronicleRouteBlocker"+id,blocker,y,ForgeUI.Small,ForgeUI.Orange)+16;
                 y=AddAction(p,"ChronicleRoute"+id,"Prepare · "+names[id],y,()=>ShowSagaDeparture(region,id),id==0);
             }
             y=AddAction(p,"ChronicleRegionTown","Visit "+WorkshopSimulation.Restorations[region].Npc,y,ShowRestoration,false);EndPage(y);
@@ -128,6 +127,7 @@ namespace ForgeEmpire
             Landscape("DepartureLandscape",p,region,0,0,1020,380);float y=Paragraph(p,"DepartureParty",PartySummary(sim),408,ForgeUI.Subheading,ForgeUI.Teal,true)+Gap;
             y=Paragraph(p,"DepartureHow","Choose each room on the road. Injuries carry forward; a shelter can restore the party. Equipment stays with this party until you return.",y)+Gap;
             y=Paragraph(p,"DepartureElement",GameContent.Regions[region].Weakness+" weapons deal 30% more damage here (60% for Kael). Matching armor reduces incoming damage by 20% (30% for Kael).",y,ForgeUI.Small,ForgeUI.Muted)+Gap;
+            if(sim.SagaSynergyHint.Length>0)y=Paragraph(p,"DepartureSynergy",sim.SagaSynergyHint,y,ForgeUI.Small,ForgeUI.Teal)+Gap;
             var reward=sim.PreviewRouteRewards(region,route);
             y=Paragraph(p,"DepartureRewards","Base return: "+reward.Gold+" gold · "+reward.Material+" "+WorkshopSimulation.MaterialName(region).ToLowerInvariant()+"\nBranch choices and challenge rank can add to this reward.",y,ForgeUI.Small,ForgeUI.Gold)+Gap;
             if(route>=2)y=Paragraph(p,"DepartureMechanic",ChronicleContent.Bosses[region*2+(route==3?1:0)].Counter,y,ForgeUI.Body,ForgeUI.Teal)+Gap;

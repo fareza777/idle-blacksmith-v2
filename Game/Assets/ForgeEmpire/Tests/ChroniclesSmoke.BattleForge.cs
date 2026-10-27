@@ -12,6 +12,7 @@ namespace ForgeEmpire.Tests
         IEnumerator CheckCombatPresentation()
         {
             var sim=app.Sim;var run=sim.State.Saga.Run;
+            Check(app.View.SagaArenaViewportRatio>=.60f,"ordinary portrait arena must dominate the combat viewport");CheckArenaVisible("ordinary portrait");
             Check(GameObject.Find("SagaPause")&&GameObject.Find("SagaControls"),"persistent battle commands");
             foreach(var image in GameObject.Find("SagaStage").GetComponentsInChildren<RawImage>())Check(!image.name.EndsWith("Armor",StringComparison.Ordinal),"inventory armor icon remains in battle");
             int tick=run.Tick;double ore=sim.State.Ore;sim.TryStart(Station.Mine);double progress=sim.State.Progress[0];
@@ -89,7 +90,7 @@ namespace ForgeEmpire.Tests
             Check(sim.State.Ingots==ingots-quote.Ingots&&sim.State.Gold==gold,"large-text alloy cost matches actual reservation");
             for(int i=0;i<4;i++)
             {
-                sim.Advance(.21);typeof(WorkshopView).GetField("sceneTime",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(app.View,.5f/.72f);Click("ArtisanStrike");app.View.Tick(.18f);yield return null;
+                sim.Advance(.21);SetArtisanMarkTime();Click("ArtisanStrike");app.View.Tick(.18f);yield return null;
                 if(i==2)
                 {
                     var bench=GameObject.Find("ArtisanWorkbench").GetComponent<RectTransform>();var viewport=bench.GetComponentInParent<ScrollRect>().viewport;var bounds=RectTransformUtility.CalculateRelativeRectTransformBounds(viewport,bench);

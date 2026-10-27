@@ -1,10 +1,21 @@
 # Idle Blacksmith v2 — Ember & Oak
 
-Game bengkel pandai besi untuk Windows dan Android, dengan workshop hand-drawn, produksi otomatis, artisan crafting dan ekspedisi party. Versi proyek saat ini: **0.7.0 — Battle & Forge**.
+Game bengkel pandai besi untuk Windows dan Android, dengan workshop hand-drawn, produksi otomatis, artisan crafting dan ekspedisi party. Versi proyek saat ini: **0.8.0 — Living Forge**.
 
-<img src="docs/images/workshop-0.6.0.png" alt="Workshop hand-drawn dengan karakter berwajah polos" width="320" />
+<img src="docs/images/workshop-0.8.0.png" alt="Workshop hand-drawn dengan karakter berwajah polos" width="320" />
 
-<img src="docs/images/battle-0.7.0.png" alt="Battle dengan target, countdown, armor yang dikenakan dan komando skill" width="260" /> <img src="docs/images/forge-0.7.0.png" alt="Bench tempa dengan item, feedback akurasi dan kontrol tetap terjangkau" width="260" />
+<img src="docs/images/battle-0.8.0.png" alt="Formasi tiga musuh dengan target, armor menyatu dan komando skill" width="260" /> <img src="docs/images/forge-0.8.0.png" alt="Benda kerja di atas landasan dengan langkah fitting dan feedback akurasi" width="260" />
+
+## Baru di 0.8.0
+
+- Formasi hingga tiga musuh dengan target yang bisa dipilih, healer, protector, dan penyerang jarak jauh. Serangan yang sudah disiapkan tetap mengenai target yang diumumkan.
+- Arena lebih besar, komando tetap terjangkau, dan detail pertarungan berada di jurnal. Frost, serangan berat, lightning, perlindungan dan pemulihan memiliki pengaruh nyata.
+- Artwork 48 musuh dengan enam pose per makhluk, efek cat tangan, serta gerakan dan pegangan untuk delapan keluarga senjata. Armor menyatu dengan tubuh; wajah manusia tetap polos.
+- Material dan benda kerja berubah melalui tahap tempa. Senjata, fitting dan ukiran memakai timing yang berbeda; pilihan teknik mengubah statistik dan dapat menambah affinity yang berbeda dari rune utama.
+- Trader, waystone dan jalur elite memberi pilihan dengan biaya serta bonus ekspedisi yang tersimpan dan berlaku terbatas.
+- Atlas dapat digeser/diperbesar, menampilkan perjalanan tersimpan dan tautan tujuan. Seluruh enam restorasi memiliki tiga tingkat yang juga terlihat di workshop.
+
+Panduan terbaru: [Living Forge](docs/PLAYING-LIVING-FORGE.md). Hasil dan batas pengujian: [verifikasi 0.8.0](docs/VERIFICATION-0.8.0.md). Arahan artwork dan urutan atlas: [living-forge-direction.md](ArtSource/living-forge-direction.md).
 
 ## Baru di 0.7.0
 

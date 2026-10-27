@@ -16,6 +16,7 @@ internal static class ArtisanTests
     }
     public static void Run(Action<string,Action> test)
     {
+        ArtisanTechniqueTests.Run(test);
         test("artisan equip eligibility follows the actual party lock and storage ownership",()=>{
             var s=Project();Shape(s);s.QuenchMasterwork(0);s.EngraveMasterwork(0);s.CompleteMasterwork();var item=s.State.Inventory[0];
             Check(s.CreationEquipBlocker(item)=="","kept result can equip");

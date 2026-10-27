@@ -76,14 +76,15 @@ namespace ForgeEmpire
             {
                 y=Paragraph(p,"SagaRoadStory",run.LastEvent,y,ForgeUI.Body,ForgeUI.Gold)+Gap;
                 y=Paragraph(p,"SagaRoadGuide",sim.SagaNextAction,y,ForgeUI.Small,ForgeUI.Muted)+Gap;
-                string[] names=run.Phase==SagaPhase.Camp?new[]{"Rest · Recover 32% health","Search the shelter · +2 materials","Chart a shortcut · Gold & ready skills"}:new[]{run.Room==run.TotalRooms-1&&run.Route>=2?"Face the guardian":"Follow the safe trail","Stop at a shelter","Answer a rescue call · Higher risk"};
-                string[] hints=run.Phase==SagaPhase.Camp?new[]{"A meal and a quiet watch restore injuries. Fallen companions can recover here.","Useful local supplies await in an old storeroom.","Earn a trader's purse and ready every companion skill."}:new[]{"Fight a normal encounter and keep the party's remaining health.","Use one shelter before the final room. Rest, gather supplies or plan a shortcut.","The enemy has 25% more health. Win for extra gold and regional materials."};
-                for(int choice=0;choice<3;choice++)
+                if(run.Boon>=0)y=Paragraph(p,"SagaActiveBoon",new[]{"Might · +12% damage","Shelter · Heal & protect","Clarity · Faster skills"}[run.Boon]+" · through room "+(run.BoonUntilRoom+1),y,ForgeUI.Small,ForgeUI.Teal)+Gap;
+                int choiceCount=run.Phase==SagaPhase.Camp||sim.SagaBoonPending?3:6;
+                for(int choice=0;choice<choiceCount;choice++)
                 {
-                    int index=choice;y=Paragraph(p,"SagaPathHelp"+choice,hints[choice],y,ForgeUI.Small,ForgeUI.Muted)+16;
-                    var button=WideButton(p,"SagaPath"+choice,names[choice],y,()=>{if(sim.ChooseSagaPath(index)){app.Save();app.Play("click");RequestPageRebuild(true);Refresh();}});
-                    button.interactable=run.Phase==SagaPhase.Camp||choice!=1||(run.Room>0&&run.Room<run.TotalRooms-1&&!run.CampUsed);y+=button.GetComponent<RectTransform>().rect.height+Gap;
+                    int index=choice;y=Paragraph(p,"SagaPathHelp"+choice,sim.SagaPathDescription(choice),y,ForgeUI.Small,ForgeUI.Muted)+16;
+                    var button=WideButton(p,"SagaPath"+choice,sim.SagaPathTitle(choice),y,()=>{if(sim.ChooseSagaPath(index)){app.Save();app.Play("click");RequestPageRebuild(true);Refresh();}});
+                    button.interactable=sim.CanChooseSagaPath(choice);y+=button.GetComponent<RectTransform>().rect.height+Gap;
                 }
+                y=AddAction(p,"SagaOpenAtlas","View the expedition route",y,ShowAtlas,false);
             }
             else
             {

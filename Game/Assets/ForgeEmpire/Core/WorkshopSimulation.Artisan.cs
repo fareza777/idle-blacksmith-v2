@@ -16,7 +16,7 @@ namespace ForgeEmpire
             new ArtisanOption(2,"Flash quench","Power +15%; guard -10%. A sharp, aggressive temper.")
         };
         public static readonly ArtisanOption[] RuneOptions={
-            new ArtisanOption(0,"Unbound","Keep the recipe's natural affinity."),
+            new ArtisanOption(0,"Unbound","Keep the pattern's natural primary affinity. A specialized technique adds its own secondary affinity."),
             new ArtisanOption(1,"Storm","Every third hit releases lightning for 55% bonus damage.",0,12),
             new ArtisanOption(2,"Aegis","Protective skills add a barrier worth 14% max health.",0,12),
             new ArtisanOption(3,"Renewal","Defeating an enemy restores 12% max health.",0,12)
@@ -42,9 +42,11 @@ namespace ForgeEmpire
             quote.CanBegin=quote.Blocker.Length==0;return quote;
         }
         public static CraftedItem PreviewMasterwork(int recipeId,int quality,int alloy,int temper,int rune)
+        {return PreviewMasterwork(recipeId,quality,alloy,temper,rune,0);}
+        public static CraftedItem PreviewMasterwork(int recipeId,int quality,int alloy,int temper,int rune,int technique)
         {
-            if(!ValidRecipe(recipeId)||quality<0||quality>3||alloy<0||alloy>=AlloyOptions.Length||temper<0||temper>=TemperOptions.Length||rune<0||rune>=RuneOptions.Length)return null;
-            return new CraftedItem{RecipeId=recipeId,Name=GameContent.Recipes[recipeId].Name,Quality=quality,Alloy=alloy,Temper=temper,Rune=rune,Masterwork=true,Protected=true};
+            if(!ValidRecipe(recipeId)||quality<0||quality>3||alloy<0||alloy>=AlloyOptions.Length||temper<0||temper>=TemperOptions.Length||rune<0||rune>=RuneOptions.Length||technique<0||technique>2)return null;
+            return new CraftedItem{RecipeId=recipeId,Name=GameContent.Recipes[recipeId].Name,Quality=quality,Alloy=alloy,Temper=temper,Rune=rune,Technique=technique,Masterwork=true,Protected=true};
         }
         public string CreationEquipBlocker(CraftedItem item)
         {
@@ -79,6 +81,7 @@ namespace ForgeEmpire
         static void NormalizeArtisanProject(MasterworkProject p)
         {
             p.Alloy=Clamp(p.Alloy,0,2);p.Temper=Clamp(p.Temper,0,2);p.Rune=Clamp(p.Rune,0,3);p.Strikes=Clamp(p.Strikes,0,3);p.Quality=Clamp(p.Quality,0,3);
+            if(p.Technique<0||p.Technique>2)p.Technique=0;
             if(p.Stage==ArtisanStage.Shape&&p.Strikes>=3)p.Stage=ArtisanStage.Quench;
             var source=p.Feedback;var feedback=new ArtisanStrikeFeedback[3];
             for(int i=0;source!=null&&i<Math.Min(p.Strikes,source.Length);i++)
@@ -94,9 +97,13 @@ namespace ForgeEmpire
         {
             if(item==null)return;
             item.Alloy=item.Masterwork?Clamp(item.Alloy,0,2):0;item.Temper=item.Masterwork?Clamp(item.Temper,0,2):0;item.Rune=item.Masterwork?Clamp(item.Rune,0,3):0;item.Provenance=Clamp(item.Provenance,0,MaxCounter);
+            if(!item.Masterwork||item.Technique<0||item.Technique>2)item.Technique=0;
         }
         public bool BeginMasterwork(int recipeId,int alloy)
+        {return BeginMasterwork(recipeId,alloy,0);}
+        public bool BeginMasterwork(int recipeId,int alloy,int technique)
         {
+            if(technique<0||technique>2)return false;
             var quote=QuoteMasterwork(recipeId,alloy);if(!quote.CanBegin)return false;
             if(!quote.Reserved)
             {
@@ -105,7 +112,7 @@ namespace ForgeEmpire
             }
             State.Ingots-=AlloyOptions[alloy].ExtraIngots;State.PendingProtection=true;
             State.ManualForge=true;State.Progress[2]=0;
-            State.Artisan.Project=new MasterworkProject{RecipeId=recipeId,Alloy=alloy,Quality=State.PendingQuality,Stage=ArtisanStage.Heat};
+            State.Artisan.Project=new MasterworkProject{RecipeId=recipeId,Alloy=alloy,Technique=technique,Quality=State.PendingQuality,Stage=ArtisanStage.Heat};
             return true;
         }
         public bool StrikeMasterwork(double accuracy)
@@ -144,7 +151,7 @@ namespace ForgeEmpire
         void DecorateCraftedItem(CraftedItem item)
         {
             if(!artisanDelivery||!MasterworkActive||item.RecipeId!=State.Artisan.Project.RecipeId)return;
-            var p=State.Artisan.Project;item.Masterwork=true;item.Alloy=p.Alloy;item.Temper=p.Temper;item.Rune=p.Rune;item.Provenance=State.Artisan.Completed+1;item.Protected=true;
+            var p=State.Artisan.Project;item.Masterwork=true;item.Alloy=p.Alloy;item.Temper=p.Temper;item.Rune=p.Rune;item.Technique=p.Technique;item.Provenance=State.Artisan.Completed+1;item.Protected=true;
             item.Value=Math.Min(MaxItemValue,(int)(item.Value*1.25));p.Stage=ArtisanStage.Complete;p.CreationNumber=item.Provenance;State.Artisan.LastCreation=p;State.Artisan.Completed=Increment(State.Artisan.Completed,1);
         }
         public static int ArtisanStat(CraftedItem item,bool power)
@@ -153,6 +160,7 @@ namespace ForgeEmpire
             var recipe=GameContent.Recipes[item.RecipeId];double stat=(power?recipe.Power:recipe.Guard)*(4+Clamp(item.Quality,0,3))/4;
             if(item.Masterwork)
             {
+                stat=ArtisanTechniqueStat(item,power);
                 if(item.Alloy==1)stat*=power?1.2:.9;else if(item.Alloy==2)stat*=power?.9:1.25;
                 if(item.Temper==1)stat*=power?.92:1.15;else if(item.Temper==2)stat*=power?1.15:.9;
             }
@@ -163,6 +171,20 @@ namespace ForgeEmpire
             if(item==null||!ValidRecipe(item.RecipeId))return GearEffect.None;
             if(item.Masterwork&&item.Rune>0&&item.Rune<4)return item.Rune==1?GearEffect.ChainLightning:item.Rune==2?GearEffect.BraceBarrier:GearEffect.LifeOnKill;
             return GameContent.Recipes[item.RecipeId].Effect;
+        }
+        public static GearEffect ItemTechniqueEffect(CraftedItem item)
+        {
+            if(item==null||!item.Masterwork||item.Technique!=2||!ValidRecipe(item.RecipeId))return GearEffect.None;
+            var effect=ArtisanTechniqueEffect(item.RecipeId);
+            if(effect!=ItemEffect(item))return effect;
+            // A rune that already supplies the alternative affinity leaves room for the category's original specialty.
+            var method=ArtisanMethodFor(item.RecipeId);
+            return method==ArtisanMethod.Strike?GearEffect.ArmorBreak:method==ArtisanMethod.Fitting?GearEffect.Mend:GearEffect.Focus;
+        }
+        public static string ItemAffinitiesDescription(CraftedItem item)
+        {
+            var primary=ItemEffect(item);var secondary=ItemTechniqueEffect(item);
+            return secondary==GearEffect.None?EffectDescription(primary):"Primary: "+EffectDescription(primary)+"\nTechnique: "+EffectDescription(secondary);
         }
         public static string EffectDescription(GearEffect effect)
         {
@@ -185,8 +207,8 @@ namespace ForgeEmpire
         public static string ItemBuildDescription(CraftedItem item)
         {
             if(item==null)return "No equipment assigned.";
-            string origin=item.Masterwork?AlloyOptions[Clamp(item.Alloy,0,2)].Name+" · "+TemperOptions[Clamp(item.Temper,0,2)].Name+"\n":"";
-            return origin+ArtisanStat(item,true)+" Power · "+ArtisanStat(item,false)+" Guard\n"+EffectDescription(ItemEffect(item));
+            string origin=item.Masterwork?AlloyOptions[Clamp(item.Alloy,0,2)].Name+" · "+TemperOptions[Clamp(item.Temper,0,2)].Name+" · "+TechniqueOptionsFor(item.RecipeId)[Clamp(item.Technique,0,2)].Name+"\n":"";
+            return origin+ArtisanStat(item,true)+" Power · "+ArtisanStat(item,false)+" Guard\n"+ItemAffinitiesDescription(item);
         }
     }
 }

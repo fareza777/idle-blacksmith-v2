@@ -81,7 +81,8 @@ namespace ForgeEmpire
         public static RawImage Piece(string name,Transform parent,string atlas,int frame,float x,float y,float width,float height)
         {
             var sheet=Get(atlas);var f=GetFrame(sheet,frame);var image=ForgeUI.Picture(name,parent,sheet.Texture,0,0,width,height);
-            image.uvRect=new Rect(f.x,f.y,f.w,f.h);float w=f.w*sheet.Layout.width,h=f.h*sheet.Layout.height,scale=Mathf.Min(width/w,height/h);
+            int sourceWidth=sheet.Layout.width>0?sheet.Layout.width:sheet.Texture.width,sourceHeight=sheet.Layout.height>0?sheet.Layout.height:sheet.Texture.height;
+            image.uvRect=new Rect(f.x,f.y,f.w,f.h);float w=f.w*sourceWidth,h=f.h*sourceHeight,scale=Mathf.Min(width/w,height/h);
             image.rectTransform.pivot=new Vector2(.5f,.5f);image.rectTransform.sizeDelta=new Vector2(w*scale,h*scale);image.rectTransform.anchoredPosition=new Vector2(x+width*.5f,-y-height*.5f);return image;
         }
     }

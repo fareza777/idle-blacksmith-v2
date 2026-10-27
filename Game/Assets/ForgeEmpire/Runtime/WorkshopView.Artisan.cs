@@ -6,6 +6,7 @@ namespace ForgeEmpire
     public sealed partial class WorkshopView
     {
         int catalogRegion,catalogSlot=-1;
+        int artisanTechnique,artisanTechniqueRecipe=-1;
         RectTransform artisanCursor;
         Text artisanTiming;
         public void ShowArtisan(int recipeId=-1)
@@ -13,20 +14,39 @@ namespace ForgeEmpire
             var sim=app.Sim;bool active=sim.MasterworkActive;
             int id=active?sim.State.Artisan.Project.RecipeId:recipeId>=0?recipeId:sim.IsRunning(Station.Forge)?sim.State.PendingRecipe:sim.State.SelectedRecipe;
             id=Mathf.Clamp(id,0,GameContent.Recipes.Length-1);
+            if(artisanTechniqueRecipe!=id){artisanTechniqueRecipe=id;artisanTechnique=0;}
             var recipe=GameContent.Recipes[id];var project=sim.State.Artisan.Project;
             var quote=sim.QuoteMasterwork(id,0);bool paid=quote.Reserved;
             artisanCursor=null;artisanTiming=null;
-            var p=Page("artisan","Forge / "+(active?ArtisanStageName(project.Stage):"Choose your alloy"),recipe.Name,()=>ShowArtisan(id));
-            var preview=active?WorkshopSimulation.PreviewMasterwork(id,project.Quality,project.Alloy,project.Temper,project.Rune):WorkshopSimulation.PreviewMasterwork(id,quote.Quality,0,0,0);
+            var p=Page("artisan","Forge / "+(active?ArtisanStageName(project.Stage,id):"Choose your approach"),recipe.Name,()=>ShowArtisan(id));
+            if(active&&root.rect.height<1600)
+            {
+                var section=modal.Find("PageSection").GetComponent<Text>();var heading=modal.Find("PageHeading").GetComponent<Text>();
+                heading.font=section.font;heading.fontSize=ForgeUI.Size(ForgeUI.Small);section.gameObject.SetActive(false);
+                float header=Mathf.Max(128,ForgeUI.Height(recipe.Name,834,ForgeUI.Small,FontStyle.Bold)+32);
+                Place(heading.rectTransform,174,16,834,header-32);Place((RectTransform)modal.Find("PageBack"),30,6,112,112);
+                Place((RectTransform)modal.Find("Hairline"),30,header-4,1020,2);Place((RectTransform)modal.Find("Diamond"),535,header-8,10,10);
+                Place(pageScroll.viewport,30,header+12,1020,Mathf.Max(180,modal.rect.height-header-24));
+            }
+            var preview=active?WorkshopSimulation.PreviewMasterwork(id,project.Quality,project.Alloy,project.Temper,project.Rune,project.Technique):WorkshopSimulation.PreviewMasterwork(id,quote.Quality,0,0,0,artisanTechnique);
             float sceneHeight=root.rect.height<1600?(ForgeUI.TextScale>1.25f?220:270):390;
             BuildArtisanBench(p,preview,active?project.Stage:ArtisanStage.Heat,active?project.Strikes:0,sceneHeight,!active);
-            float y=ArtisanSteps(p,sceneHeight+12,active?project.Stage:ArtisanStage.Heat)+18;
+            float y=ArtisanSteps(p,sceneHeight+12,active?project.Stage:ArtisanStage.Heat,id)+18;
             if(!active)
             {
                 string have="Have "+sim.State.Ingots+" ingots · "+WorkshopSimulation.Number(sim.State.Gold)+" gold";
                 if(recipe.RareCost>0)have+=" · "+sim.State.Campaign.Materials[recipe.Region-1]+" "+WorkshopSimulation.MaterialName(recipe.Region-1).ToLowerInvariant();
                 var available=ForgeUI.Label("ArtisanAvailable",p,have,0,y,1020,ForgeUI.Height(have,1020,ForgeUI.Small),ForgeUI.Small,ForgeUI.Muted);
                 y+=available.rectTransform.rect.height+12;
+                y=Paragraph(p,"ArtisanTechniqueLead",ArtisanMethodTitle(id)+" · choose your approach before paying",y,ForgeUI.Small,ForgeUI.Gold,true)+12;
+                foreach(var technique in WorkshopSimulation.TechniqueOptionsFor(id))
+                {
+                    int selection=technique.Id;bool selected=artisanTechnique==selection;
+                    string label=(selected?"Selected · ":"")+technique.Name;
+                    float h=Mathf.Max(ActionHeight,ForgeUI.Height(label,972,ForgeUI.Small,FontStyle.Bold)+28);
+                    ForgeUI.Button("ArtisanTechnique"+selection,p,label,0,y,1020,h,selected?ForgeUI.Gold:ForgeUI.Surface,selected?ForgeUI.Background:ForgeUI.Cream,()=>{artisanTechnique=selection;RebuildArtisanPage();},ForgeUI.Small);y+=h+10;
+                    if(selected)y=Paragraph(p,"ArtisanTechniqueDescription",technique.Description+"\nNo extra materials. This approach is saved when you begin.",y,ForgeUI.Small,ForgeUI.Teal)+18;
+                }
                 y=Paragraph(p,"ArtisanCost",paid?"Recipe paid · only the alloy extra is charged now.":"Choose an alloy. Pay its materials once to begin.",y,ForgeUI.Small,ForgeUI.Cream)+18;
                 if(sim.State.Inventory.Count>=120&&!paid)y=Paragraph(p,"ArtisanStorageFull","Storage full · equip, deliver or sell a piece first.",y,ForgeUI.Small,ForgeUI.Orange)+18;
                 bool waiting=sim.IsRunning(Station.Forge)&&!paid;
@@ -38,9 +58,9 @@ namespace ForgeEmpire
                 foreach(var option in WorkshopSimulation.AlloyOptions)
                 {
                     int alloy=option.Id;var cost=sim.QuoteMasterwork(id,alloy);
-                    var choice=WorkshopSimulation.PreviewMasterwork(id,cost.Quality,alloy,0,0);
+                    var choice=WorkshopSimulation.PreviewMasterwork(id,cost.Quality,alloy,0,0,artisanTechnique);
                     y=ArtisanChoiceRow(p,"BeginMasterwork"+alloy,option.Name,choice,ArtisanCostText(cost),paid?"Take over":"Begin",y,()=>{
-                        if(sim.BeginMasterwork(id,alloy)){app.Save();app.Play("smelt");QueueArtisanCue(ArtisanBenchScene.Cue.Heat);RebuildArtisanPage();}
+                        if(sim.BeginMasterwork(id,alloy,artisanTechnique)){app.Save();app.Play("smelt");QueueArtisanCue(ArtisanBenchScene.Cue.Heat);RebuildArtisanPage();}
                         else Notify(sim.QuoteMasterwork(id,alloy).Blocker);
                     },()=>sim.QuoteMasterwork(id,alloy).CanBegin);
                 }
@@ -57,16 +77,25 @@ namespace ForgeEmpire
                 EndPage(y);return;
             }
             y=Paragraph(p,"ArtisanAlloy",WorkshopSimulation.AlloyOptions[project.Alloy].Name+" · "+WorkshopSimulation.QualityName(project.Quality)+" "+project.Quality+" / 3",y,ForgeUI.Small,ForgeUI.Gold)+10;
-            y=Paragraph(p,"ArtisanCurrentPreview",ArtisanStats(preview),y,ForgeUI.Body,ForgeUI.Teal,true)+18;
+            y=Paragraph(p,"ArtisanChosenTechnique",WorkshopSimulation.TechniqueOptionsFor(id)[project.Technique].Name+" · "+ArtisanMethodTitle(id),y,ForgeUI.Small,ForgeUI.Cream)+10;
+            y=Paragraph(p,"ArtisanCurrentPreview",ArtisanStats(preview),y,ForgeUI.Body,ForgeUI.Teal,true)+10;
+            y=Paragraph(p,"ArtisanCurrentAffinities",WorkshopSimulation.ItemAffinitiesDescription(preview),y,ForgeUI.Small,ForgeUI.Teal)+18;
             if(project.Stage==ArtisanStage.Heat)
             {
-                y=AddAction(p,"ArtisanStrike","Heat the billet",y,()=>{
+                y=AddAction(p,"ArtisanStrike",WorkshopSimulation.ArtisanMethodFor(id)==ArtisanMethod.Strike?"Heat the billet":"Warm the fittings",y,()=>{
                     if(sim.StrikeMasterwork(1)){app.Save();app.Play("smelt");QueueArtisanCue(ArtisanBenchScene.Cue.Heat);RebuildArtisanPage();}
                 });
-                y=Paragraph(p,"ArtisanInstruction","Bring the steel to orange heat, then shape it with three strikes.",y,ForgeUI.Small,ForgeUI.Muted)+18;
+                y=Paragraph(p,"ArtisanInstruction","Warm the workpiece, then "+(WorkshopSimulation.ArtisanMethodFor(id)==ArtisanMethod.Fitting?"balance three fitting marks.":WorkshopSimulation.ArtisanMethodFor(id)==ArtisanMethod.Engraving?"trace three channels.":"shape it with three deliberate strikes."),y,ForgeUI.Small,ForgeUI.Muted)+18;
             }
             else if(project.Stage==ArtisanStage.Shape)
             {
+                var method=WorkshopSimulation.ArtisanMethodFor(id);
+                string instruction=method==ArtisanMethod.Fitting?"Balance the left seam, right seam, then center. Tap as the slower marker enters each gold target.":
+                    method==ArtisanMethod.Engraving?"Trace the outer channel, inner channel, then center seal. Tap as the marker reaches the moving gold channel.":
+                    "Strike the marked heel, middle, then tip. Tap as the marker reaches the center gold target.";
+                if(sim.State.Artisan.Guided||sim.State.ReducedMotion)instruction=(method==ArtisanMethod.Fitting?"Balance the left seam, right seam, then center. ":
+                    method==ArtisanMethod.Engraving?"Trace the outer channel, inner channel, then center seal. ":"Strike the marked heel, middle, then tip. ")+"Guided placement records a steady 86% mark for each deliberate tap.";
+                y=Paragraph(p,"ArtisanMethodInstruction",instruction,y,ForgeUI.Small,ForgeUI.Muted)+18;
                 ArtisanShapingDock(project);
             }
             else if(project.Stage==ArtisanStage.Quench)
@@ -74,7 +103,7 @@ namespace ForgeEmpire
                 y=Paragraph(p,"ArtisanTimingText",ArtisanLastStrike(project),y,ForgeUI.Small,ForgeUI.Teal)+18;
                 foreach(var option in WorkshopSimulation.TemperOptions)
                 {
-                    int choice=option.Id;var build=WorkshopSimulation.PreviewMasterwork(id,project.Quality,project.Alloy,choice,project.Rune);
+                    int choice=option.Id;var build=WorkshopSimulation.PreviewMasterwork(id,project.Quality,project.Alloy,choice,project.Rune,project.Technique);
                     y=ArtisanChoiceRow(p,"ArtisanQuench"+choice,option.Name,build,"No extra materials","Quench",y,()=>{
                         if(sim.QuenchMasterwork(choice)){app.Save();app.Play("smelt");QueueArtisanCue(ArtisanBenchScene.Cue.Quench);RebuildArtisanPage();}
                     });
@@ -85,8 +114,8 @@ namespace ForgeEmpire
                 y=Paragraph(p,"ArtisanGold","Have "+WorkshopSimulation.Number(sim.State.Gold)+" gold · choose the finished effect",y,ForgeUI.Small,ForgeUI.Muted)+18;
                 foreach(var option in WorkshopSimulation.RuneOptions)
                 {
-                    int choice=option.Id;var build=WorkshopSimulation.PreviewMasterwork(id,project.Quality,project.Alloy,project.Temper,choice);
-                    y=ArtisanChoiceRow(p,"ArtisanRune"+choice,option.Name,build,WorkshopSimulation.EffectDescription(WorkshopSimulation.ItemEffect(build))+"\n"+(option.GoldCost==0?"Free":option.GoldCost+" gold"),choice==0?"Keep affinity":"Engrave",y,()=>{
+                    int choice=option.Id;var build=WorkshopSimulation.PreviewMasterwork(id,project.Quality,project.Alloy,project.Temper,choice,project.Technique);
+                    y=ArtisanChoiceRow(p,"ArtisanRune"+choice,option.Name,build,WorkshopSimulation.ItemAffinitiesDescription(build)+"\n"+(option.GoldCost==0?"Free · keep pattern affinity":option.GoldCost+" gold · changes primary affinity"),choice==0?"Keep affinity":"Engrave",y,()=>{
                         if(sim.EngraveMasterwork(choice)){app.Save();app.Play("click");QueueArtisanCue(ArtisanBenchScene.Cue.Rune);RebuildArtisanPage();}
                         else Notify("This rune needs "+option.GoldCost+" gold.");
                     },()=>sim.State.Gold>=option.GoldCost,false);
@@ -99,7 +128,7 @@ namespace ForgeEmpire
                     else Notify("Free a storage slot, then reveal this creation.");
                 });y+=finish.GetComponent<RectTransform>().rect.height+Gap;
                 modalRefresh.Add(()=>finish.interactable=sim.MasterworkActive&&project.Stage==ArtisanStage.Ready&&sim.State.Inventory.Count<120);
-                y=Paragraph(p,"ArtisanFinishedBuild",WorkshopSimulation.TemperOptions[project.Temper].Name+" · "+WorkshopSimulation.RuneOptions[project.Rune].Name+"\n"+WorkshopSimulation.EffectDescription(WorkshopSimulation.ItemEffect(preview)),y,ForgeUI.Small,ForgeUI.Teal)+18;
+                y=Paragraph(p,"ArtisanFinishedBuild",WorkshopSimulation.TemperOptions[project.Temper].Name+" · "+WorkshopSimulation.RuneOptions[project.Rune].Name+"\n"+WorkshopSimulation.ItemAffinitiesDescription(preview),y,ForgeUI.Small,ForgeUI.Teal)+18;
                 if(sim.State.Inventory.Count>=120)y=Paragraph(p,"ArtisanStorageFull","Storage full. Your paid creation will wait here.",y,ForgeUI.Small,ForgeUI.Orange)+18;
             }
             y=AddAction(p,"ArtisanPause","Save & leave the bench",y,ResumeJourney,false);
@@ -111,8 +140,8 @@ namespace ForgeEmpire
         {
             if(modalKind!="artisan"&&modalKind!="craft-result")return;
             if(artisanBench!=null&&artisanBench.IsAlive)artisanBench.Tick(sceneTime,app.Sim.State.ReducedMotion);
-            if(modalKind=="artisan"&&artisanCursor)
-            {var v=artisanCursor.anchoredPosition;v.x=Mathf.PingPong(sceneTime*.72f,1)*1008;artisanCursor.anchoredPosition=v;}
+            if(modalKind=="artisan"&&artisanCursor&&app.Sim.MasterworkActive)
+            {var v=artisanCursor.anchoredPosition;v.x=(float)WorkshopSimulation.ArtisanTimingMarker(app.Sim.State.Artisan.Project.RecipeId,sceneTime)*1008;artisanCursor.anchoredPosition=v;}
         }
         void ShowChronicleCatalog()
         {

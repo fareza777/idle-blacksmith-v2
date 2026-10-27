@@ -3,99 +3,125 @@ using UnityEngine.UI;
 
 namespace ForgeEmpire
 {
-    // Presentation only: the simulation owns every payment, strike and delivery.
+    // Presentation only: every workpiece stage comes from a paid, saved simulation step.
     sealed class ArtisanBenchScene
     {
         public enum Cue { None,Heat,Strike,Quench,Rune,Reveal }
-        readonly RectTransform root,piece,reveal;
-        readonly RawImage surface,heat,contact,sparks,steam,hammer,rune;
-        readonly Vector2 hammerRest;
-        readonly float height,revealAmount;
+        readonly RectTransform root,piece;
+        readonly RawImage surface,heat,contact,sparks,steam,hammer,rune,revealGlow,workMark;
+        readonly Vector2 contactPoint,nextPoint;
+        readonly float height;
         readonly ArtisanStage stage;
-        readonly bool target;
+        readonly ArtisanMethod method;
+        readonly bool target,finished;
+        readonly HandDrawnArt.Layout fxLayout;
         Cue cue;
         float cueAt=-100;
 
         public bool IsAlive { get { return root; } }
+        public static float WorkAreaAim(int recipeId,int strike)
+        {
+            int index=Mathf.Clamp(strike,0,2);var method=WorkshopSimulation.ArtisanMethodFor(recipeId);
+            // Fine work follows its scored target; weapon contacts move along the piece while retaining center timing.
+            return method==ArtisanMethod.Strike?new[]{.30f,.52f,.72f}[index]:(float)WorkshopSimulation.ArtisanTimingTarget(recipeId,index);
+        }
+        public static string WorkAreaName(int recipeId,int strike)
+        {
+            int index=Mathf.Clamp(strike,0,2);var method=WorkshopSimulation.ArtisanMethodFor(recipeId);
+            if(method==ArtisanMethod.Fitting)return new[]{"left seam","right seam","center fit"}[index];
+            if(method==ArtisanMethod.Engraving)return new[]{"outer channel","inner channel","center seal"}[index];
+            if(GameContent.Recipes[recipeId].Kind==WeaponKind.Bow)return new[]{"lower limb","upper limb","grip"}[index];
+            return new[]{"heel","middle","tip"}[index];
+        }
 
         public ArtisanBenchScene(Transform parent,CraftedItem item,ArtisanStage currentStage,int strikes,float sceneHeight,bool targetPreview=false,bool result=false)
         {
-            height=sceneHeight;stage=currentStage;target=targetPreview;
+            height=sceneHeight;stage=currentStage;target=targetPreview;finished=result||stage>=ArtisanStage.Ready;method=WorkshopSimulation.ArtisanMethodFor(item.RecipeId);
             root=ForgeUI.Rect("ArtisanBenchScene",parent,0,0,1020,height);
             root.gameObject.AddComponent<RectMask2D>();
             var backdrop=ForgeUI.Picture("ArtisanWorkbench",root,HandDrawnArt.Texture("forge-closeup"),0,0,1020,height);
-            float crop=height/574f;
+            float crop=Mathf.Min(1,height/574f);
             backdrop.uvRect=new Rect(0,Mathf.Clamp(.5f-crop*.5f,0,1-crop),1,crop);
             heat=ForgeUI.Light("ArtisanHeat",root,290,height*.10f,430,height*.8f);
-            var shadow=ForgeUI.Light("ArtisanPieceShadow",root,325,height*.43f,370,height*.32f);shadow.color=new Color(0,0,0,.85f);
-            piece=ForgeUI.Rect("ArtisanItemOnAnvil",root,510,height*.49f,380,height*.70f);
-            piece.pivot=new Vector2(.5f,.5f);piece.anchoredPosition=new Vector2(510,-height*.49f);
-            piece.localRotation=Quaternion.Euler(0,0,GameContent.Recipes[item.RecipeId].Slot==GearSlot.Weapon?-24:4);
-            var silhouette=HandDrawnArt.Icon("ArtisanSilhouette",piece,item.RecipeId,0,0,380,height*.70f);
-            silhouette.color=new Color(.23f,.24f,.23f,1);
-            reveal=ForgeUI.Rect("ArtisanSurfaceReveal",piece,0,0,380,height*.70f);reveal.gameObject.AddComponent<RectMask2D>();
-            surface=HandDrawnArt.Icon(result?"CraftResultItem":"ArtisanPiece",reveal,item.RecipeId,0,0,380,height*.70f);
-            revealAmount=target||stage>=ArtisanStage.Ready?1:stage==ArtisanStage.Heat?.08f:stage==ArtisanStage.Shape?.24f+strikes*.19f:stage==ArtisanStage.Quench?.82f:.94f;
-            reveal.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,380*revealAmount);
-            steam=ForgeUI.Picture("ArtisanQuenchSteam",root,Resources.Load<Texture2D>("Art/smoke"),414,height*.03f,192,height*.78f);
-            steam.uvRect=new Rect(0,0,1f/6,1);
-            contact=ForgeUI.Light("ArtisanContact",root,410,height*.26f,210,height*.45f);
-            sparks=ForgeUI.Picture("ArtisanContactSparks",root,Resources.Load<Texture2D>("Art/sparks"),392,height*.11f,240,height*.60f);
-            sparks.uvRect=new Rect(0,0,.2f,1);
-            // The real painted hammer from the existing tool-rack prop, without its rack.
-            hammer=ForgeUI.Picture("ArtisanHammer",root,HandDrawnArt.Texture("props"),0,0,100,height*.54f);
-            hammer.uvRect=new Rect(.700f,.690f,.087f,.162f);hammer.rectTransform.pivot=new Vector2(.5f,0);
-            hammerRest=new Vector2(640,-height*.82f);hammer.rectTransform.anchoredPosition=hammerRest;
-            rune=ForgeUI.Glyph("ArtisanRuneMark",piece,item.Rune==1?"strike":item.Rune==2?"lock":"heal",170,height*.30f,40,ForgeUI.Gold);
-            rune.gameObject.SetActive(item.Rune>0&&stage>=ArtisanStage.Ready);
-            ForgeUI.Fade("ArtisanBenchFoot",root,0,height-64,1020,64,ForgeUI.Background,true);
+            var shadow=ForgeUI.Light("ArtisanPieceShadow",root,295,height*.43f,430,height*.31f);shadow.color=new Color(0,0,0,.76f);
+            // Child artwork is centered around this point. A sized, center-pivot parent would
+            // shift its children's top-left anchors half a workpiece away from the tool contact.
+            piece=ForgeUI.Rect("ArtisanItemOnAnvil",root,510,height*.53f,1,1);
+            int family=(int)WorkshopSimulation.ArtisanWorkpieceFor(item.RecipeId);
+            string sheet=family<4?"workpieces-metal":"workpieces-fine";int row=family<4?family:family-4;
+            // A real unfinished painting is chosen; a finished equipment icon is never masked into a blank.
+            surface=finished?HandDrawnArt.Icon(result?"CraftResultItem":"ArtisanPiece",piece,item.RecipeId,-200,-height*.26f,400,height*.52f):
+                HandDrawnArt.Piece("ArtisanWorkpiece",piece,sheet,row*5+WorkshopSimulation.ArtisanWorkpieceStage(stage,strikes),-200,-height*.26f,400,height*.52f);
+            if(!finished)surface.rectTransform.localRotation=Quaternion.Euler(42,0,-12);
+            nextPoint=new Vector2(510+(WorkAreaAim(item.RecipeId,strikes)-.5f)*surface.rectTransform.sizeDelta.x,height*.53f);
+            contactPoint=new Vector2(510+(WorkAreaAim(item.RecipeId,Mathf.Max(0,strikes-1))-.5f)*surface.rectTransform.sizeDelta.x,height*.53f);
+            workMark=ForgeUI.Glyph("ArtisanWorkArea",root,"strike",nextPoint.x-18,nextPoint.y-18,36,ForgeUI.Gold);
+            workMark.gameObject.SetActive(!target&&stage==ArtisanStage.Shape);
+            fxLayout=JsonUtility.FromJson<HandDrawnArt.Layout>(Resources.Load<TextAsset>("Art/HandDrawn/forge-fx-layout").text);
+            sparks=HandDrawnArt.Piece("ArtisanContactSparks",root,"forge-fx",0,contactPoint.x-120,contactPoint.y-height*.35f,240,height*.54f);
+            steam=HandDrawnArt.Piece("ArtisanQuenchSteam",root,"forge-fx",4,350,height*.05f,320,height*.76f);
+            revealGlow=HandDrawnArt.Piece("ArtisanRevealPaint",root,"forge-fx",8,320,height*.05f,380,height*.85f);
+            contact=ForgeUI.Light("ArtisanContact",root,contactPoint.x-62,contactPoint.y-46,124,92);
+            // Reuse the painted tool-rack hammer. Its head pivot lands directly on the work mark.
+            hammer=ForgeUI.Picture(method==ArtisanMethod.Engraving?"ArtisanEngravingTool":"ArtisanHammer",root,HandDrawnArt.Texture("props"),0,0,100,height*.54f);
+            if(method==ArtisanMethod.Engraving)
+            {
+                // A narrow painted wooden burnisher from the same tool prop keeps fine work light.
+                hammer.uvRect=new Rect(.916f,.704f,.020f,.10f);hammer.rectTransform.sizeDelta=new Vector2(22,height*.38f);hammer.rectTransform.pivot=new Vector2(.5f,.06f);
+            }
+            else {hammer.uvRect=new Rect(.700f,.690f,.087f,.162f);hammer.rectTransform.pivot=new Vector2(.34f,.80f);}
+            rune=ForgeUI.Glyph("ArtisanRuneMark",root,item.Rune==1?"strike":item.Rune==2?"lock":"heal",494,height*.47f,32,ForgeUI.Gold);
+            rune.gameObject.SetActive(item.Rune>0&&finished);
+            ForgeUI.Fade("ArtisanBenchFoot",root,0,height-48,1020,48,ForgeUI.Background,true);
             Tick(0,true);
         }
 
         public void Play(Cue action,float time) { cue=action;cueAt=time; }
-
+        void PaintFrame(RawImage image,int frame,Vector2 center,float width,float boundsHeight)
+        {
+            var f=fxLayout.frames[frame];image.uvRect=new Rect(f.x,f.y,f.w,f.h);
+            float w=f.w*fxLayout.width,h=f.h*fxLayout.height,scale=Mathf.Min(width/w,boundsHeight/h);
+            image.rectTransform.pivot=new Vector2(.5f,.5f);image.rectTransform.sizeDelta=new Vector2(w*scale,h*scale);image.rectTransform.anchoredPosition=new Vector2(center.x,-center.y);
+        }
         public void Tick(float time,bool reducedMotion)
         {
             if(!root)return;
-            float age=time-cueAt;
-            bool fresh=age>=0&&age<1.1f;
-            bool hot=!target&&stage<=ArtisanStage.Quench;
-            float warm=hot?.52f:0;
-            if(fresh&&cue==Cue.Heat)warm+=.5f*(1-age/1.1f);
+            float age=time-cueAt;bool fresh=age>=0&&age<1.1f;
+            bool hot=!target&&stage<=ArtisanStage.Quench;float warm=hot?.38f:0;
+            if(fresh&&cue==Cue.Heat)warm+=.4f*(1-age/1.1f);
             heat.color=new Color(1,.63f,.27f,warm);
-            surface.color=hot?new Color(1,.52f,.24f,1):Color.white;
-            bool strike=fresh&&cue==Cue.Strike;
-            float contactAge=age-.15f;
+            surface.color=hot?new Color(1,.77f,.55f,1):Color.white;
+            bool strike=fresh&&cue==Cue.Strike;float contactAge=age-.15f;
             bool impact=strike&&contactAge>=0&&contactAge<.38f;
-            contact.color=new Color(1,.85f,.49f,impact?(1-contactAge/.38f)*.9f:0);
-            sparks.gameObject.SetActive(impact&&!reducedMotion);
-            if(impact)sparks.uvRect=new Rect(Mathf.Clamp((int)(contactAge/.076f),0,4)/5f,0,.2f,1);
+            contact.color=new Color(1,.85f,.49f,impact?(1-contactAge/.38f)*.8f:0);
+            workMark.color=new Color(1,.82f,.4f,strike&&age<.65f?0:1);
+            sparks.gameObject.SetActive(impact&&method!=ArtisanMethod.Engraving);
+            if(impact)PaintFrame(sparks,reducedMotion?1:Mathf.Clamp((int)(contactAge/.095f),0,3),contactPoint,220,height*.5f);
             hammer.gameObject.SetActive(strike&&!reducedMotion&&age<.65f);
             if(hammer.gameObject.activeSelf)
             {
-                float angle=age<.15f?Mathf.Lerp(-24,39,Mathf.Pow(age/.15f,2)):Mathf.Lerp(39,-9,Mathf.Clamp01((age-.15f)/.5f));
-                hammer.rectTransform.localRotation=Quaternion.Euler(0,0,angle);
-                hammer.rectTransform.anchoredPosition=hammerRest;
+                float progress=age<.15f?1-Mathf.Pow(age/.15f,2):Mathf.Clamp01((age-.15f)/.5f)*.7f;
+                Vector2 point=contactPoint+new Vector2(45*progress,-height*.27f*progress);
+                hammer.rectTransform.anchoredPosition=new Vector2(point.x,-point.y);
+                hammer.rectTransform.localRotation=Quaternion.Euler(0,0,method==ArtisanMethod.Engraving?Mathf.Lerp(-24,-17,progress):Mathf.Lerp(4,-38,progress));
             }
-            bool quench=fresh&&cue==Cue.Quench;
-            steam.gameObject.SetActive(quench);
+            bool quench=fresh&&cue==Cue.Quench;steam.gameObject.SetActive(quench);
             if(quench)
             {
-                steam.uvRect=new Rect((reducedMotion?2:Mathf.Clamp((int)(age/.18f),0,5))/6f,0,1f/6,1);
-                steam.color=new Color(.76f,.88f,.91f,.8f*(1-age/1.1f));
-                steam.rectTransform.anchoredPosition=new Vector2(414,-height*(reducedMotion?.03f:.03f-age*.13f));
+                PaintFrame(steam,4+(reducedMotion?1:Mathf.Clamp((int)(age/.24f),0,3)),new Vector2(510,height*(reducedMotion?.39f:.39f-age*.13f)),320,height*.7f);
+                steam.color=new Color(1,1,1,.9f*(1-age/1.1f));
             }
-            bool engraving=fresh&&cue==Cue.Rune;
-            rune.color=engraving?Color.Lerp(ForgeUI.Cream,ForgeUI.Gold,Mathf.Clamp01(age/.8f)):ForgeUI.Gold;
+            bool engraving=fresh&&(cue==Cue.Rune||cue==Cue.Strike&&method==ArtisanMethod.Engraving);
             bool unveiling=fresh&&cue==Cue.Reveal;
-            if(unveiling)
+            revealGlow.gameObject.SetActive(engraving||unveiling);
+            if(engraving||unveiling)
             {
-                heat.color=new Color(1,.82f,.48f,.65f*(1-age/1.1f));
-                if(!reducedMotion)reveal.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,380*Mathf.Lerp(.08f,1,Mathf.SmoothStep(0,1,age/.65f)));
+                PaintFrame(revealGlow,8+(reducedMotion?1:Mathf.Clamp((int)(age/.24f),0,3)),engraving?contactPoint:new Vector2(510,height*.47f),unveiling?420:170,height*(unveiling?.85f:.44f));
+                revealGlow.color=new Color(1,1,1,.85f*(1-age/1.1f));
             }
-            else reveal.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,380*revealAmount);
+            rune.color=engraving?Color.Lerp(ForgeUI.Cream,ForgeUI.Gold,Mathf.Clamp01(age/.8f)):ForgeUI.Gold;
             piece.localScale=Vector3.one;
-            if(impact&&!reducedMotion)piece.localScale=new Vector3(1+Mathf.Sin(contactAge/.38f*Mathf.PI)*.018f,1,1);
+            if(impact&&!reducedMotion)piece.localScale=new Vector3(1+Mathf.Sin(contactAge/.38f*Mathf.PI)*.012f,1,1);
         }
     }
 }

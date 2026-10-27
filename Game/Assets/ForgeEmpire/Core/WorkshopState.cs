@@ -14,6 +14,7 @@ namespace ForgeEmpire
         public int RecipeId;
         public bool Protected;
         public int Alloy, Temper, Rune, Provenance;
+        public int Technique;
         public bool Masterwork;
     }
 

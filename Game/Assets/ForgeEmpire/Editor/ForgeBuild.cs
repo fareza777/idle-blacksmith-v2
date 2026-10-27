@@ -24,7 +24,7 @@ namespace ForgeEmpire.Editor
             }
             PlayerSettings.companyName="EmberOakGames";
             PlayerSettings.productName="Idle Blacksmith - Forge Empire";
-            PlayerSettings.bundleVersion="0.7.0";
+            PlayerSettings.bundleVersion="0.8.0";
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.emberoak.forgeempire");
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone,"com.emberoak.forgeempire");
             PlayerSettings.defaultInterfaceOrientation=UIOrientation.Portrait;
@@ -40,7 +40,7 @@ namespace ForgeEmpire.Editor
             PlayerSettings.Android.minSdkVersion=(AndroidSdkVersions)26;
             PlayerSettings.Android.targetSdkVersion=(AndroidSdkVersions)36;
             PlayerSettings.Android.targetArchitectures=AndroidArchitecture.ARM64;
-            PlayerSettings.Android.bundleVersionCode=7;
+            PlayerSettings.Android.bundleVersionCode=8;
             PlayerSettings.Android.renderOutsideSafeArea=true;
             // Legacy input receives Back as Escape, not through predictive-back callbacks.
             PlayerSettings.Android.predictiveBackSupport=false;
@@ -104,6 +104,20 @@ namespace ForgeEmpire.Editor
                 var layout=Resources.Load<TextAsset>("Art/HandDrawn/"+name+"-layout");
                 Require(layout&&JsonUtility.FromJson<HandDrawnArt.Layout>(layout.text).frames.Length==20,"Missing worn poses "+name);checks+=2;
             }
+            foreach(string name in new[]{"workpieces-metal","workpieces-fine","forge-fx","held-weapons"})
+            {
+                Require(Resources.Load<Texture2D>("Art/HandDrawn/"+name),"Missing Living Forge art "+name);
+                var layout=Resources.Load<TextAsset>("Art/HandDrawn/"+name+"-layout");int expected=name=="forge-fx"?12:name=="held-weapons"?8:20;
+                Require(layout&&JsonUtility.FromJson<HandDrawnArt.Layout>(layout.text).frames.Length==expected,"Missing Living Forge stages "+name);checks+=2;
+            }
+            for(int region=0;region<6;region++)for(int pair=0;pair<4;pair++)
+            {
+                string name="foes-"+region+"-"+pair;Require(Resources.Load<Texture2D>("Art/HandDrawn/"+name),"Missing detailed creature "+name);
+                var layout=Resources.Load<TextAsset>("Art/HandDrawn/"+name+"-layout");
+                Require(layout&&JsonUtility.FromJson<HandDrawnArt.Layout>(layout.text).frames.Length==12,"Missing creature action poses "+name);checks+=2;
+            }
+            var grips=Resources.Load<TextAsset>("Art/HandDrawn/painted-grips");
+            Require(grips&&JsonUtility.FromJson<ChronicleActor.GripAtlas>(grips.text).sheets.Length==24,"Missing measured hand attachments");checks++;
             var artisan=new WorkshopSimulation(new WorkshopState{Ingots=10,ChroniclesEnabled=true});Require(artisan.BeginMasterwork(0,0)&&artisan.StrikeMasterwork(1),"Artisan setup failed");
             var artisanReload=new WorkshopSimulation(JsonUtility.FromJson<WorkshopState>(JsonUtility.ToJson(artisan.State)));
             artisanReload.Advance(100);Require(artisanReload.MasterworkActive&&artisanReload.State.TotalCrafted==0&&artisanReload.State.Artisan.Project.Stage==ArtisanStage.Shape,"Unity save lost paid artisan stage");checks++;

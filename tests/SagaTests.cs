@@ -70,6 +70,7 @@ internal static class SagaTests
     }
     public static void Run(Action<string,Action> test)
     {
+        SagaFormationTests.Run(test);
         test("saga measured same-region loadout gives time for readable decisions",()=>{
             var boss=CadenceFixture(true);double ordinary=EncounterSeconds(CadenceFixture(),true),guardian=EncounterSeconds(boss,true);
             Console.WriteLine("SAGA_CADENCE region 1 level 6 three companions quality 1 gear skills: ordinary "+ordinary.ToString("0.0")+"s; guardian "+guardian.ToString("0.0")+"s");

@@ -3,14 +3,17 @@ using System;
 namespace ForgeEmpire
 {
     public enum ArtisanStage { Heat, Shape, Quench, Engrave, Ready, Complete }
+    public enum ArtisanMethod { Strike, Fitting, Engraving }
+    public enum ArtisanWorkpieceFamily { Blade, Hammer, Pole, Mail, Bow, Leather, Robe, Accessory }
     [Serializable] public sealed class ArtisanState
     {
         public MasterworkProject Project,LastCreation;
         public int Completed;
+        public bool Guided;
     }
     [Serializable] public sealed class MasterworkProject
     {
-        public int RecipeId, Alloy, Temper, Rune, Strikes, Quality;
+        public int RecipeId, Alloy, Temper, Rune, Strikes, Quality, Technique;
         public int CreationNumber;
         public ArtisanStage Stage;
         public ArtisanStrikeFeedback[] Feedback = new ArtisanStrikeFeedback[3];

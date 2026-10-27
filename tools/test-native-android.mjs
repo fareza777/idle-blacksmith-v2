@@ -10,7 +10,7 @@ if (!['progression', 'regression', 'illustrated','chronicles'].includes(mode) ||
   throw new Error('Usage: node tools/test-native-android.mjs progression|regression|illustrated|chronicles explicit-emulator-serial');
 }
 const adb = path.join(process.env.LOCALAPPDATA, 'Android', 'Sdk', 'platform-tools', 'adb.exe');
-const output = path.join(root, 'QA',mode==='chronicles'?'battle-forge-20261026':'illustrated-20261025', 'android', mode);
+const output = path.join(root, 'QA', 'living-forge-20261027', 'android', mode);
 fs.mkdirSync(output, { recursive: true });
 function call(args, required = true, timeout = 30000) {
   const result = spawnSync(adb, args, { encoding: 'utf8', windowsHide: true, timeout });
@@ -31,7 +31,7 @@ device('shell', 'rm', '-f', `${remote}/${filename}`);
 device('shell', 'am', 'start', '-S', '-n', 'com.emberoak.forgeempire/com.unity3d.player.UnityPlayerGameActivity',
   '--es', 'unity',mode==='chronicles'?'--chronicles-smoke': mode === 'illustrated' ? '--illustrated-smoke' : mode === 'progression' ? '--progression-smoke' : '--redesign-smoke');
 console.log(`RUNNING ${mode} on ${serial}`);
-const deadline = Date.now() + 240000;
+const deadline = Date.now() + (mode==='chronicles'?480000:240000);
 let result;
 while (Date.now() < deadline) {
   const json = call(['-s', serial, 'shell', 'cat', `${remote}/${filename}`], false, 10000);

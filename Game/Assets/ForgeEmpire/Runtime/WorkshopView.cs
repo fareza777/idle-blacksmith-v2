@@ -148,6 +148,7 @@ namespace ForgeEmpire
             scene.localScale=Vector3.one*SceneZoom;
             var texture=Resources.Load<Texture2D>("Art/HandDrawn/workshop");
             ForgeUI.Picture("WorkshopArt",scene,texture,0,0,1080,1665).color=Color.white;
+            BuildTownProgressionScene();
             workLight=ForgeUI.Light("ActiveWorkLight",scene,0,0,600,500);
             GroundShadow("MinerFeet",new Vector2(76,270),30,5);
             actors[0]=HandDrawnArt.Person("Miner",scene,"workers",0,new Vector2(76*Pixel,270*Pixel),60*Pixel,84*Pixel);
@@ -398,6 +399,7 @@ namespace ForgeEmpire
             RefreshWorkflowDock();
             RefreshGuide();LayoutWorkshop();
             RefreshTownLife();
+            RefreshTownProgressionScene();
             RefreshDialog();
         }
 

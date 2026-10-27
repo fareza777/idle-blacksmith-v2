@@ -20,14 +20,12 @@ namespace ForgeEmpire
             for(int i=0;i<12;i++)w.Conversations[i]=Math.Min(2,w.Conversations[i]);
             w.ChoicesMade=Clamp(w.ChoicesMade,0,MaxCounter);w.RoomsVisited=Clamp(w.RoomsVisited,0,MaxCounter);w.SkillsUsed=Clamp(w.SkillsUsed,0,MaxCounter);w.RunsStarted=Clamp(w.RunsStarted,0,MaxCounter);
         }
-        public int RestorationGoldCost(int region){return region>=0&&region<6?(int)Math.Ceiling(90*(region+1)*(State.World.Projects[region]+1)*(1-State.World.Trust[region]*.05)):0;}
-        public int RestorationMaterialCost(int region){return region>=0&&region<6?4+State.World.Projects[region]*3:0;}
+        public int RestorationGoldCost(int region){return region>=0&&region<6&&State.World.Projects[region]<3?(int)Math.Ceiling(90*(region+1)*(State.World.Projects[region]+1)*(1-State.World.Trust[region]*.05)):0;}
+        public int RestorationMaterialCost(int region){return region>=0&&region<6&&State.World.Projects[region]<3?4+State.World.Projects[region]*3:0;}
         public bool TryRestoreProject(int region)
         {
-            if(region<0||region>=6||region>UnlockedRegion||State.World.Projects[region]>=3||!State.Campaign.QuestClaims[GameContent.SideQuestId(region,1)])return false;
-            int gold=RestorationGoldCost(region),material=RestorationMaterialCost(region);
-            if(State.Gold<gold||State.Campaign.Materials[region]<material)return false;
-            State.Gold-=gold;State.Campaign.Materials[region]-=material;State.World.Projects[region]++;return true;
+            var preview=PreviewRestoration(region);if(preview==null||!preview.Eligible)return false;
+            State.Gold-=preview.GoldCost;State.Campaign.Materials[region]-=preview.MaterialCost;State.World.Projects[region]++;return true;
         }
         public bool CanTalk(int region,int topic)
         {
@@ -49,7 +47,7 @@ namespace ForgeEmpire
         public int LegendaryRecipeId(int contract){return contract>=0&&contract<12?24+(contract/2)*14+(contract%2==0?0:5):-1;}
         public bool ClaimLegendaryContract(int contract)
         {
-            if(contract<0||contract>=12||SagaInProgress||State.World.LegendaryClaims[contract]||State.Saga.BossMastery[contract]<1)return false;
+            if(LegendaryContractBlocker(contract)!="")return false;
             int recipe=LegendaryRecipeId(contract),index=State.Inventory.FindIndex(i=>i.Masterwork&&i.RecipeId==recipe&&i.Quality==3);
             if(index<0)return false;
             State.Inventory.RemoveAt(index);State.World.LegendaryClaims[contract]=true;AddGold((contract/2+1)*750);State.Saga.Mastery=Increment(State.Saga.Mastery,5);return true;
@@ -61,8 +59,8 @@ namespace ForgeEmpire
             get
             {
                 if(!CampaignComplete)return "Restore "+GameContent.Regions[UnlockedRegion].Name+" · "+ChapterProgress+" / 7 milestones";
-                int bosses=0,buildings=0,contracts=0;foreach(int value in State.Saga.BossMastery)if(value>0)bosses++;foreach(int value in State.World.Projects)if(value>0)buildings++;foreach(bool value in State.World.LegendaryClaims)if(value)contracts++;
-                return bosses+" / 12 guardians · "+buildings+" / 6 restorations · "+contracts+" / 12 legendary contracts";
+                int bosses=0,stages=0,contracts=0;foreach(int value in State.Saga.BossMastery)if(value>0)bosses++;foreach(int value in State.World.Projects)stages+=value;foreach(bool value in State.World.LegendaryClaims)if(value)contracts++;
+                return bosses+" / 12 guardians · "+stages+" / 18 town stages · "+contracts+" / 12 legendary contracts";
             }
         }
     }
