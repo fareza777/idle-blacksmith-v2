@@ -1,0 +1,171 @@
+{
+  "source": "Authored procedural compositions and physical-model inspired effects; no sampled recordings.",
+  "sampleRate": 24000,
+  "clips": [
+    {
+      "name": "region-0",
+      "seconds": 21.76,
+      "peak": 0.2076158970594406
+    },
+    {
+      "name": "ambience-0",
+      "seconds": 21.76,
+      "peak": 0.14231835305690765
+    },
+    {
+      "name": "boss-0",
+      "seconds": 21.76,
+      "peak": 0.28901270031929016
+    },
+    {
+      "name": "region-1",
+      "seconds": 24.96,
+      "peak": 0.19564391672611237
+    },
+    {
+      "name": "ambience-1",
+      "seconds": 24.96,
+      "peak": 0.10679647326469421
+    },
+    {
+      "name": "boss-1",
+      "seconds": 24.96,
+      "peak": 0.2891566753387451
+    },
+    {
+      "name": "region-2",
+      "seconds": 24.32,
+      "peak": 0.21893811225891113
+    },
+    {
+      "name": "ambience-2",
+      "seconds": 24.32,
+      "peak": 0.11621268093585968
+    },
+    {
+      "name": "boss-2",
+      "seconds": 24.32,
+      "peak": 0.28932100534439087
+    },
+    {
+      "name": "region-3",
+      "seconds": 19.2,
+      "peak": 0.21540863811969757
+    },
+    {
+      "name": "ambience-3",
+      "seconds": 19.2,
+      "peak": 0.1499166488647461
+    },
+    {
+      "name": "boss-3",
+      "seconds": 19.2,
+      "peak": 0.2874546945095062
+    },
+    {
+      "name": "region-4",
+      "seconds": 23.04,
+      "peak": 0.23405338823795319
+    },
+    {
+      "name": "ambience-4",
+      "seconds": 23.04,
+      "peak": 0.08220658451318741
+    },
+    {
+      "name": "boss-4",
+      "seconds": 23.04,
+      "peak": 0.28902092576026917
+    },
+    {
+      "name": "region-5",
+      "seconds": 20.48,
+      "peak": 0.21379327774047852
+    },
+    {
+      "name": "ambience-5",
+      "seconds": 20.48,
+      "peak": 0.08222202211618423
+    },
+    {
+      "name": "boss-5",
+      "seconds": 20.48,
+      "peak": 0.2878571152687073
+    },
+    {
+      "name": "impact-iron-0",
+      "seconds": 0.55,
+      "peak": 0.42126360535621643
+    },
+    {
+      "name": "impact-iron-1",
+      "seconds": 0.55,
+      "peak": 0.43812647461891174
+    },
+    {
+      "name": "impact-iron-2",
+      "seconds": 0.55,
+      "peak": 0.4633216857910156
+    },
+    {
+      "name": "impact-wood-0",
+      "seconds": 0.55,
+      "peak": 0.3830033838748932
+    },
+    {
+      "name": "impact-wood-1",
+      "seconds": 0.55,
+      "peak": 0.3861314356327057
+    },
+    {
+      "name": "impact-wood-2",
+      "seconds": 0.55,
+      "peak": 0.3856140673160553
+    },
+    {
+      "name": "impact-stone-0",
+      "seconds": 0.55,
+      "peak": 0.38401395082473755
+    },
+    {
+      "name": "impact-stone-1",
+      "seconds": 0.55,
+      "peak": 0.38417544960975647
+    },
+    {
+      "name": "impact-stone-2",
+      "seconds": 0.55,
+      "peak": 0.3788253366947174
+    },
+    {
+      "name": "impact-crystal-0",
+      "seconds": 0.55,
+      "peak": 0.44845467805862427
+    },
+    {
+      "name": "impact-crystal-1",
+      "seconds": 0.55,
+      "peak": 0.44817525148391724
+    },
+    {
+      "name": "impact-crystal-2",
+      "seconds": 0.55,
+      "peak": 0.4565970003604889
+    },
+    {
+      "name": "impact-cloth-0",
+      "seconds": 0.55,
+      "peak": 0.5361399054527283
+    },
+    {
+      "name": "impact-cloth-1",
+      "seconds": 0.55,
+      "peak": 0.48009833693504333
+    },
+    {
+      "name": "impact-cloth-2",
+      "seconds": 0.55,
+      "peak": 0.5517356395721436
+    }
+  ]
+}

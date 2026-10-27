@@ -1,21 +1,68 @@
 # Idle Blacksmith v2 — Ember & Oak
 
-Game bengkel pandai besi untuk Windows dan Android, dengan workshop bergaya hand-drawn, produksi otomatis, penempaan manual, hero dan ekspedisi. Versi proyek saat ini: **0.4.0**.
+Game bengkel pandai besi untuk Windows dan Android, dengan workshop hand-drawn, produksi otomatis, artisan crafting dan ekspedisi party. Versi proyek saat ini: **0.8.0 — Living Forge**.
 
-<img src="docs/images/workshop-0.4.0.png" alt="Workshop Ember & Oak dengan tujuan membuat pedang untuk Rowan" width="320" />
+<img src="docs/images/workshop-0.8.0.png" alt="Workshop hand-drawn dengan karakter berwajah polos" width="320" />
+
+<img src="docs/images/battle-0.8.0.png" alt="Formasi tiga musuh dengan target, armor menyatu dan komando skill" width="260" /> <img src="docs/images/forge-0.8.0.png" alt="Benda kerja di atas landasan dengan langkah fitting dan feedback akurasi" width="260" />
+
+## Baru di 0.8.0
+
+- Formasi hingga tiga musuh dengan target yang bisa dipilih, healer, protector, dan penyerang jarak jauh. Serangan yang sudah disiapkan tetap mengenai target yang diumumkan.
+- Arena lebih besar, komando tetap terjangkau, dan detail pertarungan berada di jurnal. Frost, serangan berat, lightning, perlindungan dan pemulihan memiliki pengaruh nyata.
+- Artwork 48 musuh dengan enam pose per makhluk, efek cat tangan, serta gerakan dan pegangan untuk delapan keluarga senjata. Armor menyatu dengan tubuh; wajah manusia tetap polos.
+- Material dan benda kerja berubah melalui tahap tempa. Senjata, fitting dan ukiran memakai timing yang berbeda; pilihan teknik mengubah statistik dan dapat menambah affinity yang berbeda dari rune utama.
+- Trader, waystone dan jalur elite memberi pilihan dengan biaya serta bonus ekspedisi yang tersimpan dan berlaku terbatas.
+- Atlas dapat digeser/diperbesar, menampilkan perjalanan tersimpan dan tautan tujuan. Seluruh enam restorasi memiliki tiga tingkat yang juga terlihat di workshop.
+
+Panduan terbaru: [Living Forge](docs/PLAYING-LIVING-FORGE.md). Hasil dan batas pengujian: [verifikasi 0.8.0](docs/VERIFICATION-0.8.0.md). Arahan artwork dan urutan atlas: [living-forge-direction.md](ArtSource/living-forge-direction.md).
+
+## Baru di 0.7.0
+
+- Battle dengan persiapan, pendekatan, kontak dan pemulihan yang terjadwal; pukulan anggota party bergantian dan damage terjadi pada kontak.
+- Aksi lawan menampilkan target dan hitungan waktu, respons skill guardian, tactical pause, serta jurnal aksi sebenarnya. Produksi workshop terus berjalan ketika battle dijeda.
+- Stagger dari serangan dan skill membuka dua detik guard break dengan tambahan 35% damage, disertai jeda pemulihan sebelum break berikutnya.
+- Delapan belas atlas tubuh lengkap: enam hero × mail/leather/robe × dua puluh pose. Armor mengikuti tubuh dan gerakan; wajah manusia tetap polos.
+- Creation menunjukkan biaya sebelum mulai, preview statistik dibanding gear hero, tiga catatan akurasi yang tersimpan, serta heat/hammer/quench/rune dan reveal barang akhir.
+- Komando battle, timing pukulan, dan pilihan Equip/Keep tetap terjangkau, termasuk pada teks 150% dan layar ringkas.
+
+Panduan kontrol terbaru: [Battle & Forge](docs/PLAYING-BATTLE-FORGE.md). Cakupan pengujian dan batasnya dicatat di [verifikasi 0.7.0](docs/VERIFICATION-0.7.0.md).
+
+## Baru di 0.6.0
+
+- Enam wilayah, enam hero, party tiga anggota, 108 pola equipment, 48 jenis enemy dan 12 guardian dengan tiga fase.
+- Artisan bench: alloy, timing shaping, quench dan rune dengan perubahan statistik/efek yang nyata; pekerjaan otomatis bisa diambil alih tanpa membayar bahan resep dua kali.
+- Rute bercabang dengan risiko, camp dan kesehatan yang dibawa antar ruang; role skills dan counter guardian yang mengikuti telegraph.
+- Enam proyek restorasi, potret/percakapan warga, trust, legendary commissions, challenge ranks dan legacy pilihan yang mempertahankan koleksi.
+- Equipment tampak pada hero, pose aksi/berjalan yang lebih lengkap, efek atmosfer wilayah, musik dinamis, ambience dan impact material.
+- Semua wajah manusia polos tanpa mata, hidung dan mulut, sesuai arahan visual terbaru.
+- Koleksi pola dan tujuan bab terlihat; teks 100/125/150%, Reduced motion dan save lama tetap didukung.
+
+Panduan sistem dunia: [Chronicles](docs/PLAYING-CHRONICLES.md). Data konten dan alat validasi dijelaskan di [CONTENT-AUTHORING](docs/CONTENT-AUTHORING.md); kit playtest manusia ada di [PLAYTEST-CHRONICLES](docs/PLAYTEST-CHRONICLES.md).
+
+## Fondasi ilustrasi 0.5.0
+
+- Dua puluh equipment dengan ilustrasi baru untuk seluruh resep, storage, hero, hasil tempa dan workshop.
+- Lima enemy dan lima guardian berbeda, masing-masing dengan empat pose hand-drawn.
+- Peta ilustrasi dan lima arena wilayah; artwork yang sama juga dipakai pada hero, cerita dan jurnal.
+- Nama seluruh wilayah, tujuan aktif, status restorasi dan preview syarat membuka wilayah terkunci.
+- Bayangan yang menapak, gerak kontak/settle, telegraph lembut, serta ikon tinta yang halus.
+- Penjelasan pembukaan bab, elemen perlengkapan dan reservasi barang yang lebih tepat. Save dan keseimbangan permainan tetap kompatibel.
+
+Arahan dan prompt produksi: [illustrated-world-generation.md](ArtSource/illustrated-world-generation.md). Aset hasil imagegen disertakan di `Game/Assets/Resources/Art/HandDrawn`; generator analisis hanya membaca alpha dan menulis metadata.
 
 ## Alur bermain
 
 Tambang bijih → lebur ingot → tempa perlengkapan → pakai pada hero → jelajahi wilayah → buka perkembangan bengkel berikutnya.
 
-- Lima bab dengan total 35 milestone dan arahan tindakan berikutnya.
-- Dua puluh resep, tiga hero, lima wilayah, penyelamatan warga dan 30 cerita.
+- Enam bab dengan 42 milestone dan arahan tindakan berikutnya.
+- 108 resep, enam hero, enam wilayah, penyelamatan warga dan 36 cerita.
 - Pesanan guild, reputasi, dan koleksi kualitas Masterwork.
 - Pekerja otomatis dan progres offline hingga delapan jam.
 - Penempaan manual dengan timing pukulan, hasil yang langsung bisa dipakai, dan perlindungan barang untuk tujuan/pesanan.
 - Ukuran teks 100/125/150% dan Reduced motion.
 
-Lihat [panduan bermain](docs/PLAYING.md) dan [catatan verifikasi 0.4.0](docs/VERIFICATION-0.4.0.md).
+Lihat [panduan dasar Chronicles](docs/PLAYING-CHRONICLES.md) dan [kontrol Battle & Forge](docs/PLAYING-BATTLE-FORGE.md). Catatan [verifikasi 0.6.0](docs/VERIFICATION-0.6.0.md) dan [0.5.0](docs/VERIFICATION-0.5.0.md) dipertahankan sebagai riwayat rilis sebelumnya.
 
 ## Membuka proyek
 
@@ -46,7 +93,7 @@ Jalankan method yang dipilih melalui opsi Unity `-executeMethod`. Contoh PowerSh
   -logFile "$PWD/QA/build.log"
 ```
 
-Tutup editor yang sedang memakai proyek sebelum menjalankan build batch. Build Android menggunakan ARM64, minimum API 26, target API 36, dan version code 4. Build script saat ini menghasilkan development build dengan alat pengujian yang aktif hanya melalui argumen khusus.
+Tutup editor yang sedang memakai proyek sebelum menjalankan build batch. Build Android menggunakan ARM64, minimum API 26, target API 36, dan version code 7. Build script menghasilkan release build; alat pengujian hanya aktif melalui argumen khusus dan memakai profil simpan terpisah.
 
 ## Tes
 
@@ -54,7 +101,8 @@ Dengan Node.js dan Unity terpasang di lokasi standar Windows di atas:
 
 ```powershell
 node tools/test-core.mjs local
-node --test tests/art.test.mjs
+node --test tests/art.test.mjs tests/illustrated-art.test.mjs tests/chronicle-content.test.mjs tests/chronicles-art.test.mjs tests/worn-armor.test.mjs
+node tools/validate-chronicle-content.mjs
 ```
 
 Tes logika memakai compiler C# dan runtime .NET yang disertakan Unity; hasil ditulis ke `QA/`. Jika Unity dipasang di lokasi lain, sesuaikan variabel `data` di `tools/test-core.mjs`.
@@ -64,6 +112,8 @@ Untuk menguji APK yang sudah di-build pada emulator Android yang aktif:
 ```powershell
 node tools/test-native-android.mjs progression emulator-5562
 node tools/test-native-android.mjs regression emulator-5562
+node tools/test-native-android.mjs illustrated emulator-5562
+node tools/test-native-android.mjs chronicles emulator-5562
 ```
 
 Ganti serial dengan serial emulator dari `adb devices`. Runner ini menerima serial emulator saja dan memakai profil simpan QA terpisah. ADB dibaca dari `%LOCALAPPDATA%/Android/Sdk/platform-tools/adb.exe`.

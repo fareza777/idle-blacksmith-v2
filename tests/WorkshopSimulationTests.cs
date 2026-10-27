@@ -876,6 +876,11 @@ internal static class WorkshopSimulationTests
         CampaignTests.Run(Test);
         PresentationTests.Run(Test);
         ProgressionTests.Run(Test);
+        ChroniclesTests.Run(Test);
+        WardrobeTests.Run(Test);
+        ArtisanTests.Run(Test);
+        SagaTests.Run(Test);
+        ChronicleJourneyTests.Run(Test);
 
         Console.WriteLine("RESULT " + passed + " passed, " + failed + " failed, " + (passed + failed) + " total");
         return failed == 0 ? 0 : 1;

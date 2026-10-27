@@ -136,7 +136,7 @@ internal static class CampaignTests
     {
         test("campaign content has explicit stable ids and serializable field contracts", delegate
         {
-            Check(GameContent.Recipes.Length == 20 && GameContent.Regions.Length == 5 && GameContent.Heroes.Length == 3 && GameContent.Quests.Length == 30, "content counts");
+            Check(GameContent.Recipes.Length == 108 && GameContent.Regions.Length == 6 && GameContent.Heroes.Length == 6 && GameContent.Quests.Length == 36, "expanded content counts");
             string[] names = { "Emberwood", "Whispering Marsh", "Frostpeak", "Ashen Caldera", "Starfall Citadel" };
             for (int i = 0; i < 20; i++)
             {
@@ -262,7 +262,7 @@ internal static class CampaignTests
         test("campaign recruits have distinct stats and purchases are atomic", delegate
         {
             WorkshopSimulation s = New(); double gold = s.State.Gold;
-            Check(!s.TryRecruit(-1) && !s.TryRecruit(3) && !s.TryRecruit(0) && !s.SelectHero(1), "invalid recruitment");
+            Check(!s.TryRecruit(-1) && !s.TryRecruit(6) && !s.TryRecruit(0) && !s.SelectHero(1), "invalid recruitment");
             int p = s.HeroPower, g = s.HeroGuard, hp = s.HeroMaxHealth;
             Check(s.TryRecruit(1) && !s.TryRecruit(1) && s.SelectHero(1), "recruit Lyra once");
             Near(gold - 180, s.State.Gold, "Lyra cost");
@@ -410,7 +410,7 @@ internal static class CampaignTests
                 Check(!s.ClaimQuest(r * 3 + 2), "boss quest cannot replay");
                 Console.WriteLine("INFO campaign region " + r + ": wins=" + s.State.Campaign.RegionWins[r] + " material=" + s.State.Campaign.Materials[r] + " gold=" + s.State.Gold);
             }
-            Check(s.MainQuest == null && s.UnlockedRegion == 4, "entire main campaign complete");
+            Check(s.MainQuest.Id==30 && s.UnlockedRegion == 5, "original main campaign opens Dawnforge");
             Check(s.State.Campaign.ExpeditionsWon == 15 && s.State.Campaign.TownLevel >= 5, "real wins restore town");
             for (int i = 0; i < 30; i++) Check(s.State.Campaign.QuestClaims[i], "all stories claimed " + i);
             for (int i = 0; i < 20; i++) Check(s.State.Campaign.CraftedCounts[i] > 0, "all twenty recipes actually crafted " + i);
@@ -431,7 +431,7 @@ internal static class CampaignTests
             } };
             state.Inventory.Add(new CraftedItem { RecipeId = -10 }); s = new WorkshopSimulation(state);
             CampaignState c = s.State.Campaign;
-            Check(c.Materials.Length == 5 && c.CraftedCounts.Length == 20 && c.QuestClaims.Length == 30 && c.Heroes.Length == 3, "array sizes");
+            Check(c.Materials.Length == 6 && c.CraftedCounts.Length == 108 && c.QuestClaims.Length == 36 && c.Heroes.Length == 6, "expanded array sizes");
             Check(c.Materials[0] == 0 && c.Materials[1] <= 1000000000 && c.Heroes[0].Recruited, "bounded migration");
             Check(c.Heroes[0].Weapon == null && c.Heroes[0].Armor == null, "empty or invalid gear records must not create equipment");
             Check(state.Inventory[0].RecipeId == 0 && state.SelectedRecipe == 0 && state.PendingRecipe == 0, "recipe ids repaired");

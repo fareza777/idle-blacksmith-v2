@@ -17,7 +17,7 @@ namespace ForgeEmpire
         readonly List<PageEntry> pageHistory=new List<PageEntry>();
         PageEntry currentPage;
         ScrollRect pageScroll;
-        bool rebuildingPage,pageRebuildRequested;
+        bool rebuildingPage,pageRebuildRequested,pageResetScroll;
         int primaryTab;
         GameObject lastFocusedControl;
 
@@ -31,7 +31,7 @@ namespace ForgeEmpire
             }
         }
         float Gap { get { return 28*ForgeUI.TextScale; } }
-        float ActionHeight { get { return Mathf.Max(132,112*ForgeUI.TextScale); } }
+        float ActionHeight { get { return 132*ForgeUI.TextScale; } }
         void RefreshGuide()
         {
             var sim=app.Sim;
@@ -44,7 +44,7 @@ namespace ForgeEmpire
         void LayoutWorkshop()
         {
             if(!contextDock||!stationInfo||!guidePanel)return;
-            bool forging=selected==Station.Forge&&app.Sim.IsRunning(Station.Forge)&&(!journeyFollowing||app.Sim.NextStep.Action==GuideAction.Forge);
+            bool forging=selected==Station.Forge&&app.Sim.IsRunning(Station.Forge)&&!app.Sim.MasterworkActive&&(!journeyFollowing||app.Sim.NextStep.Action==GuideAction.Forge);
             bool choosePurpose=!journeyFollowing&&selected==Station.Forge&&!forging;
             bool merchant=!journeyFollowing&&selected==Station.Market&&app.Sim.State.Automated[3];
             bool recipes=!journeyFollowing&&selected==Station.Forge;
@@ -91,6 +91,7 @@ namespace ForgeEmpire
         void ContextAction()
         {
             if(journeyFollowing){ExecuteJourneyAction();return;}
+            if(selected==Station.Forge&&app.Sim.MasterworkActive){ShowArtisan();return;}
             if(Supplied((int)selected)){app.Work(selected);return;}
             if(selected==Station.Smelter){FocusStation(Station.Mine);return;}
             if(selected==Station.Forge)
@@ -123,8 +124,8 @@ namespace ForgeEmpire
             if(!rebuildingPage&&currentPage!=null)pageHistory.Add(currentPage);
             DestroyPage();
             currentPage=new PageEntry{Kind=kind,Render=render};modalKind=kind;
-            if(kind=="heroes"||kind=="inventory"||kind=="recruit")primaryTab=1;
-            else if(kind=="world"||kind=="region"||kind=="battle")primaryTab=2;
+            if(kind=="heroes"||kind=="inventory"||kind=="recruit"||kind=="party"||kind=="party-assignment"||kind=="companion")primaryTab=1;
+            else if(kind=="world"||kind=="region"||kind=="battle"||kind=="atlas"||kind=="chronicle-region"||kind=="saga-departure"||kind=="saga"||kind=="saga-journal"||kind=="restoration"||kind=="npc"||kind=="mastery"&&app.Sim.State.ChroniclesEnabled)primaryTab=2;
             else if(kind!="settings")primaryTab=0;
             modal=ForgeUI.Fill("Page",root,0,0,1080,root.rect.height-NavHeight,ForgeUI.Background).rectTransform;
             modal.GetComponent<Image>().raycastTarget=true;
@@ -209,11 +210,11 @@ namespace ForgeEmpire
             Canvas.ForceUpdateCanvases();pageScroll.StopMovement();
             pageScroll.content.anchoredPosition=new Vector2(0,Mathf.Clamp(offset,0,Mathf.Max(0,pageScroll.content.rect.height-pageScroll.viewport.rect.height)));
         }
-        void RequestPageRebuild(){pageRebuildRequested=true;}
+        void RequestPageRebuild(bool fromTop=false){pageRebuildRequested=true;pageResetScroll|=fromTop;}
         void RebuildCurrentPage()
         {
             if(currentPage==null)return;
-            var entry=currentPage;float offset=pageScroll?pageScroll.content.anchoredPosition.y:0;
+            var entry=currentPage;float offset=pageResetScroll?0:pageScroll?pageScroll.content.anchoredPosition.y:0;pageResetScroll=false;
             rebuildingPage=true;
             try{entry.Render();RestoreScroll(offset);}finally{rebuildingPage=false;}
         }

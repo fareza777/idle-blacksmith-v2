@@ -6,11 +6,11 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const mode = process.argv[2];
 const serial = process.argv[3];
-if (!['progression', 'regression'].includes(mode) || !/^(127\.0\.0\.1:\d+|emulator-\d+)$/.test(serial || '')) {
-  throw new Error('Usage: node tools/test-native-android.mjs progression|regression explicit-emulator-serial');
+if (!['progression', 'regression', 'illustrated','chronicles'].includes(mode) || !/^(127\.0\.0\.1:\d+|emulator-\d+)$/.test(serial || '')) {
+  throw new Error('Usage: node tools/test-native-android.mjs progression|regression|illustrated|chronicles explicit-emulator-serial');
 }
 const adb = path.join(process.env.LOCALAPPDATA, 'Android', 'Sdk', 'platform-tools', 'adb.exe');
-const output = path.join(root, 'QA', 'progression-20261024', 'android', mode);
+const output = path.join(root, 'QA', 'living-forge-20261027', 'android', mode);
 fs.mkdirSync(output, { recursive: true });
 function call(args, required = true, timeout = 30000) {
   const result = spawnSync(adb, args, { encoding: 'utf8', windowsHide: true, timeout });
@@ -22,15 +22,16 @@ function call(args, required = true, timeout = 30000) {
 const device = (...args) => call(['-s', serial, ...args]);
 if (serial.startsWith('127.')) call(['connect', serial]);
 if (device('get-state') !== 'device') throw new Error('The requested emulator is not ready');
-console.log(device('install', '-r', path.join(root, 'Builds', 'Android', 'ForgeEmpire.apk')));
-const folder = mode === 'progression' ? 'progression-qa' : 'redesign-qa';
-const filename = mode === 'progression' ? 'progression-result.json' : 'native-result.json';
+// Transferring a release APK can exceed the short command timeout on a cold emulator.
+console.log(call(['-s', serial, 'install', '-r', path.join(root, 'Builds', 'Android', 'ForgeEmpire.apk')], true, 120000));
+const folder = mode==='chronicles'?'chronicles-qa':mode === 'illustrated' ? 'illustrated-qa' : mode === 'progression' ? 'progression-qa' : 'redesign-qa';
+const filename = mode==='chronicles'?'chronicles-result.json':mode === 'illustrated' ? 'illustrated-result.json' : mode === 'progression' ? 'progression-result.json' : 'native-result.json';
 const remote = `/sdcard/Android/data/com.emberoak.forgeempire/files/${folder}`;
 device('shell', 'rm', '-f', `${remote}/${filename}`);
 device('shell', 'am', 'start', '-S', '-n', 'com.emberoak.forgeempire/com.unity3d.player.UnityPlayerGameActivity',
-  '--es', 'unity', mode === 'progression' ? '--progression-smoke' : '--redesign-smoke');
+  '--es', 'unity',mode==='chronicles'?'--chronicles-smoke': mode === 'illustrated' ? '--illustrated-smoke' : mode === 'progression' ? '--progression-smoke' : '--redesign-smoke');
 console.log(`RUNNING ${mode} on ${serial}`);
-const deadline = Date.now() + 240000;
+const deadline = Date.now() + (mode==='chronicles'?480000:240000);
 let result;
 while (Date.now() < deadline) {
   const json = call(['-s', serial, 'shell', 'cat', `${remote}/${filename}`], false, 10000);

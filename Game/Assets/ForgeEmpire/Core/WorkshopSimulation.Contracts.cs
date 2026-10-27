@@ -19,7 +19,7 @@ namespace ForgeEmpire
         {
             var r=GameContent.Recipes[recipe];
             return new CommissionDefinition{RecipeId=recipe,Region=r.Region,Quantity=quantity,MinimumQuality=quality,
-                Gold=(int)Math.Ceiling(r.Value*quantity*(1.7+quality*.3)),Reputation=6+r.Region*3+quality*3,
+                Gold=(int)Math.Ceiling(r.Value*quantity*(1.7+quality*.3)*(1+(State.World==null?0:State.World.Projects[4])*.08)),Reputation=6+r.Region*3+quality*3,
                 Patron=quality>0?"The guild quartermaster":r.Slot==GearSlot.Weapon?"The road patrol":"The valley guard",
                 Title=quality>0?"An artisan's touch":r.Slot==GearSlot.Weapon?"Arm the next patrol":"Protection for the road"};
         }

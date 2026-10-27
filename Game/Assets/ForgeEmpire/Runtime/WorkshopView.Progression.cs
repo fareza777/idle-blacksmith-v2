@@ -46,7 +46,7 @@ namespace ForgeEmpire
             if(!journeyFollowing)return;
             var advice=app.Sim.NextStep;
             stationTitle.text=advice.Title;stationInfo.text=advice.Detail;
-            bool striking=advice.Action==GuideAction.Forge&&app.Sim.IsRunning(Station.Forge);
+            bool striking=advice.Action==GuideAction.Forge&&app.Sim.IsRunning(Station.Forge)&&!app.Sim.MasterworkActive;
             actionButton.gameObject.SetActive(!striking);strikeButton.gameObject.SetActive(striking);
             marker.parent.gameObject.SetActive(striking);
             actionText.text=advice.Button;
@@ -99,7 +99,7 @@ namespace ForgeEmpire
             app.ClaimCampaignQuest(id,false);
             string rewards="+"+quest.RewardGold+" gold · +"+quest.RewardReputation+" reputation";
             if(quest.RewardMaterial>0)rewards+="\n+"+quest.RewardMaterial+" "+WorkshopSimulation.MaterialName(quest.Region).ToLowerInvariant();
-            if(quest.RewardTown>0)rewards+="\nTown restored · "+sim.State.Campaign.TownLevel+" / 5";
+            if(quest.RewardTown>0)rewards+="\nTown restored · "+sim.State.Campaign.TownLevel+" / "+GameContent.RegionCount;
             string title=sim.UnlockedRegion>chapter?"Welcome to "+GameContent.Regions[sim.UnlockedRegion].Name:sim.CampaignComplete&&id==14?"The valley is free":quest.Title;
             ShowProgressReward(title,rewards,quest.Consequence);
         }
@@ -119,11 +119,13 @@ namespace ForgeEmpire
         }
         void ShowCraftResult(CraftedItem item)
         {
+            if(item!=null&&item.Masterwork){ShowArtisanResult(item);return;}
             var sim=app.Sim;var recipe=GameContent.Recipes[item.RecipeId];
             var p=Page("craft-result","A creation from your forge",recipe.Name,()=>ShowCraftResult(item));
             EquipmentIcon("CraftResultItem",p,item.RecipeId,350,0,320);
             float y=Paragraph(p,"CraftResultQuality",WorkshopSimulation.QualityName(item.Quality)+" · "+item.Quality+" / 3",334,ForgeUI.Subheading,ForgeUI.Gold,true)+Gap;
             y=Paragraph(p,"CraftResultStats",sim.ItemPower(item)+" Power · "+sim.ItemGuard(item)+" Guard · "+recipe.Element,y,ForgeUI.Subheading,ForgeUI.Teal)+Gap;
+            if(sim.State.ChroniclesEnabled)y=Paragraph(p,"CraftResultBuild",WorkshopSimulation.ItemBuildDescription(item),y,ForgeUI.Small,ForgeUI.Teal)+Gap;
             bool reserved=sim.IsCommissionReserved(item);
             var active=sim.ActiveCommission;
             bool belowQuality=active!=null&&active.RecipeId==item.RecipeId&&item.Quality<active.MinimumQuality;
@@ -169,10 +171,10 @@ namespace ForgeEmpire
         public void ShowJourney()
         {
             var sim=app.Sim;int chapter=sim.UnlockedRegion;
-            var p=Page("journey","Chapter "+(chapter+1)+" of 5 · "+sim.GuildRank,sim.CampaignComplete?"Your master forge":sim.ChapterTitle,ShowJourney);
+            var p=Page("journey","Chapter "+(chapter+1)+" of "+GameContent.RegionCount+" · "+sim.GuildRank,sim.CampaignComplete?"Your master forge":sim.ChapterTitle,ShowJourney);
             bool compact=root.rect.height<1600;
             if(!compact)Landscape("JourneyLandscape",p,chapter,0,0,1020,260);
-            float y=Paragraph(p,"JourneyProgress",sim.CampaignComplete?"Story complete · 35 milestones":sim.ChapterProgress+" / 7 milestones · "+GameContent.Regions[chapter].Name,compact?0:284,compact?ForgeUI.Small:ForgeUI.Subheading,ForgeUI.Gold,true)+Gap;
+            float y=Paragraph(p,"JourneyProgress",sim.CampaignComplete?"Story complete · "+GameContent.RegionCount*7+" milestones":sim.ChapterProgress+" / 7 milestones · "+GameContent.Regions[chapter].Name,compact?0:284,compact?ForgeUI.Small:ForgeUI.Subheading,ForgeUI.Gold,true)+Gap;
             ForgeUI.Fill("JourneyTrack",p,0,y,1020,8,ForgeUI.Line);
             ForgeUI.Fill("JourneyProgressFill",p,0,y,1020*sim.ChapterProgress/7f,8,ForgeUI.Teal);y+=Gap+12;
             y=Paragraph(p,"JourneyCurrentGoal",sim.NextStep.Title,y,ForgeUI.Subheading,null,true)+12;
@@ -187,9 +189,9 @@ namespace ForgeEmpire
                 y=Paragraph(p,"Milestone"+i,sim.MilestoneTitle(i),y,ForgeUI.Small,done?ForgeUI.Teal:current?ForgeUI.Cream:ForgeUI.Muted,current,68,952)+24;
             }
             y+=Gap;y=Paragraph(p,"LongTermTitle","The road ahead",y,ForgeUI.Subheading,null,true)+Gap;
-            for(int i=0;i<5;i++)
+            for(int i=0;i<GameContent.RegionCount;i++)
             {
-                string status=i<chapter||sim.CampaignComplete?"Complete":i==chapter?"Your current chapter":"Defeat "+GameContent.Regions[i-1].BossName+" to unlock";
+                string status=sim.IsFrontierCleared(i)?"Restored":i==chapter?"Your current chapter":sim.RegionUnlockText(i);
                 y=Paragraph(p,"ChapterRoadmap"+i,(i+1)+". "+GameContent.Regions[i].Name+"\n"+status,y,ForgeUI.Small,i<=chapter?ForgeUI.Cream:ForgeUI.Muted)+Gap;
             }
             y=AddAction(p,"JourneyOrders","Guild orders · Earn gold for your workshop",y,ShowGuildOrders,false);
@@ -225,7 +227,7 @@ namespace ForgeEmpire
                 {
                     int slot=i;var offer=sim.CommissionOffer(i);
                     Rule(p,y);y+=Gap;y=OrderTerms(p,offer,y,"GuildOffer"+i);
-                    y=AddAction(p,"AcceptGuildOrder"+i,"Accept · "+offer.Gold+" gold",y,()=>{
+                    y=AddAction(p,"AcceptGuildOrder"+i,"Accept order",y,()=>{
                         if(!sim.TryAcceptCommission(slot))return;
                         app.Save();app.Play("click");ResumeJourney();
                     },i==0);
@@ -251,6 +253,7 @@ namespace ForgeEmpire
         }
         void ShowMastery()
         {
+            if(app.Sim.State.ChroniclesEnabled){ShowLegends();return;}
             var sim=app.Sim;var c=sim.State.Campaign;
             var p=Page("mastery","Your workshop's legacy",sim.GuildRank,ShowMastery);
             int crafted=0,mastered=0,recruited=0,stories=0;
@@ -277,13 +280,14 @@ namespace ForgeEmpire
         }
         void ShowDeparture(int region,int route)
         {
+            if(app.Sim.State.ChroniclesEnabled){ShowSagaDeparture(region,route);return;}
             var sim=app.Sim;var place=GameContent.Regions[region];var rewards=sim.PreviewRouteRewards(region,route);
             string name=route==2?place.BossName:route==1?"Rescue expedition":"Supply trail";
             var p=Page("departure",place.Name+" · "+(route==0?2:3)+" encounters",name,()=>ShowDeparture(region,route));
             Landscape("DepartureLandscape",p,region,0,0,1020,340);
-            float y=Paragraph(p,"DepartureGoal",route==2?"Break the guardian's hold and open the next chapter.":route==1?"Find the missing townsfolk and help restore their home.":"Secure materials for your next creations.",366,ForgeUI.Subheading,null,true)+Gap;
+            float y=Paragraph(p,"DepartureGoal",route==2?sim.GuardianObjective(region):route==1?"Find the missing townsfolk and help restore their home.":"Secure materials for your next creations.",366,ForgeUI.Subheading,null,true)+Gap;
             y=Paragraph(p,"DepartureParty",GameContent.Heroes[sim.State.Campaign.SelectedHero].Name+" · "+sim.HeroPower+" Power · "+sim.HeroGuard+" Guard",y,ForgeUI.Small,ForgeUI.Teal)+12;
-            y=Paragraph(p,"DepartureWeakness",place.Weakness+" defeats this region's defenses. "+(sim.WeaponMultiplier(region)>1?"Your weapon matches.":"Matching equipment gives a damage bonus."),y,ForgeUI.Small,ForgeUI.Muted)+Gap;
+            y=Paragraph(p,"DepartureWeakness",ElementAdvice(region),y,ForgeUI.Small,ForgeUI.Muted)+Gap;
             y=Paragraph(p,"DepartureRewards","+"+rewards.Gold+" gold · +"+rewards.Experience+" hero XP\n+"+rewards.Material+" "+WorkshopSimulation.MaterialName(region).ToLowerInvariant(),y,ForgeUI.Body,ForgeUI.Gold)+Gap;
             string blocker=sim.ExpeditionBlocker(region,route);
             if(blocker!="")y=Paragraph(p,"DepartureBlocker",blocker,y,ForgeUI.Small,ForgeUI.Orange)+Gap;
@@ -291,7 +295,7 @@ namespace ForgeEmpire
                 if(sim.ExpeditionBlocker(region,route)!=""){ShowHeroes();return;}
                 if(app.BeginExpedition(region,route))ShowBattle();
             });
-            y=Paragraph(p,"DepartureTip","Brace when a heavy attack approaches. Recover restores health once. Your hero and equipment are safe if you retreat.",y,ForgeUI.Small,ForgeUI.Muted)+Gap;
+            y=Paragraph(p,"DepartureTip","Brace when a heavy attack approaches. Recover restores health once. Your hero and equipment are safe if you lose.",y,ForgeUI.Small,ForgeUI.Muted)+Gap;
             y=AddAction(p,"DepartureEquipment","Review equipment",y,ShowHeroes,false);
             EndPage(y);
         }

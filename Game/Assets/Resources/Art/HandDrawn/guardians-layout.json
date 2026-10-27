@@ -1,0 +1,429 @@
+{
+  "columns": 4,
+  "rows": 5,
+  "width": 1122,
+  "height": 1402,
+  "sha256": "815a84ce89058036bbf50b75c635d176a3664e716c5099f08c115e270d40b9c9",
+  "frames": [
+    {
+      "id": 0,
+      "region": 0,
+      "label": "The Thornback",
+      "pose": "ready",
+      "x": 0.04367201426024955,
+      "y": 0.8195435092724679,
+      "w": 0.16488413547237077,
+      "h": 0.12339514978601997,
+      "pivotX": 0.5550835758835758,
+      "pivotY": 0.011560693641618497,
+      "referenceWidth": 185,
+      "referenceHeight": 173,
+      "alphaBounds": [
+        51,
+        82,
+        232,
+        251
+      ],
+      "area": 18220
+    },
+    {
+      "id": 1,
+      "region": 0,
+      "label": "The Thornback",
+      "pose": "attack",
+      "x": 0.2985739750445633,
+      "y": 0.8209700427960057,
+      "w": 0.17379679144385027,
+      "h": 0.12410841654778887,
+      "pivotX": 0.7876150333684581,
+      "pivotY": 0.011494252873563218,
+      "referenceWidth": 185,
+      "referenceHeight": 173,
+      "alphaBounds": [
+        337,
+        79,
+        528,
+        249
+      ],
+      "area": 17782
+    },
+    {
+      "id": 2,
+      "region": 0,
+      "label": "The Thornback",
+      "pose": "hurt",
+      "x": 0.5525846702317291,
+      "y": 0.8202567760342367,
+      "w": 0.15062388591800357,
+      "h": 0.09914407988587731,
+      "pivotX": 0.5046900215169445,
+      "pivotY": 0.014388489208633094,
+      "referenceWidth": 185,
+      "referenceHeight": 173,
+      "alphaBounds": [
+        622,
+        115,
+        787,
+        250
+      ],
+      "area": 14742
+    },
+    {
+      "id": 3,
+      "region": 0,
+      "label": "The Thornback",
+      "pose": "defeated",
+      "x": 0.7941176470588235,
+      "y": 0.8202567760342367,
+      "w": 0.1622103386809269,
+      "h": 0.07988587731811697,
+      "pivotX": 0.48891738101856813,
+      "pivotY": 0.017857142857142856,
+      "referenceWidth": 185,
+      "referenceHeight": 173,
+      "alphaBounds": [
+        893,
+        142,
+        1071,
+        250
+      ],
+      "area": 13180
+    },
+    {
+      "id": 4,
+      "region": 1,
+      "label": "The Mire Warden",
+      "pose": "ready",
+      "x": 0.045454545454545456,
+      "y": 0.6198288159771754,
+      "w": 0.1800356506238859,
+      "h": 0.1355206847360913,
+      "pivotX": 0.5450921251065504,
+      "pivotY": 0.010526315789473684,
+      "referenceWidth": 202,
+      "referenceHeight": 190,
+      "alphaBounds": [
+        53,
+        345,
+        251,
+        531
+      ],
+      "area": 21899
+    },
+    {
+      "id": 5,
+      "region": 1,
+      "label": "The Mire Warden",
+      "pose": "attack",
+      "x": 0.2905525846702317,
+      "y": 0.6212553495007133,
+      "w": 0.21479500891265596,
+      "h": 0.1276747503566334,
+      "pivotX": 0.6174642444279388,
+      "pivotY": 0.0111731843575419,
+      "referenceWidth": 202,
+      "referenceHeight": 190,
+      "alphaBounds": [
+        328,
+        354,
+        565,
+        529
+      ],
+      "area": 22859
+    },
+    {
+      "id": 6,
+      "region": 1,
+      "label": "The Mire Warden",
+      "pose": "hurt",
+      "x": 0.5650623885918004,
+      "y": 0.6198288159771754,
+      "w": 0.15418894830659535,
+      "h": 0.12268188302425106,
+      "pivotX": 0.5499551738314238,
+      "pivotY": 0.011627906976744186,
+      "referenceWidth": 202,
+      "referenceHeight": 190,
+      "alphaBounds": [
+        636,
+        363,
+        805,
+        531
+      ],
+      "area": 17750
+    },
+    {
+      "id": 7,
+      "region": 1,
+      "label": "The Mire Warden",
+      "pose": "defeated",
+      "x": 0.7887700534759359,
+      "y": 0.6191155492154066,
+      "w": 0.17023172905525846,
+      "h": 0.0912981455064194,
+      "pivotX": 0.5012874250837543,
+      "pivotY": 0.015625,
+      "referenceWidth": 202,
+      "referenceHeight": 190,
+      "alphaBounds": [
+        887,
+        408,
+        1074,
+        532
+      ],
+      "area": 12751
+    },
+    {
+      "id": 8,
+      "region": 2,
+      "label": "The Frostfang",
+      "pose": "ready",
+      "x": 0.05258467023172905,
+      "y": 0.42510699001426533,
+      "w": 0.1889483065953654,
+      "h": 0.1433666191155492,
+      "pivotX": 0.427020047816682,
+      "pivotY": 0.009950248756218905,
+      "referenceWidth": 212,
+      "referenceHeight": 201,
+      "alphaBounds": [
+        61,
+        607,
+        269,
+        804
+      ],
+      "area": 22978
+    },
+    {
+      "id": 9,
+      "region": 2,
+      "label": "The Frostfang",
+      "pose": "attack",
+      "x": 0.27450980392156865,
+      "y": 0.4258202567760342,
+      "w": 0.23351158645276293,
+      "h": 0.1340941512125535,
+      "pivotX": 0.592587371000569,
+      "pivotY": 0.010638297872340425,
+      "referenceWidth": 212,
+      "referenceHeight": 201,
+      "alphaBounds": [
+        310,
+        619,
+        568,
+        803
+      ],
+      "area": 22887
+    },
+    {
+      "id": 10,
+      "region": 2,
+      "label": "The Frostfang",
+      "pose": "hurt",
+      "x": 0.5525846702317291,
+      "y": 0.42510699001426533,
+      "w": 0.18092691622103388,
+      "h": 0.1312410841654779,
+      "pivotX": 0.5303913431771344,
+      "pivotY": 0.010869565217391304,
+      "referenceWidth": 212,
+      "referenceHeight": 201,
+      "alphaBounds": [
+        622,
+        624,
+        821,
+        804
+      ],
+      "area": 18337
+    },
+    {
+      "id": 11,
+      "region": 2,
+      "label": "The Frostfang",
+      "pose": "defeated",
+      "x": 0.7994652406417112,
+      "y": 0.4194008559201141,
+      "w": 0.16399286987522282,
+      "h": 0.11626248216833096,
+      "pivotX": 0.5109063577495587,
+      "pivotY": 0.012269938650306749,
+      "referenceWidth": 212,
+      "referenceHeight": 201,
+      "alphaBounds": [
+        899,
+        653,
+        1079,
+        812
+      ],
+      "area": 16454
+    },
+    {
+      "id": 12,
+      "region": 3,
+      "label": "The Cinder Colossus",
+      "pose": "ready",
+      "x": 0.040106951871657755,
+      "y": 0.23323823109843078,
+      "w": 0.1800356506238859,
+      "h": 0.1433666191155492,
+      "pivotX": 0.47510462790051244,
+      "pivotY": 0.009950248756218905,
+      "referenceWidth": 202,
+      "referenceHeight": 201,
+      "alphaBounds": [
+        47,
+        876,
+        245,
+        1073
+      ],
+      "area": 25510
+    },
+    {
+      "id": 13,
+      "region": 3,
+      "label": "The Cinder Colossus",
+      "pose": "attack",
+      "x": 0.2967914438502674,
+      "y": 0.23252496433666192,
+      "w": 0.22727272727272727,
+      "h": 0.13338088445078458,
+      "pivotX": 0.5623128134974922,
+      "pivotY": 0.0106951871657754,
+      "referenceWidth": 202,
+      "referenceHeight": 201,
+      "alphaBounds": [
+        335,
+        891,
+        586,
+        1074
+      ],
+      "area": 23941
+    },
+    {
+      "id": 14,
+      "region": 3,
+      "label": "The Cinder Colossus",
+      "pose": "hurt",
+      "x": 0.5614973262032086,
+      "y": 0.23252496433666192,
+      "w": 0.16399286987522282,
+      "h": 0.13195435092724678,
+      "pivotX": 0.4196490396880355,
+      "pivotY": 0.010810810810810811,
+      "referenceWidth": 202,
+      "referenceHeight": 201,
+      "alphaBounds": [
+        632,
+        893,
+        812,
+        1074
+      ],
+      "area": 20851
+    },
+    {
+      "id": 15,
+      "region": 3,
+      "label": "The Cinder Colossus",
+      "pose": "defeated",
+      "x": 0.7905525846702317,
+      "y": 0.23252496433666192,
+      "w": 0.17290552584670232,
+      "h": 0.0905848787446505,
+      "pivotX": 0.49995337699732956,
+      "pivotY": 0.015748031496062992,
+      "referenceWidth": 202,
+      "referenceHeight": 201,
+      "alphaBounds": [
+        889,
+        951,
+        1079,
+        1074
+      ],
+      "area": 15494
+    },
+    {
+      "id": 16,
+      "region": 4,
+      "label": "The Starbound Sentinel",
+      "pose": "ready",
+      "x": 0.04723707664884135,
+      "y": 0.03994293865905851,
+      "w": 0.20320855614973263,
+      "h": 0.14122681883024252,
+      "pivotX": 0.49509532344793866,
+      "pivotY": 0.010101010101010102,
+      "referenceWidth": 228,
+      "referenceHeight": 198,
+      "alphaBounds": [
+        55,
+        1150,
+        279,
+        1344
+      ],
+      "area": 20941
+    },
+    {
+      "id": 17,
+      "region": 4,
+      "label": "The Starbound Sentinel",
+      "pose": "attack",
+      "x": 0.3003565062388592,
+      "y": 0.041369472182596345,
+      "w": 0.21746880570409982,
+      "h": 0.13338088445078458,
+      "pivotX": 0.5868571667542897,
+      "pivotY": 0.0106951871657754,
+      "referenceWidth": 228,
+      "referenceHeight": 198,
+      "alphaBounds": [
+        339,
+        1159,
+        579,
+        1342
+      ],
+      "area": 18424
+    },
+    {
+      "id": 18,
+      "region": 4,
+      "label": "The Starbound Sentinel",
+      "pose": "hurt",
+      "x": 0.56951871657754,
+      "y": 0.040656205420827374,
+      "w": 0.15597147950089127,
+      "h": 0.1398002853067047,
+      "pivotX": 0.4757902001380262,
+      "pivotY": 0.01020408163265306,
+      "referenceWidth": 228,
+      "referenceHeight": 198,
+      "alphaBounds": [
+        641,
+        1151,
+        812,
+        1343
+      ],
+      "area": 16396
+    },
+    {
+      "id": 19,
+      "region": 4,
+      "label": "The Starbound Sentinel",
+      "pose": "defeated",
+      "x": 0.7923351158645277,
+      "y": 0.03994293865905851,
+      "w": 0.1800356506238859,
+      "h": 0.11269614835948645,
+      "pivotX": 0.5125597308765627,
+      "pivotY": 0.012658227848101266,
+      "referenceWidth": 228,
+      "referenceHeight": 198,
+      "alphaBounds": [
+        891,
+        1190,
+        1089,
+        1344
+      ],
+      "area": 15499
+    }
+  ]
+}

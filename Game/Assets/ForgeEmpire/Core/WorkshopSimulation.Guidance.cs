@@ -24,10 +24,10 @@ namespace ForgeEmpire
 
     public sealed partial class WorkshopSimulation
     {
-        static readonly string[] MaterialNames = { "Cinders", "Marsh glass", "Peak crystals", "Obsidian", "Star shards" };
+        static readonly string[] MaterialNames = { "Cinders", "Marsh glass", "Peak crystals", "Obsidian", "Star shards", "Sunsteel" };
         static readonly string[] QualityNames = { "Common", "Fine", "Superior", "Masterwork" };
 
-        public static string MaterialName(int region) { return MaterialNames[Math.Max(0, Math.Min(4, region))]; }
+        public static string MaterialName(int region) { return MaterialNames[Math.Max(0, Math.Min(GameContent.RegionCount-1, region))]; }
         public static string QualityName(int quality) { return QualityNames[Math.Max(0, Math.Min(3, quality))]; }
         public static string Number(double value) { return value.ToString("0.#", CultureInfo.InvariantCulture); }
 
@@ -63,8 +63,9 @@ namespace ForgeEmpire
         public double SaleValue(CraftedItem item) { return item==null?0:item.Value*(1+.08*(State.Levels[(int)Station.Market]-1)); }
         public ExpeditionRewardPreview PreviewRouteRewards(int region,int route)
         {
-            if(region<0||region>=5||route<0||route>2)return null;
+            if(region<0||region>=GameContent.RegionCount||route<0||route>(State.ChroniclesEnabled?3:2))return null;
             var preview=new ExpeditionState{Region=region,Route=route};SetRewards(preview);
+            if(State.ChroniclesEnabled)return new ExpeditionRewardPreview{Gold=(region+1)*(55+40*route),Material=5+route*3+State.World.Projects[1],Experience=25+20*route+region*12,Reputation=(region+1)*(route+1)*2};
             return new ExpeditionRewardPreview{Gold=preview.RewardGold,Material=preview.RewardMaterial,Experience=preview.RewardExperience,Reputation=(region+1)*(route+1)*2};
         }
         public int EquipmentDelta(int index, bool power)
@@ -72,7 +73,8 @@ namespace ForgeEmpire
             if (index < 0 || index >= State.Inventory.Count) return 0;
             var item = State.Inventory[index];
             var hero = State.Campaign.Heroes[State.Campaign.SelectedHero];
-            var previous = GameContent.Recipes[item.RecipeId].Slot == GearSlot.Weapon ? hero.Weapon : hero.Armor;
+            var slot=GameContent.Recipes[item.RecipeId].Slot;
+            var previous=slot==GearSlot.Weapon?hero.Weapon:slot==GearSlot.Armor?hero.Armor:hero.Accessory;
             return GearStat(item, power) - GearStat(previous, power);
         }
 
@@ -111,11 +113,17 @@ namespace ForgeEmpire
 
         public string ExpeditionBlocker(int region, int route)
         {
-            if (region < 0 || region >= 5 || route < 0 || route > 2) return "Choose an available route.";
+            if (region < 0 || region >= GameContent.RegionCount || route < 0 || route > (State.ChroniclesEnabled?3:2)) return "Choose an available route.";
+            if(SagaInProgress)return "Continue or collect your current expedition first.";
+            if(State.ChroniclesEnabled)
+            {
+                if(route==3&&!IsFrontierCleared(region))return "Claim this region's guardian story before challenging its legend.";
+                foreach(int id in State.Saga.Party)if(id>=0&&State.Campaign.Heroes[id].Weapon==null)return "Equip a weapon on "+GameContent.Heroes[id].Name+" before departure.";
+            }
             if (State.Campaign.Battle.Active) return "An expedition is already underway.";
             if (State.Campaign.Battle.Finished) return "Collect your previous expedition result first.";
-            if (region > UnlockedRegion) return "First claim: " + GameContent.Quests[(region - 1) * 3 + 2].Title + ".";
-            if (State.Campaign.Heroes[State.Campaign.SelectedHero].Weapon == null && (region != 0 || route != 0)) return "Equip a weapon before taking this route.";
+            if (region > UnlockedRegion) return "First claim: " + GameContent.Quests[GameContent.MainQuestId(region-1,2)].Title + ".";
+            if (!State.ChroniclesEnabled&&State.Campaign.Heroes[State.Campaign.SelectedHero].Weapon == null && (region != 0 || route != 0)) return "Equip a weapon before taking this route.";
             return "";
         }
 
@@ -124,14 +132,21 @@ namespace ForgeEmpire
             if (id < 0 || id >= GameContent.Quests.Length) return "Quest unavailable.";
             if (State.Campaign.QuestClaims[id]) return "Completed";
             var quest = GameContent.Quests[id];
-            if (quest.Region > UnlockedRegion) return "First claim: " + GameContent.Quests[(quest.Region - 1) * 3 + 2].Title;
+            if (quest.Region > UnlockedRegion) return "First claim: " + GameContent.Quests[GameContent.MainQuestId(quest.Region-1,2)].Title;
             if (quest.Main && MainQuest != null && MainQuest.Id != id) return "First complete: " + MainQuest.Title;
             return quest.Objective;
         }
 
+        public double ArmorMultiplier(int region)
+        {
+            if(region<0||region>=GameContent.RegionCount)return 1;
+            var hero=State.Campaign.Heroes[State.Campaign.SelectedHero];
+            string element=hero.Armor==null?"Iron":GameContent.Recipes[hero.Armor.RecipeId].Element;
+            return element==GameContent.Regions[region].Weakness?(State.Campaign.SelectedHero==2?.7:.8):1;
+        }
         public double WeaponMultiplier(int region)
         {
-            if (region < 0 || region >= 5) return 1;
+            if (region < 0 || region >= GameContent.RegionCount) return 1;
             var hero = State.Campaign.Heroes[State.Campaign.SelectedHero];
             string element = hero.Weapon == null ? "Iron" : GameContent.Recipes[hero.Weapon.RecipeId].Element;
             return element == GameContent.Regions[region].Weakness ? (State.Campaign.SelectedHero == 2 ? 1.6 : 1.3) : element == ResistedElements[region] ? .75 : 1;

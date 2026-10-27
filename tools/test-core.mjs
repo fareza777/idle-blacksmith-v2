@@ -19,10 +19,10 @@ if (!versions.length) throw new Error('No bundled .NET runtime found');
 const version = versions[0];
 const runtime = path.join(shared, version);
 const qa = path.join(root, 'QA');
-const output = path.join(qa, 'core-test.dll');
-const response = path.join(qa, 'core-test.rsp');
 const label = process.argv[2] || 'latest';
 if (!/^[a-zA-Z0-9-]+$/.test(label)) throw new Error('Artifact label must be alphanumeric or hyphenated');
+const output = path.join(qa, `core-test-${label}.dll`);
+const response = path.join(qa, `core-test-${label}.rsp`);
 const logFile = path.join(qa, `core-test-${label}.log`);
 const sources = [path.join(root, 'Game', 'Assets', 'ForgeEmpire', 'Core'), path.join(root, 'tests')]
   .flatMap(directory => fs.readdirSync(directory).filter(name => name.endsWith('.cs')).sort().map(name => path.join(directory, name)));
@@ -35,7 +35,7 @@ fs.writeFileSync(response, [
   '/warn:4', '/warnaserror+', '/optimize+', '/deterministic+', `/out:"${output}"`,
   ...references, ...sources.map(source => `"${source}"`),
 ].join('\n'));
-fs.writeFileSync(path.join(qa, 'core-test.runtimeconfig.json'), JSON.stringify({
+fs.writeFileSync(path.join(qa, `core-test-${label}.runtimeconfig.json`), JSON.stringify({
   runtimeOptions: { tfm: `net${version.split('.').slice(0, 2).join('.')}`, framework: { name: 'Microsoft.NETCore.App', version } },
 }, null, 2));
 let log = `Runtime: ${version}\nCompiler: ${compiler}\nLanguage: C# 7.3 (warnings as errors)\n`;

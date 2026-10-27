@@ -1,0 +1,429 @@
+{
+  "columns": 4,
+  "rows": 5,
+  "width": 1122,
+  "height": 1402,
+  "sha256": "936d8b4a35e6d7c427f85babc0ee3389b05af145d8868939d46d993eac11fa90",
+  "frames": [
+    {
+      "id": 0,
+      "region": 0,
+      "label": "Cinderroot Stalker",
+      "pose": "ready",
+      "x": 0.05525846702317291,
+      "y": 0.8174037089871612,
+      "w": 0.15508021390374332,
+      "h": 0.09771754636233952,
+      "pivotX": 0.5697346722784217,
+      "pivotY": 0.014598540145985401,
+      "referenceWidth": 174,
+      "referenceHeight": 137,
+      "alphaBounds": [
+        64,
+        121,
+        234,
+        254
+      ],
+      "area": 13992
+    },
+    {
+      "id": 1,
+      "region": 0,
+      "label": "Cinderroot Stalker",
+      "pose": "attack",
+      "x": 0.2976827094474153,
+      "y": 0.8174037089871612,
+      "w": 0.1657754010695187,
+      "h": 0.09700427960057062,
+      "pivotX": 0.8392353643966547,
+      "pivotY": 0.014705882352941176,
+      "referenceWidth": 174,
+      "referenceHeight": 137,
+      "alphaBounds": [
+        336,
+        122,
+        518,
+        254
+      ],
+      "area": 13702
+    },
+    {
+      "id": 2,
+      "region": 0,
+      "label": "Cinderroot Stalker",
+      "pose": "hurt",
+      "x": 0.5579322638146168,
+      "y": 0.8166904422253923,
+      "w": 0.13012477718360071,
+      "h": 0.09700427960057062,
+      "pivotX": 0.5718320268165862,
+      "pivotY": 0.014705882352941176,
+      "referenceWidth": 174,
+      "referenceHeight": 137,
+      "alphaBounds": [
+        628,
+        123,
+        770,
+        255
+      ],
+      "area": 12069
+    },
+    {
+      "id": 3,
+      "region": 0,
+      "label": "Cinderroot Stalker",
+      "pose": "defeated",
+      "x": 0.786096256684492,
+      "y": 0.8174037089871612,
+      "w": 0.1568627450980392,
+      "h": 0.06704707560627675,
+      "pivotX": 0.4717506228837923,
+      "pivotY": 0.02127659574468085,
+      "referenceWidth": 174,
+      "referenceHeight": 137,
+      "alphaBounds": [
+        884,
+        164,
+        1056,
+        254
+      ],
+      "area": 10374
+    },
+    {
+      "id": 4,
+      "region": 1,
+      "label": "Mistbound Ferryman",
+      "pose": "ready",
+      "x": 0.07308377896613191,
+      "y": 0.6198288159771754,
+      "w": 0.13458110516934046,
+      "h": 0.11982881597717546,
+      "pivotX": 0.5342002223618698,
+      "pivotY": 0.011904761904761904,
+      "referenceWidth": 151,
+      "referenceHeight": 168,
+      "alphaBounds": [
+        84,
+        367,
+        231,
+        531
+      ],
+      "area": 12777
+    },
+    {
+      "id": 5,
+      "region": 1,
+      "label": "Mistbound Ferryman",
+      "pose": "attack",
+      "x": 0.3003565062388592,
+      "y": 0.6191155492154066,
+      "w": 0.17914438502673796,
+      "h": 0.10912981455064194,
+      "pivotX": 0.6393056513422427,
+      "pivotY": 0.013071895424836602,
+      "referenceWidth": 151,
+      "referenceHeight": 168,
+      "alphaBounds": [
+        339,
+        383,
+        536,
+        532
+      ],
+      "area": 13543
+    },
+    {
+      "id": 6,
+      "region": 1,
+      "label": "Mistbound Ferryman",
+      "pose": "hurt",
+      "x": 0.5525846702317291,
+      "y": 0.6191155492154066,
+      "w": 0.12923351158645277,
+      "h": 0.10841654778887304,
+      "pivotX": 0.48085748000524464,
+      "pivotY": 0.013157894736842105,
+      "referenceWidth": 151,
+      "referenceHeight": 168,
+      "alphaBounds": [
+        622,
+        384,
+        763,
+        532
+      ],
+      "area": 11285
+    },
+    {
+      "id": 7,
+      "region": 1,
+      "label": "Mistbound Ferryman",
+      "pose": "defeated",
+      "x": 0.7887700534759359,
+      "y": 0.6198288159771754,
+      "w": 0.1497326203208556,
+      "h": 0.07132667617689016,
+      "pivotX": 0.5379378762999453,
+      "pivotY": 0.02,
+      "referenceWidth": 151,
+      "referenceHeight": 168,
+      "alphaBounds": [
+        887,
+        435,
+        1051,
+        531
+      ],
+      "area": 7681
+    },
+    {
+      "id": 8,
+      "region": 2,
+      "label": "Icebound Sentinel",
+      "pose": "ready",
+      "x": 0.04188948306595366,
+      "y": 0.42296718972895864,
+      "w": 0.17647058823529413,
+      "h": 0.12410841654778887,
+      "pivotX": 0.5523518349605306,
+      "pivotY": 0.011494252873563218,
+      "referenceWidth": 198,
+      "referenceHeight": 174,
+      "alphaBounds": [
+        49,
+        637,
+        243,
+        807
+      ],
+      "area": 16145
+    },
+    {
+      "id": 9,
+      "region": 2,
+      "label": "Icebound Sentinel",
+      "pose": "attack",
+      "x": 0.2914438502673797,
+      "y": 0.42439372325249647,
+      "w": 0.19786096256684493,
+      "h": 0.12196861626248216,
+      "pivotX": 0.6092774044581273,
+      "pivotY": 0.011695906432748537,
+      "referenceWidth": 198,
+      "referenceHeight": 174,
+      "alphaBounds": [
+        329,
+        638,
+        547,
+        805
+      ],
+      "area": 16729
+    },
+    {
+      "id": 10,
+      "region": 2,
+      "label": "Icebound Sentinel",
+      "pose": "hurt",
+      "x": 0.5597147950089126,
+      "y": 0.42439372325249647,
+      "w": 0.1265597147950089,
+      "h": 0.12339514978601997,
+      "pivotX": 0.528820213221203,
+      "pivotY": 0.011560693641618497,
+      "referenceWidth": 198,
+      "referenceHeight": 174,
+      "alphaBounds": [
+        630,
+        636,
+        768,
+        805
+      ],
+      "area": 15093
+    },
+    {
+      "id": 11,
+      "region": 2,
+      "label": "Icebound Sentinel",
+      "pose": "defeated",
+      "x": 0.7878787878787878,
+      "y": 0.427960057061341,
+      "w": 0.1586452762923351,
+      "h": 0.0891583452211127,
+      "pivotX": 0.3595453551457343,
+      "pivotY": 0.016,
+      "referenceWidth": 198,
+      "referenceHeight": 174,
+      "alphaBounds": [
+        886,
+        679,
+        1060,
+        800
+      ],
+      "area": 11849
+    },
+    {
+      "id": 12,
+      "region": 3,
+      "label": "Slag Colossus",
+      "pose": "ready",
+      "x": 0.05614973262032086,
+      "y": 0.24251069900142652,
+      "w": 0.15775401069518716,
+      "h": 0.11412268188302425,
+      "pivotX": 0.5002950697319206,
+      "pivotY": 0.0125,
+      "referenceWidth": 177,
+      "referenceHeight": 160,
+      "alphaBounds": [
+        65,
+        904,
+        238,
+        1060
+      ],
+      "area": 16916
+    },
+    {
+      "id": 13,
+      "region": 3,
+      "label": "Slag Colossus",
+      "pose": "attack",
+      "x": 0.31283422459893045,
+      "y": 0.24322396576319538,
+      "w": 0.16844919786096257,
+      "h": 0.11340941512125535,
+      "pivotX": 0.6025071088149303,
+      "pivotY": 0.012578616352201259,
+      "referenceWidth": 177,
+      "referenceHeight": 160,
+      "alphaBounds": [
+        353,
+        904,
+        538,
+        1059
+      ],
+      "area": 15686
+    },
+    {
+      "id": 14,
+      "region": 3,
+      "label": "Slag Colossus",
+      "pose": "hurt",
+      "x": 0.5632798573975044,
+      "y": 0.2410841654778887,
+      "w": 0.12032085561497326,
+      "h": 0.11269614835948645,
+      "pivotX": 0.3382276603633668,
+      "pivotY": 0.012658227848101266,
+      "referenceWidth": 177,
+      "referenceHeight": 160,
+      "alphaBounds": [
+        634,
+        908,
+        765,
+        1062
+      ],
+      "area": 13600
+    },
+    {
+      "id": 15,
+      "region": 3,
+      "label": "Slag Colossus",
+      "pose": "defeated",
+      "x": 0.7789661319073083,
+      "y": 0.23751783166904428,
+      "w": 0.16755793226381463,
+      "h": 0.05920114122681883,
+      "pivotX": 0.45676686403943706,
+      "pivotY": 0.024096385542168676,
+      "referenceWidth": 177,
+      "referenceHeight": 160,
+      "alphaBounds": [
+        876,
+        988,
+        1060,
+        1067
+      ],
+      "area": 9941
+    },
+    {
+      "id": 16,
+      "region": 4,
+      "label": "Void Sentry",
+      "pose": "ready",
+      "x": 0.08021390374331551,
+      "y": 0.05278174037089867,
+      "w": 0.14616755793226383,
+      "h": 0.1362339514978602,
+      "pivotX": 0.39429570191467384,
+      "pivotY": 0.010471204188481676,
+      "referenceWidth": 164,
+      "referenceHeight": 191,
+      "alphaBounds": [
+        92,
+        1139,
+        252,
+        1326
+      ],
+      "area": 12705
+    },
+    {
+      "id": 17,
+      "region": 4,
+      "label": "Void Sentry",
+      "pose": "attack",
+      "x": 0.3003565062388592,
+      "y": 0.05634807417974319,
+      "w": 0.19073083778966132,
+      "h": 0.10984308131241084,
+      "pivotX": 0.7207861848584998,
+      "pivotY": 0.012987012987012988,
+      "referenceWidth": 164,
+      "referenceHeight": 191,
+      "alphaBounds": [
+        339,
+        1171,
+        549,
+        1321
+      ],
+      "area": 12584
+    },
+    {
+      "id": 18,
+      "region": 4,
+      "label": "Void Sentry",
+      "pose": "hurt",
+      "x": 0.5677361853832442,
+      "y": 0.05848787446504988,
+      "w": 0.12299465240641712,
+      "h": 0.12339514978601997,
+      "pivotX": 0.38571775564731603,
+      "pivotY": 0.011560693641618497,
+      "referenceWidth": 164,
+      "referenceHeight": 191,
+      "alphaBounds": [
+        639,
+        1149,
+        773,
+        1318
+      ],
+      "area": 10747
+    },
+    {
+      "id": 19,
+      "region": 4,
+      "label": "Void Sentry",
+      "pose": "defeated",
+      "x": 0.7825311942959001,
+      "y": 0.060627674750356686,
+      "w": 0.16131907308377896,
+      "h": 0.07417974322396577,
+      "pivotX": 0.545346998295303,
+      "pivotY": 0.019230769230769232,
+      "referenceWidth": 164,
+      "referenceHeight": 191,
+      "alphaBounds": [
+        880,
+        1215,
+        1057,
+        1315
+      ],
+      "area": 9319
+    }
+  ]
+}
